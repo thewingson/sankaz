@@ -25,10 +25,10 @@ public class SankazApplication {
 			userService.createRole(new SecRole(null, "ROLE_MANAGER"));
 			userService.createRole(new SecRole(null, "ROLE_USER"));
 
-			userService.createUser(new SecUser(null, "superAdmin", "123", true, new HashSet<>(), "superadmin@mail.kz", "Super", "Admin"));
-			userService.createUser(new SecUser(null, "admin", "123", true, new HashSet<>(), "admin@mail.kz", "Simple", "Admin"));
-			userService.createUser(new SecUser(null, "manager", "123", true, new HashSet<>(), "manager@mail.kz", "Simple", "Manager"));
-			userService.createUser(new SecUser(null, "user", "123", true, new HashSet<>(), "user@mail.kz", "Simple", "User"));
+			userService.addUser(new SecUser(null, "superAdmin", "123", true, new HashSet<>(), "superadmin@mail.kz", "Super", "Admin"));
+			userService.addUser(new SecUser(null, "admin", "123", true, new HashSet<>(), "admin@mail.kz", "Simple", "Admin"));
+			userService.addUser(new SecUser(null, "manager", "123", true, new HashSet<>(), "manager@mail.kz", "Simple", "Manager"));
+			userService.addUser(new SecUser(null, "user", "123", true, new HashSet<>(), "user@mail.kz", "Simple", "User"));
 
 			userService.addRoleToUser("superAdmin", "ROLE_SUPER_ADMIN");
 			userService.addRoleToUser("superAdmin", "ROLE_ADMIN");

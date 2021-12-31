@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        default_schema: public
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST}/${DATABASE_NAME}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+  mail:
+    host: smtp.gmail.com
+    username: sanofkaz@gmail.com
+    password: Dusseldorf!2020
+    port: 465
+    protocol: smtps
+
+mail:
+  host: localhost
+  port: 1025
+  username: hello
+  password: hello
+  debug: true

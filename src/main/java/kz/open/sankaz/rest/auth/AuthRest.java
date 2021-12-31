@@ -45,8 +45,18 @@ public class AuthRest {
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody SecUser secUser) {
         try {
-            userService.createUser(secUser);
+            userService.registerUserAndReturnConfirmationBody(secUser);
             return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/confirm-account")
+    public ResponseEntity<?> confirmAccount(@RequestParam("tokenId") String tokenId) {
+        try {
+            authService.confirmAccount(tokenId);
+            return ResponseEntity.ok("Your account has confirmed successfully!");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }

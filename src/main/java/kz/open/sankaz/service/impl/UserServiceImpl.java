@@ -4,19 +4,20 @@ import kz.open.sankaz.model.SecRole;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.repo.RoleRepo;
 import kz.open.sankaz.repo.UserRepo;
+import kz.open.sankaz.service.AuthService;
+import kz.open.sankaz.service.MailSender;
 import kz.open.sankaz.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Transactional
@@ -25,14 +26,20 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
     private final RoleRepo roleRepo;
+    private final MailSender mailSender;
+
+    @Autowired
+    @Lazy
+    private AuthService authService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepo userRepo, RoleRepo roleRepo) {
+    public UserServiceImpl(UserRepo userRepo, RoleRepo roleRepo, MailSender mailSender) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
+        this.mailSender = mailSender;
     }
 
     @Override
@@ -42,19 +49,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createUser(UserDetails user) {
+        SecUser castedUser = (SecUser) user;
+
         Set<SecRole> roles = new HashSet<>();
-        SecRole admin = roleRepo.findByName("ADMIN");
+        SecRole admin = roleRepo.findByName("ROLE_ADMIN");
         if (admin != null) {
-            roles.add(roleRepo.findByName("ADMIN"));
+            roles.add(admin);
         }
-        ((SecUser) user).setPassword(passwordEncoder.encode(((SecUser) user).getPassword()));
-        ((SecUser) user).setRoles(roles);
-        userRepo.save((SecUser) user);
+        castedUser.setPassword(passwordEncoder.encode(((SecUser) user).getPassword()));
+        castedUser.setRoles(roles);
+        SecUser currentUser = authService.getCurrentUser();
+
+        boolean isAdmin = false;
+        if (currentUser != null) {
+            isAdmin = currentUser.getRoles().stream().map(SecRole::getName).anyMatch(roleName -> roleName.equals("ROLE_ADMIN"));
+        }
+
+        if(isAdmin){
+            castedUser.setActive(true);
+            castedUser.setConfirmedTs(LocalDateTime.now());
+            castedUser.setConfirmedBy(currentUser.getUsername());
+        }
+        userRepo.save(castedUser);
     }
 
     @Override
     public void updateUser(UserDetails user) {
-
+        userRepo.save((SecUser) user);
     }
 
     @Override
@@ -78,8 +99,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public SecUser getUserByConfirmationId(UUID confirmationId) {
+        return userRepo.findByConfirmationId(confirmationId);
+    }
+
+    @Override
     public List<SecUser> getUsers(Map<String, Object> params) {
         return userRepo.findAll();
+    }
+
+    @Override
+    public SecUser addUser(SecUser user) {
+        createUser(user);
+        return user;
+    }
+
+    @Override
+    public UUID registerUser(SecUser user) {
+        return addUser(user).getConfirmationId();
+    }
+
+    @Override
+    public void registerUserAndReturnConfirmationBody(SecUser user) {
+        user = addUser(user);
+
+        String message = String.format("Hello, %s!" +
+                "\nWelcome to SanKaz!" +
+                "\nTo confirm activation, please, visit next link http://localhost:8080/auth/confirm-account?tokenId=%s",
+                user.getFullName(),
+                user.getConfirmationId());
+        mailSender.sendMail(user.getEmail(), "Activation code", message);
     }
 
     @Override

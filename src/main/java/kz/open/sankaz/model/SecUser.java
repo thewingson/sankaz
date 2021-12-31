@@ -9,8 +9,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
@@ -33,7 +35,16 @@ public class SecUser extends AbstractEntity implements UserDetails{
     protected String password;
 
     @Column(name = "ACTIVE", nullable = false)
-    protected boolean active = true;
+    protected boolean active = false;
+
+    @Column(name = "CONFIRMED_TS")
+    protected LocalDateTime confirmedTs;
+
+    @Column(name = "CONFIRMED_BY")
+    protected String confirmedBy;
+
+    @Column(name = "CONFIRMATION_ID", nullable = false, unique = true)
+    protected UUID confirmationId = UUID.randomUUID();
 
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(
@@ -50,6 +61,24 @@ public class SecUser extends AbstractEntity implements UserDetails{
 
     @Column(name = "LAST_NAME", nullable = false)
     protected String lastName;
+
+    public SecUser(Long id,
+                   String username,
+                   String password,
+                   boolean active,
+                   Set<SecRole> roles,
+                   String email,
+                   String firstName,
+                   String lastName) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.active = active;
+        this.roles = roles;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
     public void addRole(SecRole role){
         roles.add(role);
@@ -88,5 +117,9 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Override
     public boolean isEnabled() {
         return active;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 }
