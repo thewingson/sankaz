@@ -34,6 +34,15 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "PASSWORD", nullable = false)
     protected String password;
 
+    @Column(name = "EMAIL", unique = true)
+    protected String email;
+
+    @Column(name = "FIRST_NAME", nullable = false)
+    protected String firstName;
+
+    @Column(name = "LAST_NAME", nullable = false)
+    protected String lastName;
+
     @Column(name = "ACTIVE", nullable = false)
     protected boolean active = false;
 
@@ -52,15 +61,6 @@ public class SecUser extends AbstractEntity implements UserDetails{
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
     protected Set<SecRole> roles;
-
-    @Column(name = "EMAIL", unique = true)
-    protected String email;
-
-    @Column(name = "FIRST_NAME", nullable = false)
-    protected String firstName;
-
-    @Column(name = "LAST_NAME", nullable = false)
-    protected String lastName;
 
     public SecUser(Long id,
                    String username,

@@ -20,7 +20,7 @@ public class AbstractEntity {
     protected LocalDateTime createTs = LocalDateTime.now();
 
     @Column(name = "CREATED_BY", nullable = false)
-    protected String createdBy = "admin";
+    protected String createdBy = "admin"; // TODO: вынести в листенер
 
     @Column(name = "UPDATE_TS")
     protected LocalDateTime updateTs;

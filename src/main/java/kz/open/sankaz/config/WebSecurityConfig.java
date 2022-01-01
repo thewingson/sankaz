@@ -52,6 +52,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+//        http
+//                .logout().permitAll()
+//                .invalidateHttpSession(true)
+//                .clearAuthentication(true)
+//                .logoutRequestMatcher(new AntPathRequestMatcher("/auth/sign-out"))
+//                .logoutSuccessUrl("/auth/sign-in/**").permitAll();
     }
 
     @Override

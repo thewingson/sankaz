@@ -26,3 +26,8 @@ mail:
   username: hello
   password: hello
   debug: true
+
+twilio:
+  account_sid: AC8e6fe899b4538ff6af5d16b2350858b6
+  auth_token: af3413216cca168c68691012420ac76a
+  trial_number: +14845754250

@@ -3,6 +3,7 @@ package kz.open.sankaz.service.impl;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.auth.AuthRequest;
 import kz.open.sankaz.service.AuthService;
+import kz.open.sankaz.service.SmsSender;
 import kz.open.sankaz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -21,6 +22,8 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     @Lazy
     private UserService userService;
+    @Autowired
+    private SmsSender smsSender;
 
     @Override
     public void signOut(AuthRequest authRequest) {
@@ -45,5 +48,6 @@ public class AuthServiceImpl implements AuthService {
         user.setConfirmedBy(user.getUsername());
         user.setActive(true);
         userService.updateUser(user);
+        smsSender.sendSms("+77081997727", "Kalaisyn rodnoi?");
     }
 }
