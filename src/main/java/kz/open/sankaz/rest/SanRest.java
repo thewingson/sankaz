@@ -3,7 +3,6 @@ package kz.open.sankaz.rest;
 import kz.open.sankaz.model.San;
 import kz.open.sankaz.repo.SanRepo;
 import kz.open.sankaz.service.AuthService;
-import kz.open.sankaz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +15,6 @@ import java.util.Optional;
 public class SanRest {
 
     private final SanRepo sanRepo;
-
-    @Autowired
-    private UserService userService;
     @Autowired
     private AuthService authService;
 
@@ -44,7 +40,7 @@ public class SanRest {
             sanRepo.save(san);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -65,7 +61,7 @@ public class SanRest {
             }
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -75,7 +71,7 @@ public class SanRest {
             sanRepo.deleteById(id);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

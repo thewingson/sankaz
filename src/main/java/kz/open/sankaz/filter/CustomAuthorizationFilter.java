@@ -5,6 +5,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.properties.SecurityProperties;
+import kz.open.sankaz.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,7 +33,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-    private final String SECRET_KEY = "SECRET"; // TODO: move out to .properties
+    private final SecurityProperties securityProperties;
+    private final UserService userService;
+
+    public CustomAuthorizationFilter(SecurityProperties securityProperties, UserService userService) {
+        this.securityProperties = securityProperties;
+        this.userService = userService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -45,10 +54,16 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
                 try {
                     String token = authorizationHeader.substring("Bearer ".length());
-                    Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
+                    Algorithm algorithm = Algorithm.HMAC256(securityProperties.getSecurityTokenSecret().getBytes());
                     JWTVerifier verifier = JWT.require(algorithm).build();
                     DecodedJWT decodedJWT = verifier.verify(token);
                     String username = decodedJWT.getSubject();
+
+                    SecUser user = userService.getUser(username);
+                    if(user.isLoggedOut()){
+                        throw new Exception("Please, sign in to application again!");
+                    }
+
                     String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
                     Collection<GrantedAuthority> authorities = new ArrayList<>();
                     stream(roles).forEach(role -> {
@@ -60,7 +75,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     filterChain.doFilter(request, response);
                 } catch (Exception e){
                     log.error("Error logging in {}", e.getMessage());
-//                    response.sendError(FORBIDDEN.value());
                     response.setHeader("error", e.getMessage());
                     response.setStatus(FORBIDDEN.value());
                     Map<String, String> error = new HashMap<>();

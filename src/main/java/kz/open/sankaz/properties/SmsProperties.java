@@ -1,4 +1,4 @@
-package kz.open.sankaz.config;
+package kz.open.sankaz.properties;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

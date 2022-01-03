@@ -4,8 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.properties.SecurityProperties;
+import kz.open.sankaz.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,12 +29,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private final SecurityProperties securityProperties;
+    private final UserService userService;
 
-    private final String SECRET_KEY = "SECRET"; // TODO: move out to .properties
-
-    @Autowired
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, SecurityProperties securityProperties, UserService userService) {
         this.authenticationManager = authenticationManager;
+        this.securityProperties = securityProperties;
+        this.userService = userService;
     }
 
     @Override
@@ -49,7 +51,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         SecUser user = (SecUser) authentication.getPrincipal();
-        Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
+        user.setLoggedOut(false);
+        userService.updateUser(user);
+
+        Algorithm algorithm = Algorithm.HMAC256(securityProperties.getSecurityTokenSecret().getBytes());
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))

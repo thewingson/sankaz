@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,6 +46,9 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "ACTIVE", nullable = false)
     protected boolean active = false;
 
+    @Column(name = "LOGGED_OUT", nullable = false)
+    protected boolean loggedOut = false;
+
     @Column(name = "CONFIRMED_TS")
     protected LocalDateTime confirmedTs;
 
@@ -60,13 +63,13 @@ public class SecUser extends AbstractEntity implements UserDetails{
             name = "SEC_USER_ROLES",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
-    protected Set<SecRole> roles;
+    protected List<SecRole> roles;
 
     public SecUser(Long id,
                    String username,
                    String password,
                    boolean active,
-                   Set<SecRole> roles,
+                   List<SecRole> roles,
                    String email,
                    String firstName,
                    String lastName) {

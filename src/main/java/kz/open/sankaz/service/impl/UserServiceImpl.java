@@ -17,7 +17,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -47,29 +50,22 @@ public class UserServiceImpl implements UserService {
         return userRepo.findByUsername(username);
     }
 
+    /**
+     * Простое админское создание пользователя
+     * */
     @Override
     public void createUser(UserDetails user) {
         SecUser castedUser = (SecUser) user;
-
-        Set<SecRole> roles = new HashSet<>();
-        SecRole admin = roleRepo.findByName("ROLE_ADMIN");
-        if (admin != null) {
-            roles.add(admin);
-        }
-        castedUser.setPassword(passwordEncoder.encode(((SecUser) user).getPassword()));
-        castedUser.setRoles(roles);
         SecUser currentUser = authService.getCurrentUser();
 
-        boolean isAdmin = false;
-        if (currentUser != null) {
-            isAdmin = currentUser.getRoles().stream().map(SecRole::getName).anyMatch(roleName -> roleName.equals("ROLE_ADMIN"));
-        }
+        castedUser.setPassword(passwordEncoder.encode(((SecUser) user).getPassword()));
+        castedUser.setActive(true);
+        castedUser.setConfirmedTs(LocalDateTime.now());
+        castedUser.setConfirmedBy(currentUser != null ? currentUser.getUsername() : castedUser.getUsername());
+        castedUser.setConfirmationId(UUID.randomUUID());
+        List<SecRole> secRoles = roleRepo.findAllByNameIn(castedUser.getRoles().stream().map(SecRole::getName).collect(Collectors.toList()));
+        castedUser.setRoles(secRoles);
 
-        if(isAdmin){
-            castedUser.setActive(true);
-            castedUser.setConfirmedTs(LocalDateTime.now());
-            castedUser.setConfirmedBy(currentUser.getUsername());
-        }
         userRepo.save(castedUser);
     }
 
@@ -109,26 +105,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SecUser addUser(SecUser user) {
-        createUser(user);
+    public SecUser addUserForRunner(SecUser user) {
+        SecUser castedUser = (SecUser) user;
+        castedUser.setPassword(passwordEncoder.encode(((SecUser) user).getPassword()));
+        castedUser.setActive(true);
+        castedUser.setConfirmedTs(LocalDateTime.now());
+        castedUser.setConfirmedBy("admin");
+        castedUser.setConfirmationId(UUID.randomUUID());
+
+        userRepo.save(castedUser);
         return user;
-    }
-
-    @Override
-    public UUID registerUser(SecUser user) {
-        return addUser(user).getConfirmationId();
-    }
-
-    @Override
-    public void registerUserAndReturnConfirmationBody(SecUser user) {
-        user = addUser(user);
-
-        String message = String.format("Hello, %s!" +
-                "\nWelcome to SanKaz!" +
-                "\nTo confirm activation, please, visit next link http://localhost:8080/auth/confirm-account?tokenId=%s",
-                user.getFullName(),
-                user.getConfirmationId());
-        mailSender.sendMail(user.getEmail(), "Activation code", message);
     }
 
     @Override
