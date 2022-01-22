@@ -50,6 +50,11 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
     }
 
     @Override
+    public List<RoomDto> getAllDto(Map<String, Object> params) {
+        return roomMapper.roomToDto(getAll(params));
+    }
+
+    @Override
     public Room addOneDto(RoomDto roomDto) {
         log.info("SERVICE -> RoomServiceImpl.addOneDto()");
         Room room = new Room();

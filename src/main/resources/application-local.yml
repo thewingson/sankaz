@@ -8,7 +8,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: public
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
   datasource:
     #    url: jdbc:postgresql://${DATABASE_HOST}/${DATABASE_NAME}
@@ -60,3 +60,9 @@ logging:
   file:
 #    path: C:\Users\Mi Notebook\Desktop\sankaz-config
     name: app.log
+
+application:
+  rest:
+    response:
+      success: success
+      error: error

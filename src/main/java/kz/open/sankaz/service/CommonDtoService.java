@@ -10,6 +10,7 @@ public interface CommonDtoService<E extends BaseEntity, D extends BaseDto> {
 
     D getOneDto(Long id);
     List<D> getAllDto();
+    List<D> getAllDto(Map<String, Object> params);
 
     E addOneDto(D dto);
 

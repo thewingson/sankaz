@@ -58,6 +58,11 @@ public class HyperLinkServiceImpl extends AbstractService<HyperLink, HyperLinkRe
     }
 
     @Override
+    public List<HyperLinkDto> getAllDto(Map<String, Object> params) {
+        return hyperLinkMapper.hyperLinkToDto(getAll(params));
+    }
+
+    @Override
     public HyperLink addOneDto(HyperLinkDto hyperLinkDto) {
         log.info("SERVICE -> HyperLinkServiceImpl.addOneDto()");
         HyperLink hyperLink = new HyperLink();

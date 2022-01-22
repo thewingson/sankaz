@@ -67,33 +67,136 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     }
 
     @Override
+    public ProgramService getServiceOne(Long id) {
+        Optional<ProgramService> entityById = serviceRepo.findById(id);
+        if(!entityById.isPresent()){
+            Map<String, Object> params = new HashMap<>();
+            params.put("ID", id);
+            throw new EntityNotFoundException(getCurrentClass(), params);
+        }
+        return entityById.get();
+    }
+
+    @Override
+    public ProgramDay getDayOne(Long id) {
+        Optional<ProgramDay> entityById = dayRepo.findById(id);
+        if(!entityById.isPresent()){
+            Map<String, Object> params = new HashMap<>();
+            params.put("ID", id);
+            throw new EntityNotFoundException(getCurrentClass(), params);
+        }
+        return entityById.get();
+    }
+
+    @Override
     public TourProgram addOne(TourProgram program) {
-//        ApplicationEvent createEvent = getCreateEvent(entity);
-//        if(createEvent != null){
-//            applicationEventPublisher.publishEvent(createEvent);
-//        }
+        ApplicationEvent createEvent = getCreateEvent(program);
+        if(createEvent != null){
+            applicationEventPublisher.publishEvent(createEvent);
+        }
 
         return programRepo.save(program);
     }
 
     @Override
     public ProgramService addOne(ProgramService service) {
-//        ApplicationEvent createEvent = getCreateEvent(entity);
-//        if(createEvent != null){
-//            applicationEventPublisher.publishEvent(createEvent);
-//        }
+        ApplicationEvent createEvent = getCreateEvent(service);
+        if(createEvent != null){
+            applicationEventPublisher.publishEvent(createEvent);
+        }
 
         return serviceRepo.save(service);
     }
 
     @Override
     public ProgramDay addOne(ProgramDay day) {
-//        ApplicationEvent createEvent = getCreateEvent(entity);
-//        if(createEvent != null){
-//            applicationEventPublisher.publishEvent(createEvent);
-//        }
+        ApplicationEvent createEvent = getCreateEvent(day);
+        if(createEvent != null){
+            applicationEventPublisher.publishEvent(createEvent);
+        }
 
         return dayRepo.save(day);
+    }
+
+    @Override
+    public TourProgram editOne(TourProgram program) {
+        ApplicationEvent updateEvent = getUpdateEvent(program);
+        if(updateEvent != null){
+            applicationEventPublisher.publishEvent(updateEvent);
+        }
+
+        return programRepo.save(program);
+    }
+
+    @Override
+    public ProgramService editOne(ProgramService service) {
+        ApplicationEvent updateEvent = getUpdateEvent(service);
+        if(updateEvent != null){
+            applicationEventPublisher.publishEvent(updateEvent);
+        }
+
+        return serviceRepo.save(service);
+    }
+
+    @Override
+    public ProgramDay editOne(ProgramDay day) {
+        ApplicationEvent updateEvent = getUpdateEvent(day);
+        if(updateEvent != null){
+            applicationEventPublisher.publishEvent(updateEvent);
+        }
+
+        return dayRepo.save(day);
+    }
+
+    @Override
+    public void deleteProgram(Long id) {
+        TourProgram program = getProgramOne(id);
+        deleteProgram(program);
+    }
+
+    @Override
+    public void deleteProgram(TourProgram program) {
+        ApplicationEvent deleteEvent = getDeleteEvent(program);
+        if(deleteEvent != null){
+            applicationEventPublisher.publishEvent(deleteEvent);
+        }
+
+        programRepo.save(program);
+
+        program.getDays().forEach(this::deleteDay);
+        program.getServices().forEach(this::deleteService);
+    }
+
+    @Override
+    public void deleteService(Long id) {
+        ProgramService service = getServiceOne(id);
+        deleteService(service);
+    }
+
+    @Override
+    public void deleteService(ProgramService service) {
+        ApplicationEvent deleteEvent = getDeleteEvent(service);
+        if(deleteEvent != null){
+            applicationEventPublisher.publishEvent(deleteEvent);
+        }
+
+        serviceRepo.save(service);
+    }
+
+    @Override
+    public void deleteDay(Long id) {
+        ProgramDay day = getDayOne(id);
+        deleteDay(day);
+    }
+
+    @Override
+    public void deleteDay(ProgramDay day) {
+        ApplicationEvent deleteEvent = getDeleteEvent(day);
+        if(deleteEvent != null){
+            applicationEventPublisher.publishEvent(deleteEvent);
+        }
+
+        dayRepo.save(day);
     }
 
     @Override
@@ -108,17 +211,23 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     }
 
     @Override
+    public List<TourDto> getAllDto(Map<String, Object> params) {
+        return tourMapper.tourToDtoWithAll(getAll(params));
+    }
+
+    @Override
     public Tour addOneDto(TourDto tourDto) {
         log.info("SERVICE -> TourServiceImpl.addOneDto(TourDto)");
         Tour tour = new Tour();
         tour.setName(tourDto.getName());
         tour.setDescription(tourDto.getDescription());
 
-//        addOne(tour);
-        tourDto.getPrograms().forEach(programDto -> addProgramDto(tour, programDto));
+        addOne(tour);
+        if(tourDto.getPrograms() != null){
+            tourDto.getPrograms().forEach(programDto -> addProgramDto(tour, programDto));
+        }
 
-        return addOne(tour);
-//        return tour;
+        return tour;
     }
 
     @Override
@@ -129,12 +238,15 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
         program.setShortDescription(programDto.getShortDescription());
         program.setTour(tour);
 
-//        addOne(program);
-        programDto.getDays().forEach(dayDto -> addDayDto(program, dayDto));
-        programDto.getServices().forEach(serviceDto -> addServiceDto(program, serviceDto));
+        addOne(program);
+        if(programDto.getDays() != null){
+            programDto.getDays().forEach(dayDto -> addDayDto(program, dayDto));
+        }
+        if(programDto.getServices() != null){
+            programDto.getServices().forEach(serviceDto -> addServiceDto(program, serviceDto));
+        }
 
-        return addOne(program);
-//        return program;
+        return program;
     }
 
     @Override
@@ -212,6 +324,75 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     }
 
     @Override
+    public TourProgram updateProgramDto(Long programId, TourProgramDto programDto) {
+        log.info("SERVICE -> TourServiceImpl.updateProgramDto()");
+        TourProgram program = getProgramOne(programId);
+        boolean updated = false;
+        if(programDto.getShortDescription() != null && !programDto.getShortDescription().equals(program.getShortDescription())){
+            program.setShortDescription(programDto.getShortDescription());
+            updated = true;
+        }
+        if(programDto.getPrice() != null && !programDto.getPrice().equals(program.getPrice())){
+            program.setPrice(programDto.getPrice());
+            updated = true;
+        }
+        if(programDto.getTour() != null && !programDto.getTour().getId().equals(program.getTour().getId())){
+            Tour tour = getOne(programDto.getTour().getId());
+            program.setTour(tour);
+            updated = true;
+        }
+        if(updated){
+            program = editOne(program);
+        }
+        return program;
+    }
+
+    @Override
+    public ProgramService updateServiceDto(Long serviceId, ProgramServiceDto serviceDto) {
+        log.info("SERVICE -> TourServiceImpl.updateServiceDto()");
+        ProgramService programService = getServiceOne(serviceId);
+        boolean updated = false;
+        if(serviceDto.getName() != null && !serviceDto.getName().equals(programService.getName())){
+            programService.setName(serviceDto.getName());
+            updated = true;
+        }
+        if(serviceDto.getPrice() != null && !serviceDto.getPrice().equals(programService.getPrice())){
+            programService.setPrice(serviceDto.getPrice());
+            updated = true;
+        }
+        if(serviceDto.getProgram() != null && !serviceDto.getProgram().getId().equals(programService.getProgram().getId())){
+            TourProgram program = getProgramOne(serviceDto.getProgram().getId());
+            programService.setProgram(program);
+            updated = true;
+        }
+        if(updated){
+            programService = editOne(programService);
+        }
+        return programService;
+    }
+
+    @Override
+    public ProgramDay updateDayDto(Long dayId, ProgramDayDto dayDto) {
+        log.info("SERVICE -> TourServiceImpl.updateDayDto()");
+        ProgramDay day = getDayOne(dayId);
+        boolean updated = false;
+        if(dayDto.getDescription() != null && !dayDto.getDescription().equals(day.getDescription())){
+            day.setDescription(dayDto.getDescription());
+            updated = true;
+        }
+        if(dayDto.getProgram() != null && !dayDto.getProgram().getId().equals(day.getProgram().getId())){
+            TourProgram program = getProgramOne(dayDto.getProgram().getId());
+            day.setProgram(program);
+            updated = true;
+        }
+
+        if(updated){
+            day = editOne(day);
+        }
+        return day;
+    }
+
+    @Override
     protected Class getCurrentClass() {
         return Tour.class;
     }
@@ -229,5 +410,41 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     @Override
     protected ApplicationEvent getUpdateEvent(Tour tour) {
         return new UpdateEvent(tour);
+    }
+
+    protected ApplicationEvent getCreateEvent(TourProgram program) {
+        return new CreateEvent(program);
+    }
+
+    protected ApplicationEvent getDeleteEvent(TourProgram program) {
+        return new DeleteEvent(program);
+    }
+
+    protected ApplicationEvent getUpdateEvent(TourProgram program) {
+        return new UpdateEvent(program);
+    }
+
+    protected ApplicationEvent getCreateEvent(ProgramService service) {
+        return new CreateEvent(service);
+    }
+
+    protected ApplicationEvent getDeleteEvent(ProgramService service) {
+        return new DeleteEvent(service);
+    }
+
+    protected ApplicationEvent getUpdateEvent(ProgramService service) {
+        return new UpdateEvent(service);
+    }
+
+    protected ApplicationEvent getCreateEvent(ProgramDay day) {
+        return new CreateEvent(day);
+    }
+
+    protected ApplicationEvent getDeleteEvent(ProgramDay day) {
+        return new DeleteEvent(day);
+    }
+
+    protected ApplicationEvent getUpdateEvent(ProgramDay day) {
+        return new UpdateEvent(day);
     }
 }

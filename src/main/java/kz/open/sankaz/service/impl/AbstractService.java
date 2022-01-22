@@ -42,8 +42,35 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
     }
 
     @Override
+    public E getOne(Long id, Map<String, Object> params) {
+        Optional<E> entityById;
+        if (params.containsKey("deleted") && !(Boolean) params.get("deleted")) {
+            entityById = repo.getByIdAndDeletedByIsNull(id);
+        } else {
+            entityById = repo.findById(id);
+
+
+        }
+        if(!entityById.isPresent()){
+            Map<String, Object> errorParams = new HashMap<>();
+            errorParams.put("ID", id);
+            throw new EntityNotFoundException(getCurrentClass(), errorParams);
+        }
+        return entityById.get();
+    }
+
+    @Override
     public List<E> getAll() {
         return repo.findAll();
+    }
+
+    @Override
+    public List<E> getAll(Map<String, Object> params) {
+        if (params.containsKey("deleted") && !(Boolean) params.get("deleted")) {
+            return repo.getAllByDeletedByIsNull();
+        } else {
+            return repo.findAll();
+        }
     }
 
     @Override

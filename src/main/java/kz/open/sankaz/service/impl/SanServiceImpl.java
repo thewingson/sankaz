@@ -69,6 +69,11 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
+    public List<SanDto> getAllDto(Map<String, Object> params) {
+        return sanMapper.sanToDto(getAll(params));
+    }
+
+    @Override
     public San addOneDto(SanDto sanDto) {
         log.info("SERVICE -> SanServiceImpl.addOneDto()");
         San san = new San();

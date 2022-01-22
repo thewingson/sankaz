@@ -19,7 +19,20 @@ public interface TourService extends CommonService<Tour>, CommonDtoService<Tour,
     ProgramService addOne(ProgramService service);
     ProgramDay addOne(ProgramDay day);
 
+    TourProgram editOne(TourProgram program);
+    ProgramService editOne(ProgramService service);
+    ProgramDay editOne(ProgramDay day);
+
+    void deleteProgram(Long id);
+    void deleteProgram(TourProgram program);
+    void deleteService(Long id);
+    void deleteService(ProgramService service);
+    void deleteDay(Long id);
+    void deleteDay(ProgramDay day);
+
     TourProgram getProgramOne(Long id);
+    ProgramService getServiceOne(Long id);
+    ProgramDay getDayOne(Long id);
 
 
     /***
@@ -35,4 +48,8 @@ public interface TourService extends CommonService<Tour>, CommonDtoService<Tour,
     ProgramService addServiceDto(Long programId, ProgramServiceDto serviceDto);
     List<ProgramDay> addDayDto(Long programId, List<ProgramDayDto> dayDtos);
     ProgramDay addDayDto(Long programId, ProgramDayDto dayDto);
+
+    TourProgram updateProgramDto(Long programId, TourProgramDto programDto);
+    ProgramService updateServiceDto(Long serviceId, ProgramServiceDto serviceDto);
+    ProgramDay updateDayDto(Long dayId, ProgramDayDto dayDto);
 }

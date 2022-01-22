@@ -39,7 +39,7 @@ public class TourProgram extends AbstractEntity{
     @JsonBackReference
     private List<ProgramDay> days;
 
-    @OneToMany(mappedBy = "p rogram", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "program", cascade = CascadeType.REMOVE)
     @JsonBackReference
     private List<ProgramService> services;
 

@@ -20,7 +20,7 @@ public abstract class AbstractEntity extends BaseEntity {
     protected LocalDateTime createTs = LocalDateTime.now();
 
     @Column(name = "CREATED_BY", nullable = false)
-    protected String createdBy = "admin"; // TODO: вынести в листенер
+    protected String createdBy;
 
     @Column(name = "UPDATE_TS")
     protected LocalDateTime updateTs;

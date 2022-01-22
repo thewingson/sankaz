@@ -55,6 +55,11 @@ public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> imple
     }
 
     @Override
+    public List<ReviewDto> getAllDto(Map<String, Object> params) {
+        return reviewMapper.reviewToDto(getAll(params));
+    }
+
+    @Override
     public Review addOneDto(ReviewDto reviewDto) {
         log.info("SERVICE -> ReviewServiceImpl.addOneDto()");
         Review review = new Review();

@@ -50,6 +50,11 @@ public class CategoryServiceImpl extends AbstractService<Category, CategoryRepo>
     }
 
     @Override
+    public List<CategoryDto> getAllDto(Map<String, Object> params) {
+        return categoryMapper.categoryToDto(getAll(params));
+    }
+
+    @Override
     public Category addOneDto(CategoryDto categoryDto) {
         log.info("SERVICE -> CategoryServiceImpl.addOneDto()");
         Category category = new Category();
