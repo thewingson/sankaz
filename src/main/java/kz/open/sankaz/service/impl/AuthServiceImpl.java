@@ -59,7 +59,8 @@ public class AuthServiceImpl implements AuthService {
         if(authentication != null
                 && authentication.getPrincipal() != null
                 && !authentication.getPrincipal().equals("anonymousUser")){
-            return (SecUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return userService.getUser(username);
         }
         return null;
     }

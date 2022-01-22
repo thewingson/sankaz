@@ -26,44 +26,44 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Id
     @GeneratedValue(generator = "SEC_USER_SEQ", strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(sequenceName = "SEC_USER_ID_SEQ", name = "SEC_USER_ID", allocationSize = 1)
-    protected Long id;
+    private Long id;
 
     @Column(name = "USERNAME", nullable = false, unique = true)
-    protected String username;
+    private String username;
 
     @Column(name = "PASSWORD", nullable = false)
-    protected String password;
+    private String password;
 
     @Column(name = "EMAIL", unique = true)
-    protected String email;
+    private String email;
 
     @Column(name = "FIRST_NAME", nullable = false)
-    protected String firstName;
+    private String firstName;
 
     @Column(name = "LAST_NAME", nullable = false)
-    protected String lastName;
+    private String lastName;
 
     @Column(name = "ACTIVE", nullable = false)
-    protected boolean active = false;
+    private boolean active = false;
 
     @Column(name = "LOGGED_OUT", nullable = false)
-    protected boolean loggedOut = false;
+    private boolean loggedOut = false;
 
     @Column(name = "CONFIRMED_TS")
-    protected LocalDateTime confirmedTs;
+    private LocalDateTime confirmedTs;
 
     @Column(name = "CONFIRMED_BY")
-    protected String confirmedBy;
+    private String confirmedBy;
 
     @Column(name = "CONFIRMATION_ID", nullable = false, unique = true)
-    protected UUID confirmationId = UUID.randomUUID();
+    private UUID confirmationId = UUID.randomUUID();
 
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "SEC_USER_ROLES",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
-    protected List<SecRole> roles;
+    private List<SecRole> roles;
 
     public SecUser(Long id,
                    String username,

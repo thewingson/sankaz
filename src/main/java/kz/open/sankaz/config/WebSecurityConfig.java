@@ -57,13 +57,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
         http
                 .authorizeHttpRequests()
-                .antMatchers(HttpMethod.GET,
-                        "/users/**")
+                .antMatchers(HttpMethod.GET, "/users/**")
                 .hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER");
+
         http
                 .authorizeHttpRequests()
                 .anyRequest()
                 .authenticated();
+
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(securityProperties, userService), UsernamePasswordAuthenticationFilter.class);
 

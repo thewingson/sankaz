@@ -13,7 +13,7 @@ import javax.persistence.MappedSuperclass;
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
-public class AbstractDictionaryEntity extends AbstractEntity {
+public abstract class AbstractDictionaryEntity extends AbstractEntity {
     @Column(name = "NAME", nullable = false)
     protected String name;
 

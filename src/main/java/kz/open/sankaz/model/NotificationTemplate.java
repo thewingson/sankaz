@@ -17,7 +17,7 @@ public class NotificationTemplate extends AbstractDictionaryEntity {
     @Id
     @GeneratedValue(generator = "NOTIFICATION_TEMPLATE_SEQ", strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(sequenceName = "NOTIFICATION_TEMPLATE_ID_SEQ", name = "NOTIFICATION_TEMPLATE_ID", allocationSize = 1)
-    protected Long id;
+    private Long id;
 
     @Lob
     @Column(name = "MESSAGE_TEMPLATE", nullable = false, length = 1024)

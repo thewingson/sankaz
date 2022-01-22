@@ -1,0 +1,56 @@
+server:
+  port: 8099
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: public
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost/sankaz_dev
+    username: sankaz
+    password: sankaz
+  mail:
+    host: smtp.gmail.com
+    username: sanofkaz@gmail.com
+    password: Dusseldorf!2020
+    port: 465
+    protocol: smtps
+
+mail:
+  host: localhost
+  port: 1025
+  username: hello
+  password: hello
+  debug: true
+
+twilio:
+  account_sid: AC8e6fe899b4538ff6af5d16b2350858b6
+  auth_token: af3413216cca168c68691012420ac76a
+  trial_number: +14845754250
+
+security:
+  token:
+    secret: SECRET
+
+notification:
+  params:
+    keys:
+      phone-number-from: phoneNumberFrom
+      phone-number-to: phoneNumberTo
+      email-from: emailFrom
+      email-to: emailTo
+  error:
+    template:
+      not-valid: Notification Template is not valid
+    params:
+      not-valid: Notification Template params are not valid
+
+logging:
+  file:
+    path: /opt/sankaz
+    name: app.log
