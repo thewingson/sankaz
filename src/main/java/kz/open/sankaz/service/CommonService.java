@@ -23,4 +23,6 @@ public interface CommonService<E extends BaseEntity> {
 
     void deleteOneById(Long id);
 
+    void deleteOneByIdSoft(Long id);
+
 }

@@ -1,10 +1,9 @@
 package kz.open.sankaz.listener;
 
-import kz.open.sankaz.listener.event.DeleteEvent;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
+import kz.open.sankaz.listener.event.AfterDeleteEvent;
+import org.springframework.context.event.EventListener;
 
-public interface AfterDeleteListener<E extends DeleteEvent>  {
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    void onAfterDelete(E event);
+public interface AfterDeleteListener {
+    @EventListener
+    void afterDelete(AfterDeleteEvent event);
 }

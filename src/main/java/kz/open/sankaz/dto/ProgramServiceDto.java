@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProgramServiceDto extends AbstractDto {
-    private Long id;
     private String name;
     private BigDecimal price;
     private TourProgramDto program;

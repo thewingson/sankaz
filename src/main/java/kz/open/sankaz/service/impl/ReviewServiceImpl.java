@@ -1,9 +1,7 @@
 package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.dto.ReviewDto;
-import kz.open.sankaz.listener.event.CreateEvent;
-import kz.open.sankaz.listener.event.DeleteEvent;
-import kz.open.sankaz.listener.event.UpdateEvent;
+import kz.open.sankaz.dto.SanDto;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.model.Review;
 import kz.open.sankaz.model.San;
@@ -14,10 +12,10 @@ import kz.open.sankaz.service.SanService;
 import kz.open.sankaz.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +64,7 @@ public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> imple
         review.setText(reviewDto.getText());
         review.setRating(reviewDto.getRating());
 
-        SecUser user = userService.getUser(reviewDto.getUsername());// TODO: Exception or validation
+        SecUser user = (SecUser) userService.loadUserByUsername(reviewDto.getUsername());// TODO: Exception or validation + get from Sec context
         review.setUser(user);
         San san = sanService.getOne(reviewDto.getSan().getId());// TODO: Exception or validation
         review.setSan(san);
@@ -95,7 +93,7 @@ public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> imple
             review.setSan(sanById);
         }
         if(reviewDto.getUsername() != null && !review.getUser().getUsername().equals(reviewDto.getUsername())){
-            SecUser user = userService.getUser(reviewDto.getUsername());
+            SecUser user = (SecUser) userService.loadUserByUsername(reviewDto.getUsername()); // TODO: Exception or validation + get from Sec context
             review.setUser(user);
         }
         if(reviewDto.getParentReview() != null && !review.getParentReview().getId().equals(reviewDto.getParentReview())){
@@ -112,22 +110,24 @@ public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> imple
     }
 
     @Override
+    public Review addDto(Long id, ReviewDto reviewDto) {
+        SanDto sanDto = new SanDto();
+        sanDto.setId(id);
+        reviewDto.setSan(sanDto);
+        return addOneDto(reviewDto);
+    }
+
+    @Override
+    public List<Review> addDto(Long id, List<ReviewDto> reviewDtos) {
+        List<Review> reviews = new ArrayList<>();
+        reviewDtos.forEach(reviewDto -> {
+            reviews.add(addDto(id, reviewDto));
+        });
+        return reviews;
+    }
+
+    @Override
     protected Class getCurrentClass() {
         return Review.class;
-    }
-
-    @Override
-    protected ApplicationEvent getCreateEvent(Review review) {
-        return new CreateEvent(review);
-    }
-
-    @Override
-    protected ApplicationEvent getDeleteEvent(Review review) {
-        return new DeleteEvent(review);
-    }
-
-    @Override
-    protected ApplicationEvent getUpdateEvent(Review review) {
-        return new UpdateEvent(review);
     }
 }

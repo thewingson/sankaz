@@ -21,19 +21,7 @@ public class ItemPic extends AbstractEntity{
     @SequenceGenerator(sequenceName = "ITEM_PIC_ID_SEQ", name = "ITEM_PIC_ID", allocationSize = 1)
     private Long id;
 
-    /**
-     * item Type or entity Name
-     * */
-    @Column(name = "ITEM_TYPE", nullable = false)
-    private String itemType;
-
-    /**
-     * item ID or entity ID
-     * */
-    @Column(name = "ITEM_ID", nullable = false)
-    private Long itemId;
-
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "FILE_ID", foreignKey = @ForeignKey(name = "ITEM_PIC_FILE_FK"), nullable = false)
     @JsonManagedReference
     private SysFile file;

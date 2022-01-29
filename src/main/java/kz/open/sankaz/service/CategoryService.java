@@ -10,6 +10,7 @@ public interface CategoryService extends CommonService<Category>, CommonDtoServi
      * for Entity
      */
     List<Category> getAllByCodeIn(List<String> codes);
+    Category getOneDto(String code); // TODO: Вынести на абстракцию
 
 
     /***

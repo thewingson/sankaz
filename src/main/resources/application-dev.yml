@@ -1,5 +1,5 @@
 server:
-  port: 8095
+  port: 8099
 
 spring:
   jpa:
@@ -20,6 +20,9 @@ spring:
     password: Dusseldorf!2020
     port: 465
     protocol: smtps
+  liquibase:
+    enabled: false
+    change-log: classpath:liquibase/changelog-master.xml
 
 mail:
   host: localhost
@@ -54,3 +57,12 @@ logging:
   file:
     path: /opt/sankaz
     name: app.log
+
+application:
+  rest:
+    response:
+      success: success
+      error: error
+  file:
+    upload:
+      path: /images

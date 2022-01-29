@@ -11,9 +11,6 @@ spring:
       ddl-auto: update
     show-sql: true
   datasource:
-    #    url: jdbc:postgresql://${DATABASE_HOST}/${DATABASE_NAME}
-    #    username: ${DATABASE_USERNAME}
-    #    password: ${DATABASE_PASSWORD}
     url: jdbc:postgresql://localhost/sk_local
     username: postgres
     password: root
@@ -40,6 +37,9 @@ twilio:
   trial_number: +14845754250
 
 security:
+  account:
+    confirm:
+      link: http://localhost:8080/auth/confirm-account?tokenId="
   token:
     secret: SECRET
 
@@ -66,3 +66,6 @@ application:
     response:
       success: success
       error: error
+  file:
+    upload:
+      path: D:\images\

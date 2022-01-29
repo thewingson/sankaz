@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SanDto extends AbstractDto {
-    private Long id;
     private String name;
     private String description;
     private List<CategoryDto> categories;

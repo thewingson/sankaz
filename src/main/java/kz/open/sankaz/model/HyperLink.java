@@ -24,18 +24,6 @@ public class HyperLink extends AbstractEntity {
     @Column(name = "VALUE", nullable = false)
     private String value;
 
-    /**
-     * item Type or entity Name
-     * */
-    @Column(name = "ITEM_TYPE", nullable = false)
-    private String itemType;
-
-    /**
-     * item ID or entity ID
-     * */
-    @Column(name = "ITEM_ID", nullable = false)
-    private Long itemId;
-
     @ManyToOne
     @JoinColumn(name = "TYPE_ID", foreignKey = @ForeignKey(name = "HYPER_LINK_TYPE_FK"), nullable = false)
     @JsonManagedReference

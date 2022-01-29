@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProgramDayDto extends AbstractDto {
-    private Long id;
     private String description;
     private TourProgramDto program;
 }

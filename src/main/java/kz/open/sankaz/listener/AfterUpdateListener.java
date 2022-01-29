@@ -1,10 +1,9 @@
 package kz.open.sankaz.listener;
 
-import kz.open.sankaz.listener.event.UpdateEvent;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
+import kz.open.sankaz.listener.event.AfterUpdateEvent;
+import org.springframework.context.event.EventListener;
 
-public interface AfterUpdateListener<E extends UpdateEvent>  {
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    void onAfterUpdate(E event);
+public interface AfterUpdateListener {
+    @EventListener
+    void afterUpdate(AfterUpdateEvent event);
 }

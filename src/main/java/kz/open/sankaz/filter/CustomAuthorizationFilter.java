@@ -59,7 +59,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     DecodedJWT decodedJWT = verifier.verify(token);
                     String username = decodedJWT.getSubject();
 
-                    SecUser user = userService.getUser(username);
+                    SecUser user = (SecUser) userService.loadUserByUsername(username);
                     if(user.isLoggedOut()){
                         throw new Exception("Please, sign in to application again!");
                     }

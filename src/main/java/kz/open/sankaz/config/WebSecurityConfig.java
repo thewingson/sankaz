@@ -49,11 +49,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeHttpRequests()
                 .antMatchers(
-                        "/auth/sign-up/**",
-                        "/auth/refresh-token/**",
-                        "/auth/sign-in/**",
-                        "/auth/confirm-account/**",
-                        "/auth/sign-out/**")
+//                        "/auth/sign-up/**",
+//                        "/auth/refresh-token/**",
+//                        "/auth/sign-in/**",
+//                        "/auth/confirm-account/**",
+//                        "/auth/sign-out/**",
+                        "/sans/**",
+                        "/user/auth/**")
                 .permitAll();
         http
                 .authorizeHttpRequests()

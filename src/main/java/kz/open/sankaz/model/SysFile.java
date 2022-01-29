@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SysFile extends BaseEntity {
+public class SysFile extends AbstractEntity {
 
     @Id
     @GeneratedValue(generator = "SYS_FILE_SEQ", strategy = GenerationType.SEQUENCE)

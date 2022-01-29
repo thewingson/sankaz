@@ -58,7 +58,7 @@ public class TourRest {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOneById(@PathVariable(name = "id") Long id) {
         try{
-            tourService.deleteOneById(id);
+            tourService.deleteOneByIdSoft(id);
             return ResponseModel.successPure();
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -110,7 +110,7 @@ public class TourRest {
     }
 
     @PutMapping("/programs/{programId}")
-    public ResponseEntity<?> editProgram(@PathVariable(name = "programId") Long programId,
+    public ResponseEntity<?> updateProgram(@PathVariable(name = "programId") Long programId,
                                          @RequestBody TourProgramDto programDto) {
         try{
             tourService.updateProgramDto(programId, programDto);
@@ -121,7 +121,7 @@ public class TourRest {
     }
 
     @PutMapping("/programs/services/{serviceId}")
-    public ResponseEntity<?> editService(@PathVariable(name = "serviceId") Long serviceId,
+    public ResponseEntity<?> updateService(@PathVariable(name = "serviceId") Long serviceId,
                                          @RequestBody ProgramServiceDto serviceDto) {
         try{
             tourService.updateServiceDto(serviceId, serviceDto);
@@ -132,7 +132,7 @@ public class TourRest {
     }
 
     @PutMapping("/programs/days/{dayId}")
-    public ResponseEntity<?> editDay(@PathVariable(name = "dayId") Long dayId,
+    public ResponseEntity<?> updateDay(@PathVariable(name = "dayId") Long dayId,
                                          @RequestBody ProgramDayDto dayDto) {
         try{
             tourService.updateDayDto(dayId, dayDto);

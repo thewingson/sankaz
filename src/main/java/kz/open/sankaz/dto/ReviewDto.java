@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewDto extends AbstractDto {
-    private Long id;
     private Float rating;
     private SanDto san;
     protected String text;

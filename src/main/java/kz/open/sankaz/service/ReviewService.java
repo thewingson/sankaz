@@ -14,4 +14,6 @@ public interface ReviewService extends CommonService<Review>, CommonDtoService<R
     /***
      * for DTO
      */
+    Review addDto(Long id, ReviewDto reviewDto);
+    List<Review> addDto(Long id, List<ReviewDto> reviewDtos);
 }

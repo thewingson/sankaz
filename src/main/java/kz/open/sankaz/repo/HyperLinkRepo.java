@@ -10,8 +10,6 @@ import java.util.List;
 @Repository
 public interface HyperLinkRepo extends CommonRepo<HyperLink> {
 
-    List<HyperLink> getAllByItemType(@Param("itemType") String itemType);
     List<HyperLink> getAllByLinkType(@Param("hyperLinkType") HyperLinkType hyperLinkType);
-    List<HyperLink> getAllByItemTypeAndItemId(@Param("itemType") String itemType, @Param("itemId") Long itemId);
 
 }

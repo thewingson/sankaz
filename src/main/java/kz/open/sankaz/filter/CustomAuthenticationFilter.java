@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -45,14 +46,16 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         log.info("Request parameter [username]: {}", username);
         log.info("Request parameter [password]: {}", password);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        return authenticationManager.authenticate(authenticationToken);
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        return authenticate;
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         SecUser user = (SecUser) authentication.getPrincipal();
-        user.setLoggedOut(false);
-        userService.updateUser(user);
+//        user.setLoggedOut(false);
+//        userService.updateUser(user);
 
         Algorithm algorithm = Algorithm.HMAC256(securityProperties.getSecurityTokenSecret().getBytes());
         String accessToken = JWT.create()
@@ -68,8 +71,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .sign(algorithm);
         response.setContentType(APPLICATION_JSON_VALUE);
         Map<String, String> tokens = new HashMap<>();
-        tokens.put("access_token", accessToken);
-        tokens.put("refresh_token", refreshToken);
+        tokens.put("accessToken", accessToken);
+        tokens.put("refreshToken", refreshToken);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }
 }

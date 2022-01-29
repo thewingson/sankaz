@@ -10,9 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
@@ -28,7 +28,7 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @SequenceGenerator(sequenceName = "SEC_USER_ID_SEQ", name = "SEC_USER_ID", allocationSize = 1)
     private Long id;
 
-    @Column(name = "USERNAME", nullable = false, unique = true)
+    @Column(name = "USERNAME", unique = true)
     private String username;
 
     @Column(name = "PASSWORD", nullable = false)
@@ -37,11 +37,20 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "EMAIL", unique = true)
     private String email;
 
+    @Column(name = "GENDER")
+    private String gender;
+
+    @Column(name = "TEL_NUMBER", nullable = false, unique = true)
+    private String telNumber;
+
     @Column(name = "FIRST_NAME", nullable = false)
     private String firstName;
 
     @Column(name = "LAST_NAME", nullable = false)
     private String lastName;
+
+    @Column(name = "CITY")
+    private String city;
 
     @Column(name = "ACTIVE", nullable = false)
     private boolean active = false;
@@ -55,10 +64,19 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "CONFIRMED_BY")
     private String confirmedBy;
 
-    @Column(name = "CONFIRMATION_ID", nullable = false, unique = true)
-    private UUID confirmationId = UUID.randomUUID();
+    @Column(name = "CONFIRMATION_NUMBER")
+    private int confirmationNumber;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @Column(name = "CONFIRMATION_NUMBER_CREATED_TS")
+    private LocalDateTime confirmationNumberCreatedTs;
+
+    @Column(name = "RESET_NUMBER")
+    private int resetNumber;
+
+    @Column(name = "RESET_NUMBER_CREATED_TS")
+    private LocalDateTime resetNumberCreatedTs;
+
+    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "SEC_USER_ROLES",
             joinColumns = @JoinColumn(name = "USER_ID"),
@@ -84,7 +102,16 @@ public class SecUser extends AbstractEntity implements UserDetails{
     }
 
     public void addRole(SecRole role){
+        if(this.id == null){
+            roles = new ArrayList<>();
+        }
         roles.add(role);
+    }
+
+    public void clearRoles(){
+        if(getRoles() != null){
+            getRoles().clear();
+        }
     }
 
     @Override

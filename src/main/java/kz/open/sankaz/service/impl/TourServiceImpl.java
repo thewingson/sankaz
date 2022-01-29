@@ -5,9 +5,9 @@ import kz.open.sankaz.dto.ProgramServiceDto;
 import kz.open.sankaz.dto.TourDto;
 import kz.open.sankaz.dto.TourProgramDto;
 import kz.open.sankaz.exception.EntityNotFoundException;
-import kz.open.sankaz.listener.event.CreateEvent;
-import kz.open.sankaz.listener.event.DeleteEvent;
-import kz.open.sankaz.listener.event.UpdateEvent;
+import kz.open.sankaz.listener.event.BeforeCreateEvent;
+import kz.open.sankaz.listener.event.BeforeDeleteEvent;
+import kz.open.sankaz.listener.event.BeforeUpdateEvent;
 import kz.open.sankaz.mapper.TourMapper;
 import kz.open.sankaz.model.ProgramDay;
 import kz.open.sankaz.model.ProgramService;
@@ -56,7 +56,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     }
 
     @Override
-    public TourProgram getProgramOne(Long id) {
+    public TourProgram getProgram(Long id) {
         Optional<TourProgram> entityById = programRepo.findById(id);
         if(!entityById.isPresent()){
             Map<String, Object> params = new HashMap<>();
@@ -67,7 +67,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     }
 
     @Override
-    public ProgramService getServiceOne(Long id) {
+    public ProgramService getService(Long id) {
         Optional<ProgramService> entityById = serviceRepo.findById(id);
         if(!entityById.isPresent()){
             Map<String, Object> params = new HashMap<>();
@@ -78,7 +78,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     }
 
     @Override
-    public ProgramDay getDayOne(Long id) {
+    public ProgramDay getDay(Long id) {
         Optional<ProgramDay> entityById = dayRepo.findById(id);
         if(!entityById.isPresent()){
             Map<String, Object> params = new HashMap<>();
@@ -89,7 +89,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     }
 
     @Override
-    public TourProgram addOne(TourProgram program) {
+    public TourProgram add(TourProgram program) {
         ApplicationEvent createEvent = getCreateEvent(program);
         if(createEvent != null){
             applicationEventPublisher.publishEvent(createEvent);
@@ -99,7 +99,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     }
 
     @Override
-    public ProgramService addOne(ProgramService service) {
+    public ProgramService add(ProgramService service) {
         ApplicationEvent createEvent = getCreateEvent(service);
         if(createEvent != null){
             applicationEventPublisher.publishEvent(createEvent);
@@ -109,7 +109,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     }
 
     @Override
-    public ProgramDay addOne(ProgramDay day) {
+    public ProgramDay add(ProgramDay day) {
         ApplicationEvent createEvent = getCreateEvent(day);
         if(createEvent != null){
             applicationEventPublisher.publishEvent(createEvent);
@@ -150,7 +150,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
 
     @Override
     public void deleteProgram(Long id) {
-        TourProgram program = getProgramOne(id);
+        TourProgram program = getProgram(id);
         deleteProgram(program);
     }
 
@@ -169,7 +169,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
 
     @Override
     public void deleteService(Long id) {
-        ProgramService service = getServiceOne(id);
+        ProgramService service = getService(id);
         deleteService(service);
     }
 
@@ -185,7 +185,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
 
     @Override
     public void deleteDay(Long id) {
-        ProgramDay day = getDayOne(id);
+        ProgramDay day = getDay(id);
         deleteDay(day);
     }
 
@@ -238,7 +238,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
         program.setShortDescription(programDto.getShortDescription());
         program.setTour(tour);
 
-        addOne(program);
+        add(program);
         if(programDto.getDays() != null){
             programDto.getDays().forEach(dayDto -> addDayDto(program, dayDto));
         }
@@ -256,7 +256,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
         day.setDescription(dayDto.getDescription());
         day.setProgram(program);
 
-        return addOne(day);
+        return add(day);
     }
 
     @Override
@@ -267,7 +267,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
         service.setPrice(serviceDto.getPrice());
         service.setProgram(program);
 
-        return addOne(service);
+        return add(service);
     }
 
     @Override
@@ -283,7 +283,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
 
     @Override
     public ProgramService addServiceDto(Long programId, ProgramServiceDto serviceDto) {
-        TourProgram program = getProgramOne(programId);
+        TourProgram program = getProgram(programId);
         return addServiceDto(program, serviceDto);
     }
 
@@ -295,7 +295,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
 
     @Override
     public ProgramDay addDayDto(Long programId, ProgramDayDto dayDto) {
-        TourProgram program = getProgramOne(programId);
+        TourProgram program = getProgram(programId);
         return addDayDto(program, dayDto);
     }
 
@@ -326,7 +326,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     @Override
     public TourProgram updateProgramDto(Long programId, TourProgramDto programDto) {
         log.info("SERVICE -> TourServiceImpl.updateProgramDto()");
-        TourProgram program = getProgramOne(programId);
+        TourProgram program = getProgram(programId);
         boolean updated = false;
         if(programDto.getShortDescription() != null && !programDto.getShortDescription().equals(program.getShortDescription())){
             program.setShortDescription(programDto.getShortDescription());
@@ -350,7 +350,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     @Override
     public ProgramService updateServiceDto(Long serviceId, ProgramServiceDto serviceDto) {
         log.info("SERVICE -> TourServiceImpl.updateServiceDto()");
-        ProgramService programService = getServiceOne(serviceId);
+        ProgramService programService = getService(serviceId);
         boolean updated = false;
         if(serviceDto.getName() != null && !serviceDto.getName().equals(programService.getName())){
             programService.setName(serviceDto.getName());
@@ -361,7 +361,7 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
             updated = true;
         }
         if(serviceDto.getProgram() != null && !serviceDto.getProgram().getId().equals(programService.getProgram().getId())){
-            TourProgram program = getProgramOne(serviceDto.getProgram().getId());
+            TourProgram program = getProgram(serviceDto.getProgram().getId());
             programService.setProgram(program);
             updated = true;
         }
@@ -374,14 +374,14 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
     @Override
     public ProgramDay updateDayDto(Long dayId, ProgramDayDto dayDto) {
         log.info("SERVICE -> TourServiceImpl.updateDayDto()");
-        ProgramDay day = getDayOne(dayId);
+        ProgramDay day = getDay(dayId);
         boolean updated = false;
         if(dayDto.getDescription() != null && !dayDto.getDescription().equals(day.getDescription())){
             day.setDescription(dayDto.getDescription());
             updated = true;
         }
         if(dayDto.getProgram() != null && !dayDto.getProgram().getId().equals(day.getProgram().getId())){
-            TourProgram program = getProgramOne(dayDto.getProgram().getId());
+            TourProgram program = getProgram(dayDto.getProgram().getId());
             day.setProgram(program);
             updated = true;
         }
@@ -397,54 +397,39 @@ public class TourServiceImpl extends AbstractService<Tour, TourRepo> implements 
         return Tour.class;
     }
 
-    @Override
-    protected ApplicationEvent getCreateEvent(Tour tour) {
-        return new CreateEvent(tour);
-    }
-
-    @Override
-    protected ApplicationEvent getDeleteEvent(Tour tour) {
-        return new DeleteEvent(tour);
-    }
-
-    @Override
-    protected ApplicationEvent getUpdateEvent(Tour tour) {
-        return new UpdateEvent(tour);
-    }
-
     protected ApplicationEvent getCreateEvent(TourProgram program) {
-        return new CreateEvent(program);
+        return new BeforeCreateEvent(program);
     }
 
     protected ApplicationEvent getDeleteEvent(TourProgram program) {
-        return new DeleteEvent(program);
+        return new BeforeDeleteEvent(program);
     }
 
     protected ApplicationEvent getUpdateEvent(TourProgram program) {
-        return new UpdateEvent(program);
+        return new BeforeUpdateEvent(program);
     }
 
     protected ApplicationEvent getCreateEvent(ProgramService service) {
-        return new CreateEvent(service);
+        return new BeforeCreateEvent(service);
     }
 
     protected ApplicationEvent getDeleteEvent(ProgramService service) {
-        return new DeleteEvent(service);
+        return new BeforeDeleteEvent(service);
     }
 
     protected ApplicationEvent getUpdateEvent(ProgramService service) {
-        return new UpdateEvent(service);
+        return new BeforeUpdateEvent(service);
     }
 
     protected ApplicationEvent getCreateEvent(ProgramDay day) {
-        return new CreateEvent(day);
+        return new BeforeCreateEvent(day);
     }
 
     protected ApplicationEvent getDeleteEvent(ProgramDay day) {
-        return new DeleteEvent(day);
+        return new BeforeDeleteEvent(day);
     }
 
     protected ApplicationEvent getUpdateEvent(ProgramDay day) {
-        return new UpdateEvent(day);
+        return new BeforeUpdateEvent(day);
     }
 }

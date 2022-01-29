@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TourProgramDto extends AbstractDto {
-    private Long id;
     private String shortDescription;
     private BigDecimal price;
     private TourDto tour;

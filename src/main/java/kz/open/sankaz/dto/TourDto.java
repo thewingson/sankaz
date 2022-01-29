@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TourDto extends AbstractDto {
-    private Long id;
     private String name;
     private String description;
     private List<TourProgramDto> programs;

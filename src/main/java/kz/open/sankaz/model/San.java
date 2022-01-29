@@ -31,8 +31,8 @@ public class San extends AbstractEntity{
     @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "SAN_CATEGORIES",
-            joinColumns = @JoinColumn(name = "SAN_ID"),
-            inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID"))
+            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_CATEGORIES_SAN_FK")),
+            inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID", foreignKey = @ForeignKey(name = "SAN_CATEGORIES_CAT_FK")))
     private List<Category> categories;
 
     @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
@@ -43,12 +43,42 @@ public class San extends AbstractEntity{
     @JsonBackReference
     private List<Review> reviews;
 
-//    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
-//    @JsonBackReference
-//    private List<HyperLink> links;
+    @ManyToMany(cascade = {CascadeType.PERSIST})
+    @JoinTable(
+            name = "SAN_PICS",
+            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_PICS_SAN_FK")),
+            inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_PICS_PIC_FK")))
+    private List<ItemPic> pics;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST})
+    @JoinTable(
+            name = "SAN_LINKS",
+            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_LINKS_SAN_FK")),
+            inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_LINKS_LINK_FK")))
+    private List<HyperLink> links;
 
     public void addCategory(Category category){
         categories.add(category);
+    }
+
+    public void deleteCategory(Category category){
+        categories.remove(category);
+    }
+
+    public void addPic(ItemPic pic){
+        pics.add(pic);
+    }
+
+    public void deletePic(ItemPic pic){
+        pics.remove(pic);
+    }
+
+    public void addLink(HyperLink link){
+        links.add(link);
+    }
+
+    public void deleteLink(HyperLink link){
+        links.remove(link);
     }
 
     public void addRoom(Room room){
@@ -58,8 +88,4 @@ public class San extends AbstractEntity{
     public void addReview(Review review){
         reviews.add(review);
     }
-
-//    public void addLink(HyperLink link){
-//        links.add(link);
-//    }
 }

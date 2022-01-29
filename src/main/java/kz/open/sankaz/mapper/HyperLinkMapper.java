@@ -1,7 +1,9 @@
 package kz.open.sankaz.mapper;
 
 import kz.open.sankaz.dto.HyperLinkDto;
+import kz.open.sankaz.dto.HyperLinkTypeDto;
 import kz.open.sankaz.model.HyperLink;
+import kz.open.sankaz.model.HyperLinkType;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,6 +18,11 @@ public abstract class HyperLinkMapper {
     abstract public HyperLinkDto hyperLinkToDto(HyperLink hyperLink);
     @IterableMapping(qualifiedByName = "hyperLinkToDto")
     abstract public List<HyperLinkDto> hyperLinkToDto(List<HyperLink> hyperLinks);
+
+    @Named("hyperLinkTypeToDto")
+    abstract public HyperLinkTypeDto hyperLinkTypeToDto(HyperLinkType linkType);
+    @IterableMapping(qualifiedByName = "hyperLinkTypeToDto")
+    abstract public List<HyperLinkTypeDto> hyperLinkTypeToDto(List<HyperLinkType> linkTypes);
 
     @Named("hyperLinkToDtoWithType")
     @Mapping(target = "linkTypeCode", source = "hyperLink.linkType.code")

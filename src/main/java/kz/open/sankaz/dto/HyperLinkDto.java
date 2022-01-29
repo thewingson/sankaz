@@ -10,9 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HyperLinkDto extends AbstractDto {
-    private Long id;
     private String value;
-    private String itemType;
-    private Long itemId;
     private String linkTypeCode;
 }

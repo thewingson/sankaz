@@ -1,21 +1,20 @@
 package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.dto.CategoryDto;
-import kz.open.sankaz.listener.event.CreateEvent;
-import kz.open.sankaz.listener.event.DeleteEvent;
-import kz.open.sankaz.listener.event.UpdateEvent;
+import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.Category;
 import kz.open.sankaz.repo.CategoryRepo;
 import kz.open.sankaz.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -45,8 +44,21 @@ public class CategoryServiceImpl extends AbstractService<Category, CategoryRepo>
     }
 
     @Override
+    public Category getOneDto(String code) {
+        Optional<Category> entityById = categoryRepo.getByCode(code);
+        if(!entityById.isPresent()){
+            Map<String, Object> params = new HashMap<>();
+            params.put("CODE", code);
+            throw new EntityNotFoundException(getCurrentClass(), params);
+        }
+        return entityById.get();
+    }
+
+    @Override
     public List<CategoryDto> getAllDto() {
-        return categoryMapper.categoryToDto(getAll());
+        Map<String, Object> params = new HashMap<>();
+        params.put("deleted", false);
+        return categoryMapper.categoryToDto(getAll(params));
     }
 
     @Override
@@ -69,13 +81,13 @@ public class CategoryServiceImpl extends AbstractService<Category, CategoryRepo>
     public Category updateOneDto(Long id, CategoryDto categoryDto) {
         log.info("SERVICE -> CategoryServiceImpl.updateOneDto()");
         Category category = getOne(id);
-        if(categoryDto.getCode() != null){
+        if(categoryDto.getCode() != null && !categoryDto.getCode().equals(category.getCode())){
             category.setCode(categoryDto.getCode());
         }
-        if(categoryDto.getName() != null){
+        if(categoryDto.getName() != null && !categoryDto.getName().equals(category.getName())){
             category.setName(categoryDto.getName());
         }
-        if(categoryDto.getDescription() != null){
+        if(categoryDto.getDescription() != null && !categoryDto.getDescription().equals(category.getDescription())){
             category.setDescription(categoryDto.getDescription());
         }
         return editOneById(category);
@@ -90,20 +102,5 @@ public class CategoryServiceImpl extends AbstractService<Category, CategoryRepo>
     @Override
     protected Class getCurrentClass() {
         return Category.class;
-    }
-
-    @Override
-    protected ApplicationEvent getCreateEvent(Category category) {
-        return new CreateEvent(category);
-    }
-
-    @Override
-    protected ApplicationEvent getDeleteEvent(Category category) {
-        return new DeleteEvent(category);
-    }
-
-    @Override
-    protected ApplicationEvent getUpdateEvent(Category category) {
-        return new UpdateEvent(category);
     }
 }
