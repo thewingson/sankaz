@@ -24,7 +24,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping("/user/auth")
+@RequestMapping("/users/auth")
 public class UserAuthRest {
 
     private final UserService userService;
@@ -36,19 +36,19 @@ public class UserAuthRest {
         this.authService = authService;
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<?> resetPassword() {
-        try {
-            return ResponseModel.success(userService.getAll());
-        } catch (RuntimeException e) {
-            return ResponseModel.error(BAD_REQUEST, e.getMessage());
-        }
-    }
-
     @GetMapping("/numbers")
     public ResponseEntity<?> getNumbers() {
         try {
             return ResponseModel.success(authService.getNumbers());
+        } catch (RuntimeException e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/numbers/is-free")
+    public ResponseEntity<?> isNumberFree(@RequestBody NumberDto numberDto) {
+        try {
+            return ResponseModel.success(authService.isNumberFree(numberDto.getTelNumber()));
         } catch (RuntimeException e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -86,7 +86,8 @@ public class UserAuthRest {
     @PostMapping("/send-reset")
     public ResponseEntity<?> sedResetNumber(@RequestBody NumberDto numberDto) {
         try {
-            return ResponseModel.success(authService.sendResetNumber(numberDto));
+            authService.sendResetNumber(numberDto);
+            return ResponseModel.successPure();
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

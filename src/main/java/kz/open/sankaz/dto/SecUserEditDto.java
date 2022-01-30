@@ -7,12 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FinishRegDto extends BaseDto {
-    private String telNumber;
+public class SecUserEditDto extends AbstractDto {
     private String firstName;
     private String lastName;
-    private String email;
     private String gender;
+    private String email;
     private String city;
-    private String password;
 }

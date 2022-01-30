@@ -37,6 +37,9 @@ twilio:
   trial_number: +14845754250
 
 security:
+  account:
+    confirm:
+      link: http://localhost:8080/auth/confirm-account?tokenId="
   token:
     secret: SECRET
 

@@ -54,13 +54,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                        "/auth/sign-in/**",
 //                        "/auth/confirm-account/**",
 //                        "/auth/sign-out/**",
-                        "/sans/**",
-                        "/user/auth/**")
+                        "/users/auth/**")
                 .permitAll();
-        http
-                .authorizeHttpRequests()
-                .antMatchers(HttpMethod.GET, "/users/**")
-                .hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER");
+//        http
+//                .authorizeHttpRequests()
+//                .antMatchers(HttpMethod.GET, "/users/**")
+//                .hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER");
 
         http
                 .authorizeHttpRequests()

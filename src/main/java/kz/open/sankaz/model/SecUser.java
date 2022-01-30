@@ -1,5 +1,6 @@
 package kz.open.sankaz.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,6 +68,9 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "CONFIRMATION_NUMBER")
     private int confirmationNumber;
 
+    @Column(name = "CONFIRMATION_STATUS")
+    private String confirmationStatus = "NEW"; // NEW ON_CONFIRMATION CONFIRMED FINISHED
+
     @Column(name = "CONFIRMATION_NUMBER_CREATED_TS")
     private LocalDateTime confirmationNumberCreatedTs;
 
@@ -76,12 +80,20 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "RESET_NUMBER_CREATED_TS")
     private LocalDateTime resetNumberCreatedTs;
 
+    @Column(name = "RESET_NUMBER_STATUS")
+    private String resetNumberStatus; // EMPTY ON_RESET
+
     @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "SEC_USER_ROLES",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
     private List<SecRole> roles;
+
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE})
+    @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SEC_USER_PIC_FK"))
+    @JsonManagedReference
+    private ItemPic pic;
 
     public SecUser(Long id,
                    String username,

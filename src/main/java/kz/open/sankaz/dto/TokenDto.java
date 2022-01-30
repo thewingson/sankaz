@@ -2,13 +2,12 @@ package kz.open.sankaz.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
-public class NumberDto {
-    private String telNumber;
+public class TokenDto {
+    private String accessToken;
+    private String refreshToken;
 }

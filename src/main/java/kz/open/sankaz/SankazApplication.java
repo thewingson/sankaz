@@ -45,6 +45,8 @@ public class SankazApplication {
 //			user1.setPassword(passwordEncoder.encode("123"));
 //			user1.setGender("male");
 //			user1.addRole(admin);
+//			user1.setConfirmationStatus("FINISHED");
+//			user1.setResetNumberStatus("EMPTY");
 //			user1.setConfirmationNumber(0);
 //			user1.setConfirmedBy("admin");
 //			user1.setConfirmedTs(LocalDateTime.now());

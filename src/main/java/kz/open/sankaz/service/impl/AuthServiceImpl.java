@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
     private String ACCOUNT_CONFIRM_LINK;
 
     private static final String ACCOUNT_CONFIRM_MESSAGE = "\nWelcome to SanKaz!\nTo confirm activation, please, visit next link";
-    private static final int CONFIRMATION_TIME_IN_MINUTES = 5;
+    private static final int CONFIRMATION_TIME_IN_MINUTES = 1;
 
     @Override
     public String getCurrentUsername() {
@@ -107,13 +107,6 @@ public class AuthServiceImpl implements AuthService {
         return result;
     }
 
-//    @Override
-//    public void signOut(String username) {
-//        SecUser user = userService.getUser(username);
-//        user.setLoggedOut(true);
-//        userService.updateUser(user);
-//    }
-
     @Override
     public List<String> getNumbers() {
         Map<String, Object> params = new HashMap<>();
@@ -142,10 +135,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         userByNumber.setConfirmedBy(null);
-//        userByNumber.setCreatedBy("anonymousUser");
         userByNumber.setActive(false);
         userByNumber.clearRoles();
 
+        userByNumber.setConfirmationStatus("ON_CONFIRMATION");
         userByNumber.setConfirmedTs(null);
         userByNumber.setConfirmationNumber(getRandomConfirmationNumber());
         userByNumber.setConfirmationNumberCreatedTs(LocalDateTime.now());
@@ -167,6 +160,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("Start of sending confirmation number {}", numberDto.getTelNumber());
         log.info("Checking tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(numberDto.getTelNumber());
+        userByNumber.setResetNumberStatus("ON_RESET");
         userByNumber.setResetNumber(getRandomConfirmationNumber());
         userByNumber.setResetNumberCreatedTs(LocalDateTime.now());
         log.info("Updating user {}", userByNumber.getUsername());
@@ -183,14 +177,19 @@ public class AuthServiceImpl implements AuthService {
         log.info("Checking tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(registerDto.getTelNumber());
 
+        if (userByNumber.getConfirmedBy() != null) {
+            log.info("Number has already confirmed! {}", registerDto.getConfirmationNumber());
+            throw new RuntimeException("Number has already confirmed. Please, finish registration.");
+        }
         if (LocalDateTime.now().isAfter(userByNumber.getConfirmationNumberCreatedTs().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
             log.info("Confirmation number time is expired! {}", registerDto.getConfirmationNumber());
-            throw new RuntimeException("Confirmation number time is expired! Please, reset again!");
+            throw new RuntimeException("Confirmation number time is expired! Please, send again!");
         }
         if (userByNumber.getConfirmationNumber() != registerDto.getConfirmationNumber()) {
             log.info("Invalid confirmation number! {}", registerDto.getConfirmationNumber());
             throw new RuntimeException("Invalid confirmation number!");
         }
+        userByNumber.setConfirmationStatus("CONFIRMED");
         userByNumber.setConfirmationNumber(0);
         userByNumber.setConfirmedTs(LocalDateTime.now());
         userByNumber.setConfirmedBy(userByNumber.getUsername());
@@ -222,6 +221,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("Invalid reset number! {}", registerDto.getResetNumber());
             throw new RuntimeException("Invalid reset number!");
         }
+        userByNumber.setResetNumberStatus("EMPTY");
         userByNumber.setResetNumber(0);
         log.info("Updating user after reset number {}", registerDto.getResetNumber());
         userService.editOneById(userByNumber);
@@ -229,28 +229,61 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public SecUserDto finishRegistration(FinishRegDto finishRegDto) {
+    public NumberFreeDto isNumberFree(String telNumber) {
+        log.info("Start of checking number {}", telNumber);
+        NumberFreeDto dto = new NumberFreeDto();
+        boolean isFree = false;
+        try{
+            log.info("Checking tel number in DB");
+            SecUser userByNumber = userService.getUserByTelNumber(telNumber);
+            dto.setConfirmationStatus(userByNumber.getConfirmationStatus());
+        } catch (EntityNotFoundException e){
+            isFree = true;
+            dto.setConfirmationStatus("NEW");
+        }
+        log.info("End of checking number {}", telNumber);
+        dto.setFree(isFree);
+        return dto;
+    }
+
+    @Override
+    public TokenDto finishRegistration(FinishRegDto finishRegDto) {
         log.info("Start of finishing registration {}", finishRegDto.getTelNumber());
         log.info("Checking tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(finishRegDto.getTelNumber());
+        if(!userByNumber.getConfirmationStatus().equals("CONFIRMED")){
+            throw new RuntimeException("This number is not confirmed! Please, confirm number before signing up.");
+        }
 
+        userByNumber.setConfirmationStatus("FINISHED");
         userByNumber.setPassword(passwordEncoder.encode(finishRegDto.getPassword()));
         userByNumber.setFirstName(finishRegDto.getFirstName());
         userByNumber.setLastName(finishRegDto.getLastName());
-        userByNumber.setCity(finishRegDto.getCity());
+        if(finishRegDto.getCity() != null || !finishRegDto.getCity().isEmpty()){
+            userByNumber.setCity(finishRegDto.getCity());
+        }
+        if(finishRegDto.getEmail() != null || !finishRegDto.getEmail().isEmpty()){
+            userByNumber.setEmail(finishRegDto.getEmail());
+        }
+        if(finishRegDto.getGender() != null || !finishRegDto.getGender().isEmpty()){
+            userByNumber.setGender(finishRegDto.getGender());
+        }
         log.info("Updating user {}", finishRegDto.getTelNumber());
         userService.editOneById(userByNumber);
         log.info("End of finishing registration {}", finishRegDto.getTelNumber());
 
-        return userMapper.userToDto(userByNumber);
+        return authenticateUser(userByNumber.getUsername(), finishRegDto.getPassword());
     }
 
     @Override
-    public SecUserDto resetPassword(ResetPasswordDto resetPasswordDto) {
+    public TokenDto resetPassword(ResetPasswordDto resetPasswordDto) {
         log.info("Start of resetting password {}", resetPasswordDto.getTelNumber());
         log.info("Checking user by tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(resetPasswordDto.getTelNumber());
 
+        if(userByNumber.getResetNumberStatus().equals("ON_RESET")){
+            throw new RuntimeException("You did not pass reset number!");
+        }
         if(!resetPasswordDto.getPassword().equals(resetPasswordDto.getConfirmPassword())){
             throw new RuntimeException("Password mismatch!");
         }
@@ -262,7 +295,29 @@ public class AuthServiceImpl implements AuthService {
 
         // TODO: MAKE OLD TOKEN INACTIVE
 
-        return userMapper.userToDto(userByNumber);
+        return authenticateUser(userByNumber.getUsername(), resetPasswordDto.getPassword());
+    }
+
+    private TokenDto authenticateUser(String username, String password){
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        SecUser user = (SecUser) authentication.getPrincipal();
+
+        Algorithm algorithm = Algorithm.HMAC256(securityProperties.getSecurityTokenSecret().getBytes());
+        String accessToken = JWT.create()
+                .withSubject(user.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
+                .withIssuer("/users/auth/finish-reg")
+                .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .sign(algorithm);
+        String refreshToken = JWT.create()
+                .withSubject(user.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000))
+                .withIssuer("/users/auth/finish-reg")
+                .sign(algorithm);
+        return new TokenDto(accessToken, refreshToken);
     }
 
     private int getRandomConfirmationNumber() {

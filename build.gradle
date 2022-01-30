@@ -36,8 +36,8 @@ dependencies {
     implementation 'com.auth0:java-jwt:3.18.2'
     implementation 'org.springframework.boot:spring-boot-starter-mail:2.6.2'
     implementation 'com.twilio.sdk:twilio:8.23.0'
-    implementation 'org.liquibase:liquibase-core'
     implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+//    implementation 'org.liquibase:liquibase-core'
 
     compileOnly 'org.projectlombok:lombok'
 

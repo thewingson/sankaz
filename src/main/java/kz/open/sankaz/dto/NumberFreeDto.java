@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NumberDto {
-    private String telNumber;
+public class NumberFreeDto {
+    protected boolean free;
+    private String confirmationStatus;
 }

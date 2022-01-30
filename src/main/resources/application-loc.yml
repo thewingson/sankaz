@@ -8,7 +8,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: public
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
   datasource:
     url: jdbc:postgresql://localhost/sankaz_dev
@@ -37,6 +37,9 @@ twilio:
   trial_number: +14845754250
 
 security:
+  account:
+    confirm:
+      link: http://localhost:8080/auth/confirm-account?tokenId="
   token:
     secret: SECRET
 

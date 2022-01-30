@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NumberDto {
-    private String telNumber;
+public class PictureDto {
+    private String url;
 }
