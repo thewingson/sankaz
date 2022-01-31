@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import kz.open.sankaz.config.SmscApi;
 import kz.open.sankaz.dto.*;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.SecUserMapper;
@@ -150,7 +151,17 @@ public class AuthServiceImpl implements AuthService {
         log.info("Registering new user {}", userByNumber.getUsername());
         userService.addOne(userByNumber);
         log.info("Sending confirmation number {}", numberDto.getTelNumber());
-        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Welcome to SanKaz! Your confirmation number is: " + userByNumber.getConfirmationNumber());
+
+        String phones = numberDto.getTelNumber();
+        String message = "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber();
+        int translit = 0;
+        String time = "";
+        String id = "";
+        int format = 0;
+        String sender = "SanKaz";
+        String query = "";
+        SmscApi smscApi = new SmscApi();
+        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
         log.info("End of sending confirmation number {}", numberDto.getTelNumber());
         return userByNumber.getConfirmationNumber();
     }

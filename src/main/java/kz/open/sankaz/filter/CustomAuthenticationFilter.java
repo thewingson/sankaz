@@ -3,9 +3,11 @@ package kz.open.sankaz.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kz.open.sankaz.dto.UsernamePasswordDto;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.properties.SecurityProperties;
 import kz.open.sankaz.service.UserService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,10 +41,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         this.userService = userService;
     }
 
+    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        String username = request.getHeader("username");
-        String password = request.getHeader("password");
+        String jsonBody = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+        ObjectMapper objectMapper = new ObjectMapper();
+        UsernamePasswordDto usernamePasswordDto = objectMapper.readValue(jsonBody, UsernamePasswordDto.class);
+
+        String username = usernamePasswordDto.getUsername();
+        String password = usernamePasswordDto.getPassword();
         log.info("Request parameter [username]: {}", username);
         log.info("Request parameter [password]: {}", password);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
