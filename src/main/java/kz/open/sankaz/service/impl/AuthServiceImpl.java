@@ -177,7 +177,17 @@ public class AuthServiceImpl implements AuthService {
         log.info("Updating user {}", userByNumber.getUsername());
         userService.editOneById(userByNumber);
         log.info("Sending confirmation number {}", numberDto.getTelNumber());
-        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Hello from SanKaz! Your reset number is: " + userByNumber.getResetNumber());
+
+        String phones = userByNumber.getTelNumber();
+        String message = "SanKaz приветствует Вас! \nВаш номер для сброса пароля: " + userByNumber.getResetNumber();
+        int translit = 0;
+        String time = "";
+        String id = "";
+        int format = 0;
+        String sender = "SanKaz";
+        String query = "";
+        SmscApi smscApi = new SmscApi();
+        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
         log.info("End of sending confirmation number {}", numberDto.getTelNumber());
         return userByNumber.getResetNumber();
     }
