@@ -176,6 +176,17 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     }
 
     @Override
+    public SecUser getUserByEmail(String email) {
+        Optional<SecUser> secUser = repo.findByEmailAndDeletedByIsNull(email);
+        if(!secUser.isPresent()){
+            Map<String, Object> params = new HashMap<>();
+            params.put("email", email);
+            throw new EntityNotFoundException(getCurrentClass(), params);
+        }
+        return secUser.get();
+    }
+
+    @Override
     protected Class getCurrentClass() {
         return SecUser.class;
     }

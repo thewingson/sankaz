@@ -26,7 +26,11 @@ public class SankazApplication {
 			admin.setCreatedBy("admin");
 			admin.setCreateTs(LocalDateTime.now());
 			roleRepo.save(admin);
-			SecRole manager = new SecRole(null, "ROLE_MANAGER");
+			SecRole moderator = new SecRole(null, "ROLE_MODERATOR");
+			moderator.setCreatedBy("admin");
+			moderator.setCreateTs(LocalDateTime.now());
+			roleRepo.save(moderator);
+			SecRole manager = new SecRole(null, "ROLE_ORG");
 			manager.setCreatedBy("admin");
 			manager.setCreateTs(LocalDateTime.now());
 			roleRepo.save(manager);
@@ -36,12 +40,13 @@ public class SankazApplication {
 			roleRepo.save(user);
 
 			SecUser user1 = new SecUser();
+			user1.setUserType("USER");
 			user1.setFirstName("Admin");
 			user1.setLastName("Admin");
 			user1.setCity("Almaty");
 			user1.setTelNumber("+77777777777");
 			user1.setEmail("admin@mail.kz");
-			user1.setUsername("admin");
+			user1.setUsername("+77777777777");
 			user1.setPassword(passwordEncoder.encode("123"));
 			user1.setGender("male");
 			user1.addRole(admin);
@@ -55,6 +60,28 @@ public class SankazApplication {
 			user1.setCreatedBy("admin");
 			user1.setCreateTs(LocalDateTime.now());
 			userRepo.save(user1);
+
+			SecUser user2 = new SecUser();
+			user2.setUserType("USER");
+			user2.setFirstName("Moderator");
+			user2.setLastName("Moderator");
+			user2.setCity("Almaty");
+			user2.setTelNumber("+77777777778");
+			user2.setEmail("moderator@mail.kz");
+			user2.setUsername("+77777777778");
+			user2.setPassword(passwordEncoder.encode("123"));
+			user2.setGender("male");
+			user2.addRole(admin);
+			user2.setConfirmationStatus("FINISHED");
+			user2.setResetNumberStatus("EMPTY");
+			user2.setConfirmationNumber(0);
+			user2.setConfirmedBy("admin");
+			user2.setConfirmedTs(LocalDateTime.now());
+			user2.setActive(true);
+			user2.setLoggedOut(false);
+			user2.setCreatedBy("admin");
+			user2.setCreateTs(LocalDateTime.now());
+			userRepo.save(user2);
 		};
 	}
 

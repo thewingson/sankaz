@@ -20,4 +20,6 @@ public interface UserService extends UserDetailsManager, CommonService<SecUser>,
 
     PictureDto changePicture(Long userId, MultipartFile file) throws IOException;
     void deletePicture(Long userId);
+
+    SecUser getUserByEmail(String email);
 }

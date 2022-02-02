@@ -5,8 +5,10 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kz.open.sankaz.model.JwtBlackList;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.properties.SecurityProperties;
+import kz.open.sankaz.service.JwtBlackListService;
 import kz.open.sankaz.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,10 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -35,10 +34,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private final SecurityProperties securityProperties;
     private final UserService userService;
+    private final JwtBlackListService jwtBlackListService;
 
-    public CustomAuthorizationFilter(SecurityProperties securityProperties, UserService userService) {
+    public CustomAuthorizationFilter(SecurityProperties securityProperties, UserService userService, JwtBlackListService jwtBlackListService) {
         this.securityProperties = securityProperties;
         this.userService = userService;
+        this.jwtBlackListService = jwtBlackListService;
     }
 
     @Override
@@ -60,8 +61,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     String username = decodedJWT.getSubject();
 
                     SecUser user = (SecUser) userService.loadUserByUsername(username);
-                    if(user.isLoggedOut()){
-                        throw new Exception("Please, sign in to application again!");
+                    List<JwtBlackList> jwtBlackList = jwtBlackListService.getAllByUsername(username);
+                    if(jwtBlackList.stream().map(JwtBlackList::getAccessToken).anyMatch(s -> s.equals(token))){
+                        throw new Exception("Вы вышли из системы. Пожалуйста, войдите еще раз!");
                     }
 
                     String[] roles = decodedJWT.getClaim("roles").asArray(String.class);

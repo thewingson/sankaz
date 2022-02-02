@@ -8,6 +8,7 @@ import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.AuthService;
 import kz.open.sankaz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -132,9 +133,9 @@ public class UserAuthRest {
     }
 
 //    @PostMapping("/sign-out")
-//    public ResponseEntity<?> signOut(@Param("username") String username) throws IOException {
+//    public ResponseEntity<?> signOut(HttpServletRequest request) {
 //        try {
-//            authService.signOut(username);
+//            authService.signOut(request);
 //            return ResponseEntity.ok().build();
 //        } catch (Exception e) {
 //            return ResponseEntity.badRequest().body(e.getMessage());

@@ -29,6 +29,9 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @SequenceGenerator(sequenceName = "SEC_USER_ID_SEQ", name = "SEC_USER_ID", allocationSize = 1)
     private Long id;
 
+    @Column(name = "USER_TYPE", nullable = false)
+    private String userType; // USER ORG
+
     @Column(name = "USERNAME", unique = true)
     private String username;
 
@@ -81,7 +84,7 @@ public class SecUser extends AbstractEntity implements UserDetails{
     private LocalDateTime resetNumberCreatedTs;
 
     @Column(name = "RESET_NUMBER_STATUS")
-    private String resetNumberStatus; // EMPTY ON_RESET
+    private String resetNumberStatus = "EMPTY"; // EMPTY ON_RESET
 
     @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(

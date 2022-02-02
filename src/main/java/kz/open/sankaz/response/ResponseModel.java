@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
+import java.util.Map;
 
 @Data
 @Builder(toBuilder = true)
@@ -51,6 +52,15 @@ public class ResponseModel<T> implements Serializable {
     }
 
     public static ResponseEntity<?> success(Object content) {
+        return ResponseEntity.ok(
+                ResponseModel.builder()
+                        .type("success")
+                        .data(content)
+                        .build()
+        );
+    }
+
+    public static ResponseEntity<?> success(Map<String, Object> content) {
         return ResponseEntity.ok(
                 ResponseModel.builder()
                         .type("success")

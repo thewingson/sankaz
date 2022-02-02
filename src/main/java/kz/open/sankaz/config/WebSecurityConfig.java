@@ -2,12 +2,13 @@ package kz.open.sankaz.config;
 
 import kz.open.sankaz.filter.CustomAuthenticationFilter;
 import kz.open.sankaz.filter.CustomAuthorizationFilter;
+import kz.open.sankaz.filter.CustomSecurityContextLogoutHandler;
 import kz.open.sankaz.properties.SecurityProperties;
+import kz.open.sankaz.service.JwtBlackListService;
 import kz.open.sankaz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -24,14 +26,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final SecurityProperties securityProperties;
+    private final JwtBlackListService jwtBlackListService;
 
     @Autowired
     public WebSecurityConfig(UserService userService,
                              PasswordEncoder passwordEncoder,
-                             SecurityProperties securityProperties) {
+                             SecurityProperties securityProperties,
+                             JwtBlackListService jwtBlackListService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.securityProperties = securityProperties;
+        this.jwtBlackListService = jwtBlackListService;
     }
 
     @Override
@@ -49,17 +54,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeHttpRequests()
                 .antMatchers(
-//                        "/auth/sign-up/**",
-//                        "/auth/refresh-token/**",
-//                        "/auth/sign-in/**",
-//                        "/auth/confirm-account/**",
-//                        "/auth/sign-out/**",
-                        "/users/auth/**")
+                        "/orgs/auth/**",
+                        "/users/auth/**",
+                        "/users/auth/sign-out")
                 .permitAll();
-//        http
-//                .authorizeHttpRequests()
-//                .antMatchers(HttpMethod.GET, "/users/**")
-//                .hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER");
+
+        http
+                .authorizeHttpRequests()
+                .antMatchers("/orgs/auth/register-org")
+                .authenticated();
 
         http
                 .authorizeHttpRequests()
@@ -67,14 +70,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated();
 
         http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(securityProperties, userService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new CustomAuthorizationFilter(securityProperties, userService, jwtBlackListService), UsernamePasswordAuthenticationFilter.class);
 
-//        http
-//                .logout()
-//                .invalidateHttpSession(true)
-//                .clearAuthentication(true)
-//                .logoutRequestMatcher(new AntPathRequestMatcher("/auth/sign-out"))
-//                .logoutSuccessUrl("/users");
+        http
+                .logout()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/users/auth/sign-out"))
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .logoutSuccessUrl("/categories")
+                .logoutSuccessHandler(new CustomSecurityContextLogoutHandler(jwtBlackListService, securityProperties));
+
     }
 
     @Override

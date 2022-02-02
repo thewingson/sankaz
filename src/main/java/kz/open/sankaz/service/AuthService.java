@@ -16,9 +16,15 @@ public interface AuthService {
 
     int sendConfirmationNumber(NumberDto numberDto);
 
+    int sendConfirmationNumberOrganization(ResetPasswordDto resetPasswordDto);
+
     void checkConfirmationNumber(RegisterDto registerDto);
 
+    TokenDto checkConfirmationNumberOrganization(RegisterOrganizationDto registerDto);
+
     TokenDto finishRegistration(FinishRegDto finishRegDto);
+
+    void registerOrganization(RegisterOrgDto registerOrgDto);
 
     int sendResetNumber(NumberDto numberDto);
 
@@ -27,4 +33,6 @@ public interface AuthService {
     void checkResetNumber(RegisterDto registerDto);
 
     NumberFreeDto isNumberFree(String telNumber);
+
+    ConfirmationStatusDto getOrganizationConfirmationStatus(NumberDto numberDto);
 }

@@ -8,11 +8,13 @@ import kz.open.sankaz.config.SmscApi;
 import kz.open.sankaz.dto.*;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.SecUserMapper;
+import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecRole;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.properties.MailProperties;
 import kz.open.sankaz.properties.SecurityProperties;
 import kz.open.sankaz.properties.SmsProperties;
+import kz.open.sankaz.repo.JwtBlackListRepo;
 import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,8 @@ public class AuthServiceImpl implements AuthService {
     private UserService userService;
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private OrganizationService organizationService;
     @Autowired
     private SmsSender smsSender;
     @Autowired
@@ -121,7 +125,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public int sendConfirmationNumber(NumberDto numberDto) {
-         log.info("Start of sending confirmation number {}", numberDto.getTelNumber());
+        log.info("Start of sending confirmation number {}", numberDto.getTelNumber());
         SecUser userByNumber;
         try{
             log.info("Checking tel number in DB");
@@ -135,6 +139,7 @@ public class AuthServiceImpl implements AuthService {
             userByNumber = new SecUser();
         }
 
+        userByNumber.setUserType("USER");
         userByNumber.setConfirmedBy(null);
         userByNumber.setActive(false);
         userByNumber.clearRoles();
@@ -161,8 +166,64 @@ public class AuthServiceImpl implements AuthService {
         String sender = "SanKaz";
         String query = "";
         SmscApi smscApi = new SmscApi();
-        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
+//        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
+        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber());
         log.info("End of sending confirmation number {}", numberDto.getTelNumber());
+        return userByNumber.getConfirmationNumber();
+    }
+
+    @Override
+    public int sendConfirmationNumberOrganization(ResetPasswordDto resetPasswordDto) {
+        log.info("Start of sending confirmation number {}", resetPasswordDto.getTelNumber());
+        if(resetPasswordDto.getTelNumber() == null || resetPasswordDto.getPassword().isEmpty()){
+            throw new RuntimeException("Пожалуйста, введите номер!");
+        }
+        if(!resetPasswordDto.getPassword().equals(resetPasswordDto.getConfirmPassword())){
+            throw new RuntimeException("Пароли не совпадают! Пожалуйста, введите еще раз.");
+        }
+        SecUser userByNumber;
+        try{
+            log.info("Checking tel number in DB");
+            userByNumber = userService.getUserByTelNumber(resetPasswordDto.getTelNumber());
+            if(userByNumber.getConfirmationStatus().equals("CONFIRMED")){
+                throw new RuntimeException("К сожалению номер занят! Пожалуйста, введите другой номер.");
+            }
+        } catch (EntityNotFoundException e){
+            // FREE NUMBER
+            log.info("Number is free");
+            userByNumber = new SecUser();
+        }
+
+        userByNumber.setUserType("ORG");
+        userByNumber.setConfirmedBy(null);
+        userByNumber.setActive(false);
+        userByNumber.clearRoles();
+
+        userByNumber.setConfirmationStatus("ON_CONFIRMATION");
+        userByNumber.setConfirmedTs(null);
+        userByNumber.setConfirmationNumber(getRandomConfirmationNumber());
+        userByNumber.setConfirmationNumberCreatedTs(LocalDateTime.now());
+        userByNumber.setTelNumber(resetPasswordDto.getTelNumber());
+        userByNumber.setUsername(resetPasswordDto.getTelNumber());
+        userByNumber.setPassword(passwordEncoder.encode(resetPasswordDto.getPassword()));
+        userByNumber.setFirstName("");
+        userByNumber.setLastName("");
+        log.info("Registering new user {}", userByNumber.getUsername());
+        userService.addOne(userByNumber);
+        log.info("Sending confirmation number {}", resetPasswordDto.getTelNumber());
+
+        String phones = resetPasswordDto.getTelNumber();
+        String message = "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber();
+        int translit = 0;
+        String time = "";
+        String id = "";
+        int format = 0;
+        String sender = "SanKaz";
+        String query = "";
+        SmscApi smscApi = new SmscApi();
+//        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
+        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber());
+        log.info("End of sending confirmation number {}", resetPasswordDto.getTelNumber());
         return userByNumber.getConfirmationNumber();
     }
 
@@ -187,7 +248,8 @@ public class AuthServiceImpl implements AuthService {
         String sender = "SanKaz";
         String query = "";
         SmscApi smscApi = new SmscApi();
-        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
+//        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
+        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber());
         log.info("End of sending confirmation number {}", numberDto.getTelNumber());
         return userByNumber.getResetNumber();
     }
@@ -200,15 +262,15 @@ public class AuthServiceImpl implements AuthService {
 
         if (userByNumber.getConfirmedBy() != null) {
             log.info("Number has already confirmed! {}", registerDto.getConfirmationNumber());
-            throw new RuntimeException("Number has already confirmed. Please, finish registration.");
+            throw new RuntimeException("Номер уже подтвержден! Пожалуйста, закончите регистрацию.");
         }
         if (LocalDateTime.now().isAfter(userByNumber.getConfirmationNumberCreatedTs().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
             log.info("Confirmation number time is expired! {}", registerDto.getConfirmationNumber());
-            throw new RuntimeException("Confirmation number time is expired! Please, send again!");
+            throw new RuntimeException("Время номера подтверждения истек! Пожалуйста, отправьте еще раз!");
         }
         if (userByNumber.getConfirmationNumber() != registerDto.getConfirmationNumber()) {
             log.info("Invalid confirmation number! {}", registerDto.getConfirmationNumber());
-            throw new RuntimeException("Invalid confirmation number!");
+            throw new RuntimeException("Неправильный номер подтверждения!");
         }
         userByNumber.setConfirmationStatus("CONFIRMED");
         userByNumber.setConfirmationNumber(0);
@@ -216,12 +278,46 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setConfirmedBy(userByNumber.getUsername());
         userByNumber.setCreatedBy(userByNumber.getUsername());
         userByNumber.setActive(true);
-        log.info("Searching for role {}", "ROLE_USER");
+        log.info("Searching for role");
         SecRole roleUser = roleService.getByName("ROLE_USER");
         userByNumber.addRole(roleUser);
         log.info("Updating user after confirmation number {}", registerDto.getConfirmationNumber());
         userService.editOneById(userByNumber);
         log.info("End of checking confirmation number {}", registerDto.getTelNumber());
+    }
+
+    @Override
+    public TokenDto checkConfirmationNumberOrganization(RegisterOrganizationDto registerDto) {
+        log.info("Start of checking confirmation number {}", registerDto.getTelNumber());
+        log.info("Checking tel number in DB");
+        SecUser userByNumber = userService.getUserByTelNumber(registerDto.getTelNumber());
+
+        if (userByNumber.getConfirmedBy() != null) {
+            log.info("Number has already confirmed! {}", registerDto.getConfirmationNumber());
+            throw new RuntimeException("Номер уже подтвержден! Пожалуйста, закончите регистрацию.");
+        }
+        if (LocalDateTime.now().isAfter(userByNumber.getConfirmationNumberCreatedTs().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
+            log.info("Confirmation number time is expired! {}", registerDto.getConfirmationNumber());
+            throw new RuntimeException("Время номера подтверждения истек! Пожалуйста, отправьте еще раз!");
+        }
+        if (userByNumber.getConfirmationNumber() != registerDto.getConfirmationNumber()) {
+            log.info("Invalid confirmation number! {}", registerDto.getConfirmationNumber());
+            throw new RuntimeException("Неправильный номер подтверждения!");
+        }
+        userByNumber.setConfirmationStatus("CONFIRMED");
+        userByNumber.setConfirmationNumber(0);
+        userByNumber.setConfirmedTs(LocalDateTime.now());
+        userByNumber.setConfirmedBy(userByNumber.getUsername());
+        userByNumber.setCreatedBy(userByNumber.getUsername());
+        userByNumber.setActive(true);
+        log.info("Searching for role");
+        SecRole roleUser = roleService.getByName("ROLE_ORG");
+        userByNumber.addRole(roleUser);
+        log.info("Updating user after confirmation number {}", registerDto.getConfirmationNumber());
+        userService.editOneById(userByNumber);
+        log.info("End of checking confirmation number {}", registerDto.getTelNumber());
+
+        return authenticateUser(userByNumber.getUsername(), registerDto.getPassword());
     }
 
     @Override
@@ -232,15 +328,15 @@ public class AuthServiceImpl implements AuthService {
 
         if (userByNumber.getResetNumber() == 0) {
             log.info("Unable to check reset number! {}", registerDto.getResetNumber());
-            throw new RuntimeException("Unable to check reset number. Please, send new one.");
+            throw new RuntimeException("Невозможно проверить номер. Пожалуйста, отправьте номер для сброса еще раз.");
         }
         if (LocalDateTime.now().isAfter(userByNumber.getResetNumberCreatedTs().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
             log.info("Reset number time is expired! {}", registerDto.getResetNumber());
-            throw new RuntimeException("Reset number time is expired! Please, reset again!");
+            throw new RuntimeException("Время для сброса истек! Пожалуйста, отправьте номер для сброса еще раз.");
         }
         if (userByNumber.getResetNumber() != registerDto.getResetNumber()) {
             log.info("Invalid reset number! {}", registerDto.getResetNumber());
-            throw new RuntimeException("Invalid reset number!");
+            throw new RuntimeException("Неправильный номер сброса!");
         }
         userByNumber.setResetNumberStatus("EMPTY");
         userByNumber.setResetNumber(0);
@@ -268,6 +364,19 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public ConfirmationStatusDto getOrganizationConfirmationStatus(NumberDto numberDto){
+        log.info("Start of checking organization confirmation status by number {}", numberDto);
+        try{
+            log.info("Checking tel number {} in DB", numberDto.getTelNumber());
+            Organization organization = organizationService.getOrganizationByTelNumber(numberDto.getTelNumber());
+            log.info("End of checking number {}", numberDto.getTelNumber());
+            return new ConfirmationStatusDto(organization.getConfirmationStatus());
+        } catch (EntityNotFoundException e){
+            throw new RuntimeException("Указан неправильный номер для поиска!");
+        }
+    }
+
+    @Override
     public TokenDto finishRegistration(FinishRegDto finishRegDto) {
         log.info("Start of finishing registration {}", finishRegDto.getTelNumber());
         log.info("Checking tel number in DB");
@@ -280,13 +389,13 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setPassword(passwordEncoder.encode(finishRegDto.getPassword()));
         userByNumber.setFirstName(finishRegDto.getFirstName());
         userByNumber.setLastName(finishRegDto.getLastName());
-        if(finishRegDto.getCity() != null || !finishRegDto.getCity().isEmpty()){
+        if(finishRegDto.getCity() != null && !finishRegDto.getCity().isEmpty()){
             userByNumber.setCity(finishRegDto.getCity());
         }
-        if(finishRegDto.getEmail() != null || !finishRegDto.getEmail().isEmpty()){
+        if(finishRegDto.getEmail() != null && !finishRegDto.getEmail().isEmpty()){
             userByNumber.setEmail(finishRegDto.getEmail());
         }
-        if(finishRegDto.getGender() != null || !finishRegDto.getGender().isEmpty()){
+        if(finishRegDto.getGender() != null && !finishRegDto.getGender().isEmpty()){
             userByNumber.setGender(finishRegDto.getGender());
         }
         log.info("Updating user {}", finishRegDto.getTelNumber());
@@ -297,16 +406,93 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public void registerOrganization(RegisterOrgDto registerOrgDto) {
+        log.info("Start of finishing registration {}", registerOrgDto.getTelNumber());
+        log.info("Checking tel number in DB");
+        SecUser userByNumber = userService.getUserByTelNumber(getCurrentUsername());
+        if(!userByNumber.getConfirmationStatus().equals("CONFIRMED") && !userByNumber.getConfirmationStatus().equals("FINISHED")){
+            throw new RuntimeException("Номер не подтвержден! Пожалуйста, подтвердите номер.");
+        }
+
+        try{ // проверка email
+            userService.getUserByEmail(registerOrgDto.getEmail());
+            log.warn("Email is busy {}", registerOrgDto.getEmail());
+            throw new RuntimeException("Этот email занят другой организацией! Пожалуйста, введите другой email для огранизации.");
+        } catch (EntityNotFoundException e){
+            log.info("Email is free {}", registerOrgDto.getTelNumber());
+        }
+
+        try{ // проверка iban
+            organizationService.getOrganizationByIban(registerOrgDto.getIban());
+            log.warn("IBAN is busy {}", registerOrgDto.getIban());
+            throw new RuntimeException("Этот IBAN занят другой организацией! Пожалуйста, введите другой IBAN для огранизации.");
+        } catch (EntityNotFoundException e){
+            log.info("IBAN is free {}", registerOrgDto.getTelNumber());
+        }
+
+        try{ // проверка iin
+            organizationService.getOrganizationByIin(registerOrgDto.getIin());
+            log.warn("IIN is busy {}", registerOrgDto.getIban());
+            throw new RuntimeException("Этот ИИН занят другой организацией! Пожалуйста, введите другой ИИН для огранизации.");
+        } catch (EntityNotFoundException e){
+            log.info("IIN is free {}", registerOrgDto.getTelNumber());
+        }
+
+        if(!userByNumber.getConfirmationStatus().equals("CONFIRMED") && !userByNumber.getConfirmationStatus().equals("FINISHED")){
+            throw new RuntimeException("Номер не подтвержден! Пожалуйста, подтвердите номер.");
+        }
+        try{ // проверка номера в организациях
+            organizationService.getOrganizationByTelNumber(registerOrgDto.getTelNumber());
+            log.warn("Number is busy {}", registerOrgDto.getTelNumber());
+            throw new RuntimeException("Этот номер занят другой организацией! Пожалуйста, введите другой номер для огранизации.");
+        } catch (EntityNotFoundException e){
+            log.info("Number is free {}", registerOrgDto.getTelNumber());
+        }
+        try{ // проверка организации по юзеру / один юзер - одна организация !
+            organizationService.getOrganizationByUser(userByNumber);
+            log.warn("User already has registered organization {}", userByNumber.getTelNumber());
+            throw new RuntimeException("Вы уже зарегистрировали организацию! Пользователь может создать только одну огранизацию.");
+        } catch (EntityNotFoundException e){
+            log.info("User did not registered any organization {}", userByNumber.getTelNumber());
+        }
+
+        userByNumber.setConfirmationStatus("FINISHED");
+        userByNumber.setFirstName(registerOrgDto.getFullName());
+        userByNumber.setLastName(registerOrgDto.getFullName());
+        if(registerOrgDto.getEmail() != null || !registerOrgDto.getEmail().isEmpty()){
+            userByNumber.setEmail(registerOrgDto.getEmail());
+        }
+        log.info("Updating user {}", registerOrgDto.getTelNumber());
+        userService.editOneById(userByNumber);
+
+        log.info("Creating organization");
+        Organization organization = new Organization();
+        organization.setConfirmationStatus("ON_CONFIRMATION");
+        organization.setUser(userByNumber);
+        organization.setEmail(registerOrgDto.getEmail());
+        organization.setIban(registerOrgDto.getIban());
+        organization.setName(registerOrgDto.getOrgName());
+        organization.setManagerFullName(registerOrgDto.getFullName());
+        organization.setTelNumber(registerOrgDto.getTelNumber());
+        organization.setIin(registerOrgDto.getIin());
+        organization.setManagerFullName(registerOrgDto.getFullName());
+        organizationService.addOne(organization);
+        // TODO: send to Moderator through method or listener
+        log.info("Organization creation is finished");
+        log.info("End of finishing registration {}", registerOrgDto.getTelNumber());
+    }
+
+    @Override
     public TokenDto resetPassword(ResetPasswordDto resetPasswordDto) {
         log.info("Start of resetting password {}", resetPasswordDto.getTelNumber());
         log.info("Checking user by tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(resetPasswordDto.getTelNumber());
 
         if(userByNumber.getResetNumberStatus().equals("ON_RESET")){
-            throw new RuntimeException("You did not pass reset number!");
+            throw new RuntimeException("Вы не подтвердили номер сброса!");
         }
         if(!resetPasswordDto.getPassword().equals(resetPasswordDto.getConfirmPassword())){
-            throw new RuntimeException("Password mismatch!");
+            throw new RuntimeException("Пароли не совпвдвют!");
         }
         userByNumber.setResetNumberCreatedTs(null);
         userByNumber.setPassword(passwordEncoder.encode(resetPasswordDto.getPassword()));
