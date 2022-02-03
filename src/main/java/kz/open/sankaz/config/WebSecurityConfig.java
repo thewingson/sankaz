@@ -66,6 +66,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeHttpRequests()
+                .antMatchers("/orgs/auth/register-org")
+                .authenticated();
+
+        http
+                .authorizeHttpRequests()
                 .anyRequest()
                 .authenticated();
 
