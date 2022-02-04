@@ -42,7 +42,7 @@ public abstract class SanMapper {
 
     @Named("sanToDtoWithAll")
     @Mapping(target = "categories",
-            expression = "java(categoryMapper.categoryToDto(san.getCategories()))")
+            expression = "java(categoryMapper.sanTypeToDto(san.getCategories()))")
     @Mapping(target = "rooms",
             expression = "java(roomMapper.roomToDto(san.getRooms()))")
     @Mapping(target = "reviews",

@@ -3,7 +3,7 @@ package kz.open.sankaz.service.impl;
 import kz.open.sankaz.dto.CategoryDto;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.CategoryMapper;
-import kz.open.sankaz.model.Category;
+import kz.open.sankaz.model.SanType;
 import kz.open.sankaz.repo.CategoryRepo;
 import kz.open.sankaz.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @Transactional
-public class CategoryServiceImpl extends AbstractService<Category, CategoryRepo> implements CategoryService {
+public class CategoryServiceImpl extends AbstractService<SanType, CategoryRepo> implements CategoryService {
 
     private final CategoryRepo categoryRepo;
 
@@ -33,19 +33,19 @@ public class CategoryServiceImpl extends AbstractService<Category, CategoryRepo>
     }
 
     @Override
-    public List<Category> getAllByCodeIn(List<String> codes) {
+    public List<SanType> getAllByCodeIn(List<String> codes) {
         return categoryRepo.getAllByCodeIn(codes);
     }
 
     @Override
     public CategoryDto getOneDto(Long id) {
-        Category one = getOne(id);
-        return categoryMapper.categoryToDto(one);
+        SanType one = getOne(id);
+        return categoryMapper.sanTypeToDto(one);
     }
 
     @Override
-    public Category getOneDto(String code) {
-        Optional<Category> entityById = categoryRepo.getByCode(code);
+    public SanType getOneDto(String code) {
+        Optional<SanType> entityById = categoryRepo.getByCode(code);
         if(!entityById.isPresent()){
             Map<String, Object> params = new HashMap<>();
             params.put("CODE", code);
@@ -58,18 +58,18 @@ public class CategoryServiceImpl extends AbstractService<Category, CategoryRepo>
     public List<CategoryDto> getAllDto() {
         Map<String, Object> params = new HashMap<>();
         params.put("deleted", false);
-        return categoryMapper.categoryToDto(getAll(params));
+        return categoryMapper.sanTypeToDto(getAll(params));
     }
 
     @Override
     public List<CategoryDto> getAllDto(Map<String, Object> params) {
-        return categoryMapper.categoryToDto(getAll(params));
+        return categoryMapper.sanTypeToDto(getAll(params));
     }
 
     @Override
-    public Category addOneDto(CategoryDto categoryDto) {
+    public SanType addOneDto(CategoryDto categoryDto) {
         log.info("SERVICE -> CategoryServiceImpl.addOneDto()");
-        Category category = new Category();
+        SanType category = new SanType();
         category.setName(categoryDto.getName());
         category.setDescription(categoryDto.getDescription());
         category.setCode(categoryDto.getCode());
@@ -78,9 +78,9 @@ public class CategoryServiceImpl extends AbstractService<Category, CategoryRepo>
     }
 
     @Override
-    public Category updateOneDto(Long id, CategoryDto categoryDto) {
+    public SanType updateOneDto(Long id, CategoryDto categoryDto) {
         log.info("SERVICE -> CategoryServiceImpl.updateOneDto()");
-        Category category = getOne(id);
+        SanType category = getOne(id);
         if(categoryDto.getCode() != null && !categoryDto.getCode().equals(category.getCode())){
             category.setCode(categoryDto.getCode());
         }
@@ -94,13 +94,13 @@ public class CategoryServiceImpl extends AbstractService<Category, CategoryRepo>
     }
 
     @Override
-    public Category updateOneDto(Map<String, Object> params, CategoryDto categoryDto) {
+    public SanType updateOneDto(Map<String, Object> params, CategoryDto categoryDto) {
         // Backlog: потом, с помощью JOOQ
         return null;
     }
 
     @Override
     protected Class getCurrentClass() {
-        return Category.class;
+        return SanType.class;
     }
 }

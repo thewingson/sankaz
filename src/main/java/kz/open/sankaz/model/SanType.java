@@ -8,16 +8,16 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "CATEGORY")
+@Table(name = "SAN_TYPE")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category extends AbstractDictionaryEntity {
+public class SanType extends AbstractDictionaryEntity {
 
     @Id
-    @GeneratedValue(generator = "CATEGORY_SEQ", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(sequenceName = "CATEGORY_ID_SEQ", name = "CATEGORY_ID", allocationSize = 1)
+    @GeneratedValue(generator = "SAN_TYPE_SEQ", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(sequenceName = "SAN_TYPE_ID_SEQ", name = "SAN_TYPE_ID", allocationSize = 1)
     private Long id;
 
 }

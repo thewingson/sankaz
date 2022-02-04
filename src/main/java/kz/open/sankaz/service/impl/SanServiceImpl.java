@@ -5,7 +5,7 @@ import kz.open.sankaz.dto.HyperLinkDto;
 import kz.open.sankaz.dto.ItemPicDto;
 import kz.open.sankaz.dto.SanDto;
 import kz.open.sankaz.mapper.SanMapper;
-import kz.open.sankaz.model.Category;
+import kz.open.sankaz.model.SanType;
 import kz.open.sankaz.model.HyperLink;
 import kz.open.sankaz.model.ItemPic;
 import kz.open.sankaz.model.San;
@@ -83,7 +83,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         san.setName(sanDto.getName());
 
         if(sanDto.getCategories()!= null && !sanDto.getCategories().isEmpty()){
-            List<Category> categoriesByCode = categoryService
+            List<SanType> categoriesByCode = categoryService
                     .getAllByCodeIn(sanDto.getCategories().stream().map(CategoryDto::getCode).collect(Collectors.toList()));
             san.setCategories(categoriesByCode);
         }
@@ -114,7 +114,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Override
     public void deleteCategory(Long sanId, Long categoryId) {
         San san = getOne(sanId);
-        Category category = categoryService.getOne(categoryId);
+        SanType category = categoryService.getOne(categoryId);
         san.deleteCategory(category);
         repo.save(san);
     }
@@ -138,7 +138,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Override
     public San addCategoryDto(Long id, CategoryDto categoryDto) {
         San san = getOne(id);
-        Category category;
+        SanType category;
         if(categoryDto.getId() != null){
             category = categoryService.getOne(categoryDto.getId());
         } else {
@@ -250,7 +250,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Override
     protected Class getCurrentClass() {
-        return Category.class;
+        return SanType.class;
     }
 
 }

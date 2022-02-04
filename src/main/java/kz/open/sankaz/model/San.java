@@ -33,7 +33,7 @@ public class San extends AbstractEntity{
             name = "SAN_CATEGORIES",
             joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_CATEGORIES_SAN_FK")),
             inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID", foreignKey = @ForeignKey(name = "SAN_CATEGORIES_CAT_FK")))
-    private List<Category> categories;
+    private List<SanType> categories;
 
     @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
     @JsonBackReference
@@ -57,11 +57,11 @@ public class San extends AbstractEntity{
             inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_LINKS_LINK_FK")))
     private List<HyperLink> links;
 
-    public void addCategory(Category category){
+    public void addCategory(SanType category){
         categories.add(category);
     }
 
-    public void deleteCategory(Category category){
+    public void deleteCategory(SanType category){
         categories.remove(category);
     }
 
