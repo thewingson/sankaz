@@ -64,7 +64,7 @@ public class ItemPicServiceImpl extends AbstractService<ItemPic, ItemPicRepo> im
         SysFile file = new SysFile();
         file.setFileName(picDto.getFileName());
         file.setExtension(picDto.getExtension());
-        file.setSize(picDto.getSize());
+        file.setSize(Long.valueOf(picDto.getSize()));
         file = sysFileService.addOne(file);
 
         ItemPic pic = new ItemPic();

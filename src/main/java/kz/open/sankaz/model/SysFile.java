@@ -27,5 +27,5 @@ public class SysFile extends AbstractEntity {
     private String extension;
 
     @Column(name = "SIZE", nullable = false)
-    private String size;
+    private Long size;
 }

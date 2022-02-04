@@ -23,7 +23,7 @@ public abstract class ItemPicMapper {
     @Mapping(target = "extension",
             expression = "java(itemPic.getFile().getExtension())")
     @Mapping(target = "size",
-            expression = "java(itemPic.getFile().getSize())")
+            expression = "java(itemPic.getFile().getSize().toString())")
     abstract public ItemPicDto itemPicToDtoWithFile(ItemPic itemPic);
     @IterableMapping(qualifiedByName = "itemPicToDtoWithFile")
     abstract public List<ItemPicDto> itemPicToDtoWithFile(List<ItemPic> itemPics);

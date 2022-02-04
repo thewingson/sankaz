@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,4 +23,5 @@ public class OrganizationDto extends AbstractDto {
     private LocalDateTime confirmedTs;
     private String confirmedBy;
     private SecUserDto user;
+    private List<String> picUrls;
 }
