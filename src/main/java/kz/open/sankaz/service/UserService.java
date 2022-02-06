@@ -22,4 +22,5 @@ public interface UserService extends UserDetailsManager, CommonService<SecUser>,
     void deletePicture(Long userId);
 
     SecUser getUserByEmail(String email);
+    SecUser getUserByUsername(String email);
 }

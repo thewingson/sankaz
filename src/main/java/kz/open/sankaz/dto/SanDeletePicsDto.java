@@ -2,10 +2,13 @@ package kz.open.sankaz.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class CategoryDto extends AbstractDictionaryDto {
+@NoArgsConstructor
+public class SanDeletePicsDto {
+    private Long[] picIds;
 }

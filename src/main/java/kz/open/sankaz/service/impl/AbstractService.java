@@ -142,6 +142,10 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
 
     protected abstract Class getCurrentClass();
 
+    protected Class getServiceClass(){
+        return this.getClass();
+    }
+
     protected BeforeCreateEvent getBeforeCreateEvent(E entity) { return new BeforeCreateEvent(entity); }
 
     protected BeforeDeleteEvent getBeforeDeleteEvent(E entity) {

@@ -1,6 +1,7 @@
 package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.dto.CompanyCategoryDto;
+import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.CompanyCategory;
 import kz.open.sankaz.repo.CompanyCategoryRepo;
@@ -51,6 +52,13 @@ public class CompanyCategoryServiceImpl extends AbstractDictionaryService<Compan
 
     @Override
     public CompanyCategory addOneDto(CompanyCategoryDto dto) {
+        try{
+            getOneByCode(dto.getCode());
+            log.info(getServiceClass() + ".addOneDto()" + ". Code is busy");
+            throw new RuntimeException("К сожалению кодовое название занято! Пожалуйста, введите другое название.");
+        } catch (EntityNotFoundException e){
+            log.info(getServiceClass() + ".addOneDto()" + ". Code is free");
+        }
         CompanyCategory companyCategory = categoryMapper.dtoToCompanyCategory(dto);
         return addOne(companyCategory);
     }
@@ -58,6 +66,13 @@ public class CompanyCategoryServiceImpl extends AbstractDictionaryService<Compan
     @Override
     public CompanyCategory updateOneDto(Long id, CompanyCategoryDto dto) {
         CompanyCategory companyCategory = getOne(id);
+        try{
+            getOneByCode(dto.getCode());
+            log.info(getServiceClass() + ".updateOneDto()" + ". Code is busy");
+            throw new RuntimeException("К сожалению кодовое название занято! Пожалуйста, введите другое название.");
+        } catch (EntityNotFoundException e){
+            log.info(getServiceClass() + ".updateOneDto()" + ". Code is free");
+        }
         if(dto.getCode() != null && !dto.getCode().equals(companyCategory.getCode())){
             companyCategory.setCode(dto.getCode());
         }
@@ -79,5 +94,10 @@ public class CompanyCategoryServiceImpl extends AbstractDictionaryService<Compan
     @Override
     public CompanyCategory updateOneDto(Map<String, Object> params, CompanyCategoryDto dto) {
         return null;
+    }
+
+    @Override
+    protected Class getServiceClass(){
+        return this.getClass();
     }
 }

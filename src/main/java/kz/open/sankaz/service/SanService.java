@@ -1,9 +1,6 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.dto.CategoryDto;
-import kz.open.sankaz.dto.HyperLinkDto;
-import kz.open.sankaz.dto.ItemPicDto;
-import kz.open.sankaz.dto.SanDto;
+import kz.open.sankaz.dto.*;
 import kz.open.sankaz.model.San;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,54 +12,30 @@ public interface SanService extends CommonService<San>, CommonDtoService<San, Sa
     /***
      * for Entity
      */
-//    Room add(Room room);
-//    Review add(Review review);
-//    HyperLink add(HyperLink link);
-//
-//    Room editOne(Room room);
-//    Review editOne(Review review);
-//    HyperLink editOne(HyperLink link);
-
-    void deleteCategory(Long sanId, Long categoryId);
-    void deleteLink(Long sanId, Long linkId);
-    void deletePic(Long sanId, Long picId);
-//
-//    void getRoom(Long id);
-//    void getReview(Long id);
-//    void getLink(Long id);
-//
-//    SanDto getOneDto(Long id);
-//    List<SanDto> getAllDto();
-//
-//    San addRoomsDto(Long id, List<RoomDto> roomDtos);
-//    San addReviewsDto(Long id, List<ReviewDto> reviewDtos);
-//    San addHyperLinksDto(Long id, List<HyperLinkDto> hyperLinkDtos);
 
     /***
      * for DTO
      */
-//    Room addRoomDto(San san, RoomDto roomDto);
-//    Review addReviewDto(San san, ReviewDto reviewDto);
-//
-//    List<Room> addRoomDto(Long sanId, List<RoomDto> roomDtos);
-//    Room addRoomDto(Long sanId, RoomDto roomDto);
-//    List<Review> addReviewDto(Long sanId, List<ReviewDto> reviewDtos);
-//    Review addReviewDto(Long sanId, ReviewDto reviewDto);
-//
-//    Room updateRoomDto(Long roomId, RoomDto roomDto);
-//    Review updateReviewDto(Long reviewId, ReviewDto reviewDto);
+    San addOneDto(SanCreateDto dto);
+    San updateOneDto(Long id, SanCreateDto dto);
 
-    San addCategoryDto(Long id, CategoryDto categoryDto);
-    San addCategoryDto(Long id, List<CategoryDto> categoryDtos);
+    SanDto addSanTypes(Long id, Long[] sanTypes);
 
-    San addHyperLinkDto(Long id, HyperLinkDto hyperLinkDto);
-    San addHyperLinkDto(Long id, List<HyperLinkDto> hyperLinkDtos);
+    void deleteSanTypes(Long sanId, Long[] sanTypes);
 
-    San addItemPicDto(Long id, ItemPicDto picDto);
-    San addItemPicDto(Long id, List<ItemPicDto> picDtos);
+    SanDto addTelNumbers(Long id, String[] telNumbers);
 
-    String addPic(Long sanId, MultipartFile pic) throws IOException;
-    List<String> addPics(Long sanId, List<MultipartFile> pics) throws IOException;
+    void deleteTelNumbers(Long sanId, String[] telNumbers);
 
-    List<String> getPicUrls(Long sanId);
+    List<FileUrlDto> addPics(Long id, MultipartFile[] pics) throws IOException;
+
+    void deletePics(Long sanId, Long[] pics);
+
+    ReviewCreateDto addReview(Long sanId, ReviewCreateDto dto);
+
+    RoomCreateDto addRoom(Long sanId, RoomCreateDto dto);
+
+    List<FileUrlDto> addRoomPics(Long roomId, MultipartFile[] pics) throws IOException;
+
+    void deleteRoomPics(Long roomId, Long[] pics);
 }

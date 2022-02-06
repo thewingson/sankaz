@@ -1,4 +1,4 @@
-package kz.open.sankaz.rest;
+package kz.open.sankaz.rest.dictionary;
 
 import kz.open.sankaz.dto.RoomTypeDto;
 import kz.open.sankaz.response.ResponseModel;

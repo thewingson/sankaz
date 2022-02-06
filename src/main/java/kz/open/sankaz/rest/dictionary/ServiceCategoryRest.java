@@ -1,23 +1,23 @@
-package kz.open.sankaz.rest;
+package kz.open.sankaz.rest.dictionary;
 
-import kz.open.sankaz.dto.CategoryDto;
+import kz.open.sankaz.dto.ServiceCategoryDto;
 import kz.open.sankaz.response.ResponseModel;
-import kz.open.sankaz.service.CategoryService;
+import kz.open.sankaz.service.ServiceCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/categories")
-public class CategoryRest {
+@RequestMapping("/ser-categories")
+public class ServiceCategoryRest {
     @Autowired
-    private CategoryService categoryService;
+    private ServiceCategoryService serviceCategoryService;
 
     @GetMapping
     public ResponseEntity<?> getAll() {
         try{
-            return ResponseModel.success(categoryService.getAllDto());
+            return ResponseModel.success(serviceCategoryService.getAll());
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -26,16 +26,16 @@ public class CategoryRest {
     @GetMapping("/{id}")
     public ResponseEntity<?> getOneById(@PathVariable(name = "id") Long id) {
         try{
-            return ResponseModel.success(categoryService.getOneDto(id));
+            return ResponseModel.success(serviceCategoryService.getOne(id));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> addOne(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<?> addOne(@RequestBody ServiceCategoryDto categoryDto) {
         try{
-            return ResponseModel.success(categoryService.addOneDto(categoryDto));
+            return ResponseModel.success(serviceCategoryService.addOneDto(categoryDto));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -44,7 +44,7 @@ public class CategoryRest {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOneById(@PathVariable(name = "id") Long id) {
         try{
-            categoryService.deleteOneByIdSoft(id);
+            serviceCategoryService.deleteOneByIdSoft(id);
             return ResponseModel.successPure();
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -53,9 +53,9 @@ public class CategoryRest {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editOneById(@PathVariable(name = "id") Long id,
-                                         @RequestBody CategoryDto categoryDto) {
+                                         @RequestBody ServiceCategoryDto categoryDto) {
         try{
-            categoryService.updateOneDto(id, categoryDto);
+            serviceCategoryService.updateOneDto(id, categoryDto);
             return ResponseModel.successPure();
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());

@@ -1,6 +1,6 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.dto.CategoryDto;
+import kz.open.sankaz.dto.SanTypeDto;
 import kz.open.sankaz.dto.CompanyCategoryDto;
 import kz.open.sankaz.dto.RoomTypeDto;
 import kz.open.sankaz.dto.ServiceCategoryDto;
@@ -21,9 +21,9 @@ public abstract class CategoryMapper {
      * from Entity to DTO
      * */
     @Named("sanTypeToDto")
-    abstract public CategoryDto sanTypeToDto(SanType sanType);
+    abstract public SanTypeDto sanTypeToDto(SanType sanType);
     @IterableMapping(qualifiedByName = "sanTypeToDto")
-    abstract public List<CategoryDto> sanTypeToDto(List<SanType> sanTypes);
+    abstract public List<SanTypeDto> sanTypeToDto(List<SanType> sanTypes);
 
     @Named("companyCategoryToDto")
     abstract public CompanyCategoryDto companyCategoryToDto(CompanyCategory category);

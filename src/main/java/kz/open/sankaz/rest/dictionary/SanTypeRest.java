@@ -1,23 +1,23 @@
-package kz.open.sankaz.rest;
+package kz.open.sankaz.rest.dictionary;
 
-import kz.open.sankaz.dto.CompanyCategoryDto;
+import kz.open.sankaz.dto.SanTypeDto;
 import kz.open.sankaz.response.ResponseModel;
-import kz.open.sankaz.service.CompanyCategoryService;
+import kz.open.sankaz.service.SanTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/comp-categories")
-public class CompanyCategoryRest {
+@RequestMapping("/san-types")
+public class SanTypeRest {
     @Autowired
-    private CompanyCategoryService companyCategoryService;
+    private SanTypeService sanTypeService;
 
     @GetMapping
     public ResponseEntity<?> getAll() {
         try{
-            return ResponseModel.success(companyCategoryService.getAll());
+            return ResponseModel.success(sanTypeService.getAllDto());
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -26,16 +26,16 @@ public class CompanyCategoryRest {
     @GetMapping("/{id}")
     public ResponseEntity<?> getOneById(@PathVariable(name = "id") Long id) {
         try{
-            return ResponseModel.success(companyCategoryService.getOne(id));
+            return ResponseModel.success(sanTypeService.getOneDto(id));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> addOne(@RequestBody CompanyCategoryDto categoryDto) {
+    public ResponseEntity<?> addOne(@RequestBody SanTypeDto sanTypeDto) {
         try{
-            return ResponseModel.success(companyCategoryService.addOneDto(categoryDto));
+            return ResponseModel.success(sanTypeService.addOneDto(sanTypeDto));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -44,7 +44,7 @@ public class CompanyCategoryRest {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOneById(@PathVariable(name = "id") Long id) {
         try{
-            companyCategoryService.deleteOneByIdSoft(id);
+            sanTypeService.deleteOneByIdSoft(id);
             return ResponseModel.successPure();
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -53,9 +53,9 @@ public class CompanyCategoryRest {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editOneById(@PathVariable(name = "id") Long id,
-                                         @RequestBody CompanyCategoryDto categoryDto) {
+                                         @RequestBody SanTypeDto sanTypeDto) {
         try{
-            companyCategoryService.updateOneDto(id, categoryDto);
+            sanTypeService.updateOneDto(id, sanTypeDto);
             return ResponseModel.successPure();
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());

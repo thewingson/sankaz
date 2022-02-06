@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SanType extends AbstractDictionaryEntity {
+public class SanType extends AbstractDictionaryLangEntity {
 
     @Id
     @GeneratedValue(generator = "SAN_TYPE_SEQ", strategy = GenerationType.SEQUENCE)

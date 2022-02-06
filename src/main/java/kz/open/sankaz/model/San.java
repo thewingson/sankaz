@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,64 +29,101 @@ public class San extends AbstractEntity{
     @Column(name = "DESCRIPTION")
     private String description;
 
+    @Column(name = "INSTAGRAM_LINK")
+    private String instagramLink;
+
+    @Column(name = "SITE_LINK")
+    private String siteLink;
+
     @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(
-            name = "SAN_CATEGORIES",
-            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_CATEGORIES_SAN_FK")),
-            inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID", foreignKey = @ForeignKey(name = "SAN_CATEGORIES_CAT_FK")))
-    private List<SanType> categories;
+            name = "SAN_TEL_NUMBERS",
+            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_TEL_NUMBERS_SAN_FK")),
+            inverseJoinColumns = @JoinColumn(name = "TEL_NUMBER_ID", foreignKey = @ForeignKey(name = "SAN_TEL_NUMBERS_NUMBER_FK")))
+    private List<TelNumber> telNumbers;
 
-    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
-    @JsonBackReference
-    private List<Room> rooms;
-
-    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
-    @JsonBackReference
-    private List<Review> reviews;
+    @ManyToMany(cascade = {CascadeType.PERSIST})
+    @JoinTable(
+            name = "SAN_TYPES",
+            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_TYPES_SAN_FK")),
+            inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID", foreignKey = @ForeignKey(name = "SAN_TYPES_TYPE_FK")))
+    private List<SanType> sanTypes;
 
     @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "SAN_PICS",
             joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_PICS_SAN_FK")),
             inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_PICS_PIC_FK")))
-    private List<ItemPic> pics;
+    private List<SysFile> pics;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST})
-    @JoinTable(
-            name = "SAN_LINKS",
-            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_LINKS_SAN_FK")),
-            inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_LINKS_LINK_FK")))
-    private List<HyperLink> links;
+    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
+    @JsonBackReference
+    private List<Review> reviews;
 
-    public void addCategory(SanType category){
-        categories.add(category);
+    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
+    @JsonBackReference
+    private List<Room> rooms;
+
+    public void addSanType(SanType sanType){
+        if(getSanTypes() == null){
+            this.sanTypes = new ArrayList<>();
+        }
+        sanTypes.add(sanType);
     }
 
-    public void deleteCategory(SanType category){
-        categories.remove(category);
+    public void deleteSanType(SanType sanType){
+        sanTypes.remove(sanType);
     }
 
-    public void addPic(ItemPic pic){
+    public void addTelNumber(TelNumber telNumber){
+        if(getTelNumbers() == null){
+            this.telNumbers = new ArrayList<>();
+        }
+        telNumbers.add(telNumber);
+    }
+
+    public void addTelNumbers(List<TelNumber> telNumbers){
+        if(getTelNumbers() == null){
+            this.telNumbers = new ArrayList<>();
+        }
+        this.telNumbers.addAll(telNumbers);
+    }
+
+    public void deleteTelNumber(TelNumber telNumber){
+        if(!getTelNumbers().isEmpty()){
+            getTelNumbers().remove(telNumber);
+        }
+    }
+
+    public void deleteTelNumbers(List<TelNumber> telNumbers){
+        if(!getTelNumbers().isEmpty()){
+            this.getTelNumbers().removeAll(telNumbers);
+        }
+    }
+
+    public void addPic(SysFile pic){
+        if(getPics() == null){
+            this.pics = new ArrayList<>();
+        }
         pics.add(pic);
     }
 
-    public void deletePic(ItemPic pic){
-        pics.remove(pic);
+    public void addPics(List<SysFile> pics){
+        if(getPics() == null){
+            this.pics = new ArrayList<>();
+        }
+        this.pics.addAll(pics);
     }
 
-    public void addLink(HyperLink link){
-        links.add(link);
+    public void deletePic(SysFile pic){
+        if(!getPics().isEmpty()){
+            getPics().remove(pic);
+        }
     }
 
-    public void deleteLink(HyperLink link){
-        links.remove(link);
-    }
-
-    public void addRoom(Room room){
-        rooms.add(room);
-    }
-
-    public void addReview(Review review){
-        reviews.add(review);
+    public void deletePics(List<SysFile> pics){
+        if(!getPics().isEmpty()){
+            this.getPics().removeAll(pics);
+        }
     }
 }

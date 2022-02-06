@@ -187,6 +187,17 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     }
 
     @Override
+    public SecUser getUserByUsername(String username) {
+        Optional<SecUser> secUser = repo.findByUsername(username);
+        if(!secUser.isPresent()){
+            Map<String, Object> params = new HashMap<>();
+            params.put("username", username);
+            throw new EntityNotFoundException(getCurrentClass(), params);
+        }
+        return secUser.get();
+    }
+
+    @Override
     protected Class getCurrentClass() {
         return SecUser.class;
     }

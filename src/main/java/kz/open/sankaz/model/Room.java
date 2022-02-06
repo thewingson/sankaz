@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "ROOM")
@@ -35,5 +37,38 @@ public class Room extends AbstractEntity {
     @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "ROOM_SAN_FK"), nullable = false)
     @JsonManagedReference
     private San san;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST})
+    @JoinTable(
+            name = "ROOM_PICS",
+            joinColumns = @JoinColumn(name = "ROOM_ID", foreignKey = @ForeignKey(name = "ROOM_PICS_ROOM_FK")),
+            inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "ROOM_PICS_PIC_FK")))
+    private List<SysFile> pics;
+
+    public void addPic(SysFile pic){
+        if(getPics() == null){
+            this.pics = new ArrayList<>();
+        }
+        pics.add(pic);
+    }
+
+    public void addPics(List<SysFile> pics){
+        if(getPics() == null){
+            this.pics = new ArrayList<>();
+        }
+        this.pics.addAll(pics);
+    }
+
+    public void deletePic(SysFile pic){
+        if(!getPics().isEmpty()){
+            getPics().remove(pic);
+        }
+    }
+
+    public void deletePics(List<SysFile> pics){
+        if(!getPics().isEmpty()){
+            this.getPics().removeAll(pics);
+        }
+    }
 
 }

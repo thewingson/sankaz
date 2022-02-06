@@ -31,7 +31,7 @@ public abstract class SanMapper {
     protected ItemPicMapper itemPicMapper;
 
     @Named("sanToDto")
-    @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "sanTypes", ignore = true)
     @Mapping(target = "rooms", ignore = true)
     @Mapping(target = "reviews", ignore = true)
 //    @Mapping(target = "links", ignore = true)
@@ -40,19 +40,19 @@ public abstract class SanMapper {
     @IterableMapping(qualifiedByName = "sanToDto")
     abstract public List<SanDto> sanToDto(List<San> sans);
 
-    @Named("sanToDtoWithAll")
-    @Mapping(target = "categories",
-            expression = "java(categoryMapper.sanTypeToDto(san.getCategories()))")
-    @Mapping(target = "rooms",
-            expression = "java(roomMapper.roomToDto(san.getRooms()))")
-    @Mapping(target = "reviews",
-            expression = "java(reviewMapper.reviewToDto(san.getReviews()))")
-//    @Mapping(target = "links",
-//            expression = "java(hyperLinkMapper.hyperLinkToDto(san.getLinks()))")
-//    @Mapping(target = "pics",
-//            expression = "java(itemPicMapper.itemPicToDto(san.getPics()))")
-    abstract public SanDto sanToDtoWithAll(San san);
-    @IterableMapping(qualifiedByName = "sanToDtoWithAll")
-    abstract public List<SanDto> sanToDtoWithAll(List<San> sans);
+//    @Named("sanToDtoWithAll")
+//    @Mapping(target = "sanTypes",
+//            expression = "java(categoryMapper.sanTypeToDto(san.getSanTypes()))")
+//    @Mapping(target = "rooms",
+//            expression = "java(roomMapper.roomToDto(san.getRooms()))")
+//    @Mapping(target = "reviews",
+//            expression = "java(reviewMapper.reviewToDto(san.getReviews()))")
+////    @Mapping(target = "links",
+////            expression = "java(hyperLinkMapper.hyperLinkToDto(san.getLinks()))")
+////    @Mapping(target = "pics",
+////            expression = "java(itemPicMapper.itemPicToDto(san.getPics()))")
+//    abstract public SanDto sanToDtoWithAll(San san);
+//    @IterableMapping(qualifiedByName = "sanToDtoWithAll")
+//    abstract public List<SanDto> sanToDtoWithAll(List<San> sans);
 
 }

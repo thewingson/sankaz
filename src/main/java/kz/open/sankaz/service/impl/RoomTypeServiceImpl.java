@@ -1,6 +1,7 @@
 package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.dto.RoomTypeDto;
+import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.RoomType;
 import kz.open.sankaz.repo.RoomTypeRepo;
@@ -51,6 +52,13 @@ public class RoomTypeServiceImpl extends AbstractDictionaryService<RoomType, Roo
 
     @Override
     public RoomType addOneDto(RoomTypeDto dto) {
+        try{
+            getOneByCode(dto.getCode());
+            log.info(getServiceClass() + ".addOneDto()" + ". Code is busy");
+            throw new RuntimeException("К сожалению кодовое название занято! Пожалуйста, введите другое название.");
+        } catch (EntityNotFoundException e){
+            log.info(getServiceClass() + ".addOneDto()" + ". Code is free");
+        }
         RoomType roomType = categoryMapper.dtoToRoomType(dto);
         return addOne(roomType);
     }
@@ -58,6 +66,13 @@ public class RoomTypeServiceImpl extends AbstractDictionaryService<RoomType, Roo
     @Override
     public RoomType updateOneDto(Long id, RoomTypeDto dto) {
         RoomType roomType = getOne(id);
+        try{
+            getOneByCode(dto.getCode());
+            log.info(getServiceClass() + ".updateOneDto()" + ". Code is busy");
+            throw new RuntimeException("К сожалению кодовое название занято! Пожалуйста, введите другое название.");
+        } catch (EntityNotFoundException e){
+            log.info(getServiceClass() + ".updateOneDto()" + ". Code is free");
+        }
         if(dto.getCode() != null && !dto.getCode().equals(roomType.getCode())){
             roomType.setCode(dto.getCode());
         }
@@ -79,5 +94,10 @@ public class RoomTypeServiceImpl extends AbstractDictionaryService<RoomType, Roo
     @Override
     public RoomType updateOneDto(Map<String, Object> params, RoomTypeDto dto) {
         return null;
+    }
+
+    @Override
+    protected Class getServiceClass(){
+        return this.getClass();
     }
 }

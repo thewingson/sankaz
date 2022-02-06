@@ -1,19 +1,13 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.CategoryDto;
-import kz.open.sankaz.dto.HyperLinkDto;
-import kz.open.sankaz.dto.ItemPicDto;
-import kz.open.sankaz.dto.SanDto;
+import kz.open.sankaz.dto.*;
+import kz.open.sankaz.mapper.FileMapper;
+import kz.open.sankaz.mapper.ReviewMapper;
+import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
-import kz.open.sankaz.model.SanType;
-import kz.open.sankaz.model.HyperLink;
-import kz.open.sankaz.model.ItemPic;
-import kz.open.sankaz.model.San;
+import kz.open.sankaz.model.*;
 import kz.open.sankaz.repo.SanRepo;
-import kz.open.sankaz.service.CategoryService;
-import kz.open.sankaz.service.HyperLinkService;
-import kz.open.sankaz.service.ItemPicService;
-import kz.open.sankaz.service.SanService;
+import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,10 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,16 +30,36 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Lazy
     @Autowired
-    private CategoryService categoryService;
+    private SanTypeService sanTypeService;
+
+    @Lazy
+    @Autowired
+    private UserService userService;
 
     @Autowired
-    private HyperLinkService linkService;
+    private TelNumberService telNumberService;
 
     @Autowired
-    private ItemPicService picService;
+    private ReviewService reviewService;
+
+    @Autowired
+    private SysFileService sysFileService;
+
+    @Lazy
+    @Autowired
+    private RoomService roomService;
 
     @Autowired
     private SanMapper sanMapper;
+
+    @Autowired
+    private ReviewMapper reviewMapper;
+
+    @Autowired
+    private FileMapper fileMapper;
+
+    @Autowired
+    private RoomMapper roomMapper;
 
     @Value("${application.file.upload.path}")
     private String APPLICATION_UPLOAD_PATH;
@@ -61,13 +72,13 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Override
     public SanDto getOneDto(Long id) {
         San one = getOne(id);
-        return sanMapper.sanToDtoWithAll(one);
+        return sanMapper.sanToDto(one);
     }
 
     @Override
     public List<SanDto> getAllDto() {
 //        return sanMapper.sanToDto(getAll());
-        return sanMapper.sanToDtoWithAll(getAll());
+        return sanMapper.sanToDto(getAll());
     }
 
     @Override
@@ -82,27 +93,278 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         san.setDescription(sanDto.getDescription());
         san.setName(sanDto.getName());
 
-        if(sanDto.getCategories()!= null && !sanDto.getCategories().isEmpty()){
-            List<SanType> categoriesByCode = categoryService
-                    .getAllByCodeIn(sanDto.getCategories().stream().map(CategoryDto::getCode).collect(Collectors.toList()));
-            san.setCategories(categoriesByCode);
+        if(sanDto.getSanTypes()!= null && !sanDto.getSanTypes().isEmpty()){
+            List<SanType> sanTypesByCode = sanTypeService
+                    .getAllByCodeIn(sanDto.getSanTypes().stream().map(SanTypeDto::getCode).collect(Collectors.toList()));
+            san.setSanTypes(sanTypesByCode);
         }
 
         return addOne(san);
     }
 
     @Override
-    public San updateOneDto(Long id, SanDto sanDto) {
-        log.info("SERVICE -> SanServiceImpl.updateOneDto()");
+    public San updateOneDto(Long id, SanDto dto) {
+        return null;
+    }
+
+    @Override
+    public San updateOneDto(Long id, SanCreateDto dto) {
+        log.info(getServiceClass() + ".updateOneDto() Started");
+        log.info(getServiceClass() + ".updateOneDto() Checking San in DB");
         San san = getOne(id);
-        if(sanDto.getName() != null){
-            san.setName(sanDto.getName());
+
+        List<SanType> sanTypes = new ArrayList<>();
+        log.info(getServiceClass() + ".updateOneDto() Checking San Types in DB");
+        for (long type : dto.getSanTypes()) {
+            sanTypes.add(sanTypeService.getOne(type));
         }
-        if(sanDto.getDescription() != null){
-            san.setDescription(sanDto.getDescription());
+        san.setSanTypes(sanTypes);
+
+        if(dto.getName() != null && !dto.getName().equals(san.getName())){
+            san.setName(dto.getName());
+        }
+        if(dto.getDescription() != null && !dto.getDescription().equals(san.getDescription())){
+            san.setDescription(dto.getDescription());
+        }
+        if(dto.getSiteLink() != null && !dto.getSiteLink().equals(san.getSiteLink())){
+            san.setSiteLink(dto.getSiteLink());
+        }
+        if(dto.getInstagramLink() != null && !dto.getInstagramLink().equals(san.getInstagramLink())){
+            san.setInstagramLink(dto.getInstagramLink());
         }
 
+        if(dto.getTelNumbers() != null && dto.getTelNumbers().length > 0){
+            List<String> dtoTelNumbers = Arrays.asList(dto.getTelNumbers());
+            List<TelNumber> toDelete = new ArrayList<>();
+            san.getTelNumbers().stream().forEach(telNumber -> {
+                if(!dtoTelNumbers.contains(telNumber.getValue())){
+                    toDelete.add(telNumber);
+                }
+            });
+
+            List<String> sanTelNumberValues = san.getTelNumbers().stream().map(TelNumber::getValue).collect(Collectors.toList());
+            List<TelNumber> toCreate = new ArrayList<>();
+            dtoTelNumbers.stream().forEach(dtoTelNumber -> {
+                if(!sanTelNumberValues.contains(dtoTelNumber)){
+                    TelNumber tel = new TelNumber();
+                    tel.setValue(dtoTelNumber);
+                    telNumberService.addOne(tel);
+                    toCreate.add(tel);
+                }
+            });
+
+            san.deleteTelNumbers(toDelete);
+            san.addTelNumbers(toCreate);
+        } else{
+            san.deleteTelNumbers(san.getTelNumbers());
+        }
+
+        log.info(getServiceClass() + ".updateOneDto() Finished");
         return editOneById(san);
+    }
+
+    @Override
+    public SanDto addSanTypes(Long id, Long[] sanTypes) {
+        log.info(getServiceClass() + ".addSanTypes() Started");
+        log.info(getServiceClass() + ".addSanTypes() Checking San in DB");
+        San san = getOne(id);
+
+        log.info(getServiceClass() + ".addSanTypes() Checking San Types in DB");
+        for (long typeId : sanTypes) {
+            san.addSanType(sanTypeService.getOne(typeId));
+        }
+
+        log.info(getServiceClass() + ".addSanTypes() Finished");
+        return sanMapper.sanToDto(editOneById(san));
+    }
+
+    @Override
+    public void deleteSanTypes(Long id, Long[] sanTypes) {
+        log.info(getServiceClass() + ".deleteSanTypes() Started");
+        log.info(getServiceClass() + ".deleteSanTypes() Checking San in DB");
+        San san = getOne(id);
+
+        log.info(getServiceClass() + ".deleteSanTypes() Checking San Types in DB");
+        for (long typeId : sanTypes) {
+            san.deleteSanType(sanTypeService.getOne(typeId));
+        }
+
+        log.info(getServiceClass() + ".deleteSanTypes() Finished");
+    }
+
+    @Override
+    public SanDto addTelNumbers(Long id, String[] telNumbers) {
+        log.info(getServiceClass() + ".addTelNumbers() Started");
+        log.info(getServiceClass() + ".addTelNumbers() Checking San in DB");
+        San san = getOne(id);
+
+        if(telNumbers != null && telNumbers.length > 0){
+            List<String> dtoTelNumbers = Arrays.asList(telNumbers);
+
+            List<String> sanTelNumberValues = san.getTelNumbers().stream().map(TelNumber::getValue).collect(Collectors.toList());
+            List<TelNumber> toCreate = new ArrayList<>();
+            dtoTelNumbers.stream().forEach(dtoTelNumber -> {
+                if(!sanTelNumberValues.contains(dtoTelNumber)){
+                    TelNumber tel = new TelNumber();
+                    tel.setValue(dtoTelNumber);
+                    telNumberService.addOne(tel);
+                    toCreate.add(tel);
+                }
+            });
+            san.addTelNumbers(toCreate);
+        }
+
+        log.info(getServiceClass() + ".addTelNumbers() Finished");
+        return sanMapper.sanToDto(editOneById(san));
+    }
+
+    @Override
+    public void deleteTelNumbers(Long id, String[] telNumbers) {
+        log.info(getServiceClass() + ".addTelNumbers() Started");
+        log.info(getServiceClass() + ".addTelNumbers() Checking San in DB");
+        San san = getOne(id);
+
+        if(telNumbers != null && telNumbers.length > 0){
+            List<String> numbersToDelete = Arrays.asList(telNumbers);
+
+            List<TelNumber> toDelete = new ArrayList<>();
+            san.getTelNumbers().stream().forEach(telNumber -> {
+                if(numbersToDelete.contains(telNumber.getValue())){
+                    toDelete.add(telNumber);
+                }
+            });
+            san.deleteTelNumbers(toDelete);
+        }
+
+        log.info(getServiceClass() + ".addTelNumbers() Finished");
+    }
+
+    @Override
+    public List<FileUrlDto> addPics(Long id, MultipartFile[] pics) throws IOException {
+        log.info(getServiceClass() + ".addPics() Started");
+        log.info(getServiceClass() + ".addPics() Checking San in DB");
+        San san = getOne(id);
+
+        for(MultipartFile pic : pics){
+            if (!pic.getOriginalFilename().isEmpty()) {
+                File uploadDir = new File(APPLICATION_UPLOAD_PATH);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdir();
+                }
+
+                String uuidFile = UUID.randomUUID().toString();
+                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
+                String fileNameWithPath = APPLICATION_UPLOAD_PATH + "/" + resultFilename;
+
+                pic.transferTo(new File(fileNameWithPath));
+
+                SysFile file = new SysFile();
+                file.setFileName(resultFilename);
+                file.setExtension(pic.getContentType());
+                file.setSize(pic.getSize());
+                file = sysFileService.addOne(file);
+
+                san.addPic(file);
+            }
+        }
+
+        log.info(getServiceClass() + ".addPics() Finished");
+        return fileMapper.fileToFileUrlDto(editOneById(san).getPics());
+    }
+
+    @Override
+    public void deletePics(Long sanId, Long[] pics) {
+        log.info(getServiceClass() + ".deletePics() Started");
+        log.info(getServiceClass() + ".deletePics() Checking San in DB");
+        San san = getOne(sanId);
+
+        List<SysFile> picsToDelete = sysFileService.getAllByIdIn(Arrays.asList(pics));
+        san.deletePics(picsToDelete);
+        editOneById(san);
+        log.info(getServiceClass() + ".deletePics() Finished");
+    }
+
+    @Override
+    public ReviewCreateDto addReview(Long sanId, ReviewCreateDto dto) {
+        log.info(getServiceClass() + ".addReview() Started");
+        log.info(getServiceClass() + ".addReview() Checking San in DB");
+        Review review = reviewMapper.reviewCreateDtoToReview(dto);
+        San san = getOne(sanId);
+        SecUser user = userService.getUserByUsername(dto.getUsername());
+
+        if(dto.getParentReviewId() != null){
+            Review parentReview = reviewService.getOne(dto.getParentReviewId());
+            review.setParentReview(parentReview);
+        }
+        review.setSan(san);
+        review.setUser(user);
+
+        reviewService.addOne(review);
+
+        log.info(getServiceClass() + ".addReview() Finished");
+        return reviewMapper.reviewToReviewCreateDto(review);
+    }
+
+    @Override
+    public RoomCreateDto addRoom(Long sanId, RoomCreateDto dto) {
+        log.info(getServiceClass() + ".addRoom() Started");
+        log.info(getServiceClass() + ".addRoom() Checking San in DB");
+        San san = getOne(sanId);
+
+        Room room = new Room();
+        room.setSan(san);
+        room.setPrice(dto.getPrice());
+        room.setName(dto.getName());
+        room.setDescription(dto.getDescription());
+        roomService.addOne(room);
+
+        log.info(getServiceClass() + ".addRoom() Finished");
+        return roomMapper.roomToRoomCreateDto(room);
+    }
+
+    @Override
+    public List<FileUrlDto> addRoomPics(Long roomId, MultipartFile[] pics) throws IOException {
+        log.info(getServiceClass() + ".addRoomPics() Started");
+        log.info(getServiceClass() + ".addRoomPics() Checking San in DB");
+        Room room = roomService.getOne(roomId);
+
+        for(MultipartFile pic : pics){
+            if (!pic.getOriginalFilename().isEmpty()) {
+                File uploadDir = new File(APPLICATION_UPLOAD_PATH);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdir();
+                }
+
+                String uuidFile = UUID.randomUUID().toString();
+                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
+                String fileNameWithPath = APPLICATION_UPLOAD_PATH + "/" + resultFilename;
+
+                pic.transferTo(new File(fileNameWithPath));
+
+                SysFile file = new SysFile();
+                file.setFileName(resultFilename);
+                file.setExtension(pic.getContentType());
+                file.setSize(pic.getSize());
+                file = sysFileService.addOne(file);
+
+                room.addPic(file);
+            }
+        }
+
+        log.info(getServiceClass() + ".addRoomPics() Finished");
+        return fileMapper.fileToFileUrlDto(roomService.editOneById(room).getPics());
+    }
+
+    @Override
+    public void deleteRoomPics(Long roomId, Long[] pics) {
+        log.info(getServiceClass() + ".deleteRoomPics() Started");
+        log.info(getServiceClass() + ".deleteRoomPics() Checking San in DB");
+        Room room = roomService.getOne(roomId);
+
+        List<SysFile> picsToDelete = sysFileService.getAllByIdIn(Arrays.asList(pics));
+        room.deletePics(picsToDelete);
+        roomService.editOneById(room);
+        log.info(getServiceClass() + ".deleteRoomPics() Finished");
     }
 
     @Override
@@ -112,145 +374,40 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
-    public void deleteCategory(Long sanId, Long categoryId) {
-        San san = getOne(sanId);
-        SanType category = categoryService.getOne(categoryId);
-        san.deleteCategory(category);
-        repo.save(san);
-    }
-
-    @Override
-    public void deleteLink(Long sanId, Long linkId) {
-        San san = getOne(sanId);
-        HyperLink link = linkService.getOne(linkId);
-        san.deleteLink(link);
-        repo.save(san);
-    }
-
-    @Override
-    public void deletePic(Long sanId, Long picId) {
-        San san = getOne(sanId);
-        ItemPic pic = picService.getOne(picId);
-        san.deletePic(pic);
-        repo.save(san);
-    }
-
-    @Override
-    public San addCategoryDto(Long id, CategoryDto categoryDto) {
-        San san = getOne(id);
-        SanType category;
-        if(categoryDto.getId() != null){
-            category = categoryService.getOne(categoryDto.getId());
-        } else {
-            category = categoryService.getOneDto(categoryDto.getCode());
-        }
-
-        san.addCategory(category);
-        return editOneById(san);
-    }
-
-    @Override
-    public San addCategoryDto(Long id, List<CategoryDto> categoryDtos) {
-        List<San> sans = new ArrayList<>();
-        categoryDtos.forEach(categoryDto -> {
-            sans.add(addCategoryDto(id, categoryDto));
-        });
-        if(sans.isEmpty()){
-            return null;
-        } else {
-            return sans.get(0);
-        }
-    }
-
-    @Override
-    public San addHyperLinkDto(Long id, HyperLinkDto hyperLinkDto) {
-        San san = getOne(id);
-        HyperLink link = linkService.addOneDto(hyperLinkDto);
-        san.addLink(link);
-        return editOneById(san);
-    }
-
-    @Override
-    public San addHyperLinkDto(Long id, List<HyperLinkDto> hyperLinkDtos) {
-        List<San> sans = new ArrayList<>();
-        hyperLinkDtos.forEach(linkDto -> sans.add(addHyperLinkDto(id, linkDto)));
-        if(sans.isEmpty()){
-            return null;
-        } else {
-            return sans.get(0);
-        }
-    }
-
-    @Override
-    public San addItemPicDto(Long id, ItemPicDto picDto) {
-        San san = getOne(id);
-        ItemPic pic = picService.addOneDto(picDto);
-        san.addPic(pic);
-        return editOneById(san);
-    }
-
-    @Override
-    public San addItemPicDto(Long id, List<ItemPicDto> picDtos) {
-        List<San> sans = new ArrayList<>();
-        picDtos.forEach(picDto -> sans.add(addItemPicDto(id, picDto)));
-        if(sans.isEmpty()){
-            return null;
-        } else {
-            return sans.get(0);
-        }
-    }
-
-    @Override
-    public String addPic(Long sanId, MultipartFile pic) throws IOException {
-        San san = getOne(sanId);
-        String fileNameWithPath = "";
-        if (pic != null && !pic.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(APPLICATION_UPLOAD_PATH);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-            fileNameWithPath = APPLICATION_UPLOAD_PATH + "/" + resultFilename;
-
-            pic.transferTo(new File(fileNameWithPath));
-
-            ItemPicDto picDto = new ItemPicDto();
-            picDto.setExtension(pic.getContentType());
-            picDto.setFileName(pic.getOriginalFilename());
-            picDto.setSize(String.valueOf(pic.getSize()));
-            ItemPic itemPic = picService.addOneDto(picDto);
-
-            san.addPic(itemPic);
-            editOneById(san);
-        }
-        return fileNameWithPath;
-    }
-
-    @Override
-    public List<String> addPics(Long sanId, List<MultipartFile> pics) throws IOException {
-        List<String> fileNameWithPathList = new ArrayList<>();
-        for (MultipartFile file : pics) {
-            fileNameWithPathList.add(addPic(sanId, file));
-        }
-        return fileNameWithPathList;
-    }
-
-    @Override
-    public List<String> getPicUrls(Long sanId) {
-        San san = getOne(sanId);
-        List<String> picUrls = san.getPics()
-                .stream()
-                .map(itemPic -> APPLICATION_UPLOAD_PATH + itemPic.getFile().getFileName())
-                .collect(Collectors.toList());
-
-        return picUrls;
-    }
-
-    @Override
     protected Class getCurrentClass() {
-        return SanType.class;
+        return San.class;
     }
 
+    @Override
+    public San addOneDto(SanCreateDto dto) {
+        log.info(getServiceClass() + ".addOneDto() Started");
+        List<SanType> sanTypes = new ArrayList<>();
+        log.info(getServiceClass() + ".addOneDto() Checking San Types in DB");
+        for (long type : dto.getSanTypes()) {
+            sanTypes.add(sanTypeService.getOne(type));
+        }
+
+        log.info(getServiceClass() + ".addOneDto() Creating San");
+        San san = new San();
+        san.setName(dto.getName());
+        san.setDescription(dto.getDescription());
+        san.setSiteLink(dto.getSiteLink());
+        san.setInstagramLink(dto.getInstagramLink());
+        san.setSanTypes(sanTypes);
+
+        for (String telNumber : dto.getTelNumbers()) {
+            TelNumber number = new TelNumber();
+            number.setValue(telNumber);
+            telNumberService.addOne(number);
+            san.addTelNumber(number);
+        }
+
+        log.info(getServiceClass() + ".addOneDto() Finished");
+        return addOne(san);
+    }
+
+    @Override
+    protected Class getServiceClass(){
+        return this.getClass();
+    }
 }
