@@ -1,6 +1,6 @@
 package kz.open.sankaz.rest.dictionary;
 
-import kz.open.sankaz.dto.RoomTypeDto;
+import kz.open.sankaz.pojo.dto.RoomTypeDto;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.RoomTypeService;
 import org.springframework.beans.factory.annotation.Autowired;

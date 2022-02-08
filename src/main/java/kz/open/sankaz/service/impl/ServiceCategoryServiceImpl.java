@@ -1,9 +1,9 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.ServiceCategoryDto;
+import kz.open.sankaz.pojo.dto.ServiceCategoryDto;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.ServiceCategory;
-import kz.open.sankaz.repo.ServiceCategoryRepo;
+import kz.open.sankaz.repo.dictionary.ServiceCategoryRepo;
 import kz.open.sankaz.service.ServiceCategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

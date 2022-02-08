@@ -1,9 +1,9 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.dto.ProgramDayDto;
-import kz.open.sankaz.dto.ProgramServiceDto;
-import kz.open.sankaz.dto.TourDto;
-import kz.open.sankaz.dto.TourProgramDto;
+import kz.open.sankaz.pojo.dto.ProgramDayDto;
+import kz.open.sankaz.pojo.dto.ProgramServiceDto;
+import kz.open.sankaz.pojo.dto.TourDto;
+import kz.open.sankaz.pojo.dto.TourProgramDto;
 import kz.open.sankaz.model.ProgramDay;
 import kz.open.sankaz.model.ProgramService;
 import kz.open.sankaz.model.Tour;

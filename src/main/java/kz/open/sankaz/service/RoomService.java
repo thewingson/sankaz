@@ -1,6 +1,6 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.dto.RoomDto;
+import kz.open.sankaz.pojo.dto.RoomDto;
 import kz.open.sankaz.model.Room;
 
 import java.util.List;

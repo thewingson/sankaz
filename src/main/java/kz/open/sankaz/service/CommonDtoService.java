@@ -1,6 +1,6 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.dto.BaseDto;
+import kz.open.sankaz.pojo.dto.BaseDto;
 import kz.open.sankaz.model.BaseEntity;
 
 import java.util.List;

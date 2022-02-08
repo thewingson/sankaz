@@ -1,6 +1,6 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.dto.FileUrlDto;
+import kz.open.sankaz.pojo.dto.FileUrlDto;
 import kz.open.sankaz.model.SysFile;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;

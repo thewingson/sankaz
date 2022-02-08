@@ -1,14 +1,13 @@
 package kz.open.sankaz.rest;
 
-import kz.open.sankaz.dto.FinishRegDto;
-import kz.open.sankaz.dto.NumberDto;
-import kz.open.sankaz.dto.RegisterDto;
-import kz.open.sankaz.dto.ResetPasswordDto;
+import kz.open.sankaz.pojo.dto.FinishRegDto;
+import kz.open.sankaz.pojo.dto.NumberDto;
+import kz.open.sankaz.pojo.dto.RegisterDto;
+import kz.open.sankaz.pojo.dto.ResetPasswordDto;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.AuthService;
 import kz.open.sankaz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

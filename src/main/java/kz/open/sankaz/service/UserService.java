@@ -1,9 +1,9 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.dto.ChangePasswordDto;
-import kz.open.sankaz.dto.PictureDto;
-import kz.open.sankaz.dto.SecUserDto;
-import kz.open.sankaz.dto.SecUserEditDto;
+import kz.open.sankaz.pojo.dto.ChangePasswordDto;
+import kz.open.sankaz.pojo.dto.PictureDto;
+import kz.open.sankaz.pojo.dto.SecUserDto;
+import kz.open.sankaz.pojo.dto.SecUserEditDto;
 import kz.open.sankaz.model.SecUser;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.multipart.MultipartFile;

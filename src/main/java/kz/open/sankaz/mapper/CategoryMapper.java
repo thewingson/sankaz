@@ -1,9 +1,9 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.dto.SanTypeDto;
-import kz.open.sankaz.dto.CompanyCategoryDto;
-import kz.open.sankaz.dto.RoomTypeDto;
-import kz.open.sankaz.dto.ServiceCategoryDto;
+import kz.open.sankaz.pojo.dto.SanTypeDto;
+import kz.open.sankaz.pojo.dto.CompanyCategoryDto;
+import kz.open.sankaz.pojo.dto.RoomTypeDto;
+import kz.open.sankaz.pojo.dto.ServiceCategoryDto;
 import kz.open.sankaz.model.CompanyCategory;
 import kz.open.sankaz.model.RoomType;
 import kz.open.sankaz.model.SanType;

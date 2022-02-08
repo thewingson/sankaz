@@ -1,18 +1,23 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.dto.SanDto;
 import kz.open.sankaz.model.San;
+import kz.open.sankaz.pojo.dto.SanDto;
+import kz.open.sankaz.pojo.dto.SanForMainDto;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public abstract class SanMapper {
+
+    @Value("${application.file.upload.path}")
+    private String APPLICATION_UPLOAD_PATH;
 
     @Lazy
     @Autowired
@@ -54,5 +59,23 @@ public abstract class SanMapper {
 //    abstract public SanDto sanToDtoWithAll(San san);
 //    @IterableMapping(qualifiedByName = "sanToDtoWithAll")
 //    abstract public List<SanDto> sanToDtoWithAll(List<San> sans);
+
+    @Named("sanToSanForMainDto")
+    @Mapping(target = "picUrl", expression = "java(getPicFullUrl(san.getMainPicUrl()))")
+    @Mapping(target = "rating", source = "san.rating")
+    @Mapping(target = "reviewCount", source = "san.reviewCount")
+//    @Mapping(target = "createdBy", ignore = true)
+//    @Mapping(target = "updatedBy", ignore = true)
+//    @Mapping(target = "deletedBy", ignore = true)
+    abstract public SanForMainDto sanToSanForMainDto(San san);
+    @IterableMapping(qualifiedByName = "sanToSanForMainDto")
+    abstract public List<SanForMainDto> sanToSanForMainDto(List<San> sans);
+
+    protected String getPicFullUrl(String picUrl){
+        if(picUrl == null){
+            return null;
+        }
+        return APPLICATION_UPLOAD_PATH + picUrl;
+    }
 
 }

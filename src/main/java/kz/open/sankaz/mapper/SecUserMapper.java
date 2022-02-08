@@ -1,7 +1,7 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.dto.SecRoleDto;
-import kz.open.sankaz.dto.SecUserDto;
+import kz.open.sankaz.pojo.dto.SecRoleDto;
+import kz.open.sankaz.pojo.dto.SecUserDto;
 import kz.open.sankaz.model.SecRole;
 import kz.open.sankaz.model.SecUser;
 import org.mapstruct.IterableMapping;
@@ -9,7 +9,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper(componentModel = "spring")

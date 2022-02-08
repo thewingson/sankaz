@@ -1,6 +1,6 @@
 package kz.open.sankaz.rest;
 
-import kz.open.sankaz.dto.*;
+import kz.open.sankaz.pojo.dto.*;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;

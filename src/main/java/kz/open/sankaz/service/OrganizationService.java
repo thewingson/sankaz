@@ -1,8 +1,8 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.dto.OrganizationAddDataDto;
-import kz.open.sankaz.dto.OrganizationDto;
-import kz.open.sankaz.dto.OrganizationFilterDto;
+import kz.open.sankaz.pojo.dto.OrganizationAddDataDto;
+import kz.open.sankaz.pojo.dto.OrganizationDto;
+import kz.open.sankaz.pojo.dto.OrganizationFilterDto;
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecUser;
 import org.springframework.web.multipart.MultipartFile;

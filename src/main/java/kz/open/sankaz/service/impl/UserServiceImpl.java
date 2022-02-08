@@ -1,6 +1,6 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.*;
+import kz.open.sankaz.pojo.dto.*;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.listener.event.AfterDeleteEvent;
 import kz.open.sankaz.listener.event.BeforeDeleteEvent;

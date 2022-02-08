@@ -1,6 +1,6 @@
 package kz.open.sankaz.rest;
 
-import kz.open.sankaz.dto.HyperLinkTypeDto;
+import kz.open.sankaz.pojo.dto.HyperLinkTypeDto;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.HyperLinkTypeService;
 import org.springframework.beans.factory.annotation.Autowired;

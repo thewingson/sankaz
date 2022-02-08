@@ -1,6 +1,6 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.dto.ReviewDto;
+import kz.open.sankaz.pojo.dto.ReviewDto;
 import kz.open.sankaz.model.Review;
 
 import java.util.List;

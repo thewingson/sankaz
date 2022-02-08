@@ -1,7 +1,7 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.dto.RoomCreateDto;
-import kz.open.sankaz.dto.RoomDto;
+import kz.open.sankaz.pojo.dto.RoomCreateDto;
+import kz.open.sankaz.pojo.dto.RoomDto;
 import kz.open.sankaz.model.Room;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;

@@ -1,6 +1,6 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.ItemPicDto;
+import kz.open.sankaz.pojo.dto.ItemPicDto;
 import kz.open.sankaz.mapper.ItemPicMapper;
 import kz.open.sankaz.model.ItemPic;
 import kz.open.sankaz.model.SysFile;
@@ -8,14 +8,12 @@ import kz.open.sankaz.repo.ItemPicRepo;
 import kz.open.sankaz.service.ItemPicService;
 import kz.open.sankaz.service.SysFileService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;

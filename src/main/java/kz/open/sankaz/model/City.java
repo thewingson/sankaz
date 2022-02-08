@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class City extends AbstractDictionaryEntity {
+public class City extends AbstractDictionaryLangEntity {
 
     @Id
     @GeneratedValue(generator = "CITY_SEQ", strategy = GenerationType.SEQUENCE)

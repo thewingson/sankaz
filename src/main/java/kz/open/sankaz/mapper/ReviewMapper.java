@@ -1,7 +1,7 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.dto.ReviewCreateDto;
-import kz.open.sankaz.dto.ReviewDto;
+import kz.open.sankaz.pojo.dto.ReviewCreateDto;
+import kz.open.sankaz.pojo.dto.ReviewDto;
 import kz.open.sankaz.model.Review;
 import kz.open.sankaz.model.SecUser;
 import org.mapstruct.IterableMapping;

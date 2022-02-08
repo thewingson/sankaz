@@ -1,6 +1,6 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.HyperLinkDto;
+import kz.open.sankaz.pojo.dto.HyperLinkDto;
 import kz.open.sankaz.mapper.HyperLinkMapper;
 import kz.open.sankaz.model.HyperLink;
 import kz.open.sankaz.model.HyperLinkType;

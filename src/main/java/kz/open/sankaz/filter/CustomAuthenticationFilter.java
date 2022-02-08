@@ -3,7 +3,7 @@ package kz.open.sankaz.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kz.open.sankaz.dto.UsernamePasswordDto;
+import kz.open.sankaz.pojo.dto.UsernamePasswordDto;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.properties.SecurityProperties;
 import kz.open.sankaz.service.UserService;

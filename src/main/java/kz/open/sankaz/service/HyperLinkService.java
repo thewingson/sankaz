@@ -1,6 +1,6 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.dto.HyperLinkDto;
+import kz.open.sankaz.pojo.dto.HyperLinkDto;
 import kz.open.sankaz.model.HyperLink;
 
 import java.util.List;

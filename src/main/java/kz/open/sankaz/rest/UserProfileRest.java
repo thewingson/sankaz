@@ -1,7 +1,7 @@
 package kz.open.sankaz.rest;
 
-import kz.open.sankaz.dto.ChangePasswordDto;
-import kz.open.sankaz.dto.SecUserEditDto;
+import kz.open.sankaz.pojo.dto.ChangePasswordDto;
+import kz.open.sankaz.pojo.dto.SecUserEditDto;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.AuthService;
 import kz.open.sankaz.service.UserService;
@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 

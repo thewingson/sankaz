@@ -1,10 +1,10 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.CompanyCategoryDto;
+import kz.open.sankaz.pojo.dto.CompanyCategoryDto;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.CompanyCategory;
-import kz.open.sankaz.repo.CompanyCategoryRepo;
+import kz.open.sankaz.repo.dictionary.CompanyCategoryRepo;
 import kz.open.sankaz.service.CompanyCategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

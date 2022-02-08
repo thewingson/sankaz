@@ -1,6 +1,6 @@
 package kz.open.sankaz.rest.dictionary;
 
-import kz.open.sankaz.dto.ServiceCategoryDto;
+import kz.open.sankaz.pojo.dto.ServiceCategoryDto;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.ServiceCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;

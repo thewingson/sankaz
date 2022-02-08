@@ -1,9 +1,9 @@
 package kz.open.sankaz.rest;
 
-import kz.open.sankaz.dto.ProgramDayDto;
-import kz.open.sankaz.dto.ProgramServiceDto;
-import kz.open.sankaz.dto.TourDto;
-import kz.open.sankaz.dto.TourProgramDto;
+import kz.open.sankaz.pojo.dto.ProgramDayDto;
+import kz.open.sankaz.pojo.dto.ProgramServiceDto;
+import kz.open.sankaz.pojo.dto.TourDto;
+import kz.open.sankaz.pojo.dto.TourProgramDto;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.TourService;
 import org.springframework.beans.factory.annotation.Autowired;

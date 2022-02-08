@@ -1,10 +1,12 @@
 package kz.open.sankaz;
 
+import kz.open.sankaz.model.City;
 import kz.open.sankaz.model.SanType;
 import kz.open.sankaz.model.SecRole;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.repo.RoleRepo;
-import kz.open.sankaz.repo.SanTypeRepo;
+import kz.open.sankaz.repo.dictionary.CityRepo;
+import kz.open.sankaz.repo.dictionary.SanTypeRepo;
 import kz.open.sankaz.repo.UserRepo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,7 +24,7 @@ public class SankazApplication {
 	}
 
 	@Bean
-	CommandLineRunner run(UserRepo userRepo, RoleRepo roleRepo, SanTypeRepo sanTypeRepo, PasswordEncoder passwordEncoder){
+	CommandLineRunner run(UserRepo userRepo, RoleRepo roleRepo, SanTypeRepo sanTypeRepo, CityRepo cityRepo, PasswordEncoder passwordEncoder){
 		return  args -> {
 			SecRole admin = new SecRole(null, "ROLE_ADMIN");
 			admin.setCreatedBy("admin");
@@ -100,6 +102,22 @@ public class SankazApplication {
 			sanType2.setCreatedBy("admin");
 			sanType2.setCreateTs(LocalDateTime.now());
 			sanTypeRepo.save(sanType2);
+
+			City city = new City();
+			city.setCode("ALM");
+			city.setName("Almaty");
+			city.setDescription("type tpe 2");
+			city.setCreatedBy("admin");
+			city.setCreateTs(LocalDateTime.now());
+			cityRepo.save(city);
+
+			City city2 = new City();
+			city2.setCode("AST");
+			city2.setName("Astana");
+			city2.setDescription("type tpe 2");
+			city2.setCreatedBy("admin");
+			city2.setCreateTs(LocalDateTime.now());
+			cityRepo.save(city2);
 		};
 	}
 

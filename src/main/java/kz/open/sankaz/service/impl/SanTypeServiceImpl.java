@@ -1,10 +1,10 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.SanTypeDto;
+import kz.open.sankaz.pojo.dto.SanTypeDto;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.SanType;
-import kz.open.sankaz.repo.SanTypeRepo;
+import kz.open.sankaz.repo.dictionary.SanTypeRepo;
 import kz.open.sankaz.service.SanTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

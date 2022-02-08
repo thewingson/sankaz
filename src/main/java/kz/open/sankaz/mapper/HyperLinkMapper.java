@@ -1,7 +1,7 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.dto.HyperLinkDto;
-import kz.open.sankaz.dto.HyperLinkTypeDto;
+import kz.open.sankaz.pojo.dto.HyperLinkDto;
+import kz.open.sankaz.pojo.dto.HyperLinkTypeDto;
 import kz.open.sankaz.model.HyperLink;
 import kz.open.sankaz.model.HyperLinkType;
 import org.mapstruct.IterableMapping;

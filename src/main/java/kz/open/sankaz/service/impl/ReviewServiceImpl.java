@@ -1,7 +1,7 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.ReviewDto;
-import kz.open.sankaz.dto.SanDto;
+import kz.open.sankaz.pojo.dto.ReviewDto;
+import kz.open.sankaz.pojo.dto.SanDto;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.model.Review;
 import kz.open.sankaz.model.San;

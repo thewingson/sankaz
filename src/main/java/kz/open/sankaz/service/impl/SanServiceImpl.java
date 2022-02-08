@@ -1,11 +1,12 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.*;
 import kz.open.sankaz.mapper.FileMapper;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.model.*;
+import kz.open.sankaz.pojo.dto.*;
+import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.repo.SanRepo;
 import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,9 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Lazy
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private CityService cityService;
 
     @Autowired
     private SanMapper sanMapper;
@@ -113,6 +117,9 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         log.info(getServiceClass() + ".updateOneDto() Checking San in DB");
         San san = getOne(id);
 
+        log.info(getServiceClass() + ".addOneDto() Checking City in DB");
+        City city = cityService.getOne(dto.getCityId());
+
         List<SanType> sanTypes = new ArrayList<>();
         log.info(getServiceClass() + ".updateOneDto() Checking San Types in DB");
         for (long type : dto.getSanTypes()) {
@@ -120,6 +127,9 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         }
         san.setSanTypes(sanTypes);
 
+        if(!city.equals(san.getCity())){
+            san.setCity(city);
+        }
         if(dto.getName() != null && !dto.getName().equals(san.getName())){
             san.setName(dto.getName());
         }
@@ -368,6 +378,23 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
+    public List<SanForMainDto> getAllForMain(SanForMainFilter filter) {
+//        List<San> result = sanRepo.getAllBySanForMainFilter(filter.getCityId(), filter.getStartDate(), filter.getEndDate());
+        List<San> result = sanRepo.getAllBySanForMainFilter(filter.getCityId());
+
+        return result.stream().map(san -> {
+            SanForMainDto dto = new SanForMainDto();
+            dto.setId(san.getId());
+            dto.setName(san.getName());
+            dto.setDescription(san.getDescription());
+            if(san.getMainPicUrl() != null) dto.setPicUrl(APPLICATION_UPLOAD_PATH + san.getMainPicUrl());
+            dto.setRating(san.getRating());
+            dto.setReviewCount(san.getReviewCount());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
     public San updateOneDto(Map<String, Object> params, SanDto sanDto) {
         // Backlog: потом, с помощью JOOQ
         return null;
@@ -381,6 +408,10 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Override
     public San addOneDto(SanCreateDto dto) {
         log.info(getServiceClass() + ".addOneDto() Started");
+
+        log.info(getServiceClass() + ".addOneDto() Checking City in DB");
+        City city = cityService.getOne(dto.getCityId());
+
         List<SanType> sanTypes = new ArrayList<>();
         log.info(getServiceClass() + ".addOneDto() Checking San Types in DB");
         for (long type : dto.getSanTypes()) {
@@ -394,6 +425,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         san.setSiteLink(dto.getSiteLink());
         san.setInstagramLink(dto.getInstagramLink());
         san.setSanTypes(sanTypes);
+        san.setCity(city);
 
         for (String telNumber : dto.getTelNumbers()) {
             TelNumber number = new TelNumber();

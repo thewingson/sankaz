@@ -2,10 +2,8 @@ package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.model.AbstractDictionaryEntity;
-import kz.open.sankaz.repo.CommonDictionaryRepo;
+import kz.open.sankaz.repo.dictionary.CommonDictionaryRepo;
 import kz.open.sankaz.service.CommonDictionaryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -18,13 +16,8 @@ public abstract class AbstractDictionaryService<E extends AbstractDictionaryEnti
         extends AbstractService<E, R>
         implements CommonDictionaryService<E> {
 
-    protected final R repo;
-    @Autowired
-    protected ApplicationEventPublisher applicationEventPublisher;
-
     protected <T extends CommonDictionaryRepo<E>> AbstractDictionaryService(T repo) {
         super(repo);
-        this.repo = (R) repo;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.RoomDto;
-import kz.open.sankaz.dto.SanDto;
+import kz.open.sankaz.pojo.dto.RoomDto;
+import kz.open.sankaz.pojo.dto.SanDto;
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.model.Room;
 import kz.open.sankaz.model.San;

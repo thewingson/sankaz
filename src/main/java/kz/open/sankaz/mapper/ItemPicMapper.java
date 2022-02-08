@@ -1,6 +1,6 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.dto.ItemPicDto;
+import kz.open.sankaz.pojo.dto.ItemPicDto;
 import kz.open.sankaz.model.ItemPic;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;

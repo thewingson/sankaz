@@ -1,6 +1,7 @@
 package kz.open.sankaz.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -64,6 +65,11 @@ public class San extends AbstractEntity{
     @JsonBackReference
     private List<Room> rooms;
 
+    @ManyToOne
+    @JoinColumn(name = "CITY_ID", foreignKey = @ForeignKey(name = "SAN_CITY_FK"), nullable = false)
+    @JsonManagedReference
+    private City city;
+
     public void addSanType(SanType sanType){
         if(getSanTypes() == null){
             this.sanTypes = new ArrayList<>();
@@ -124,6 +130,32 @@ public class San extends AbstractEntity{
     public void deletePics(List<SysFile> pics){
         if(!getPics().isEmpty()){
             this.getPics().removeAll(pics);
+        }
+    }
+
+    public Float getRating(){
+        return (float)getReviews().stream().mapToDouble(Review::getRating).average().orElse(0.0);
+    }
+
+    public Integer getReviewCount(){
+        return (int)getReviews().stream().count();
+    }
+
+    public SysFile getMainPic(){
+        List<SysFile> pics = getPics();
+        if(pics != null && !pics.isEmpty()){
+            return pics.get(0);
+        } else{
+            return null;
+        }
+    }
+
+    public String getMainPicUrl(){
+        SysFile mainPic = getMainPic();
+        if(mainPic != null){
+            return mainPic.getFileName();
+        } else{
+            return null;
         }
     }
 }

@@ -1,6 +1,8 @@
 package kz.open.sankaz.rest;
 
-import kz.open.sankaz.dto.*;
+import kz.open.sankaz.mapper.SanMapper;
+import kz.open.sankaz.pojo.dto.*;
+import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.ReviewService;
 import kz.open.sankaz.service.RoomService;
@@ -24,14 +26,17 @@ public class SanRest {
     private RoomService roomService;
 
     @Autowired
+    private SanMapper sanMapper;
+
+    @Autowired
     public SanRest(SanService sanService) {
         this.sanService = sanService;
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<?> getAll(@RequestBody SanForMainFilter filter) {
         try{
-            return ResponseModel.success(sanService.getAllDto());
+            return ResponseModel.success(sanService.getAllForMain(filter));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -49,7 +54,7 @@ public class SanRest {
     @PostMapping
     public ResponseEntity<?> addOne(@RequestBody SanCreateDto sanDto) {
         try{
-            return ResponseModel.success(sanService.addOneDto(sanDto));
+            return ResponseModel.success(sanMapper.sanToDto(sanService.addOneDto(sanDto)));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

@@ -1,7 +1,8 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.dto.*;
+import kz.open.sankaz.pojo.dto.*;
 import kz.open.sankaz.model.San;
+import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,4 +39,6 @@ public interface SanService extends CommonService<San>, CommonDtoService<San, Sa
     List<FileUrlDto> addRoomPics(Long roomId, MultipartFile[] pics) throws IOException;
 
     void deleteRoomPics(Long roomId, Long[] pics);
+
+    List<SanForMainDto> getAllForMain(SanForMainFilter filter);
 }

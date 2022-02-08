@@ -1,9 +1,9 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.dto.ProgramDayDto;
-import kz.open.sankaz.dto.ProgramServiceDto;
-import kz.open.sankaz.dto.TourDto;
-import kz.open.sankaz.dto.TourProgramDto;
+import kz.open.sankaz.pojo.dto.ProgramDayDto;
+import kz.open.sankaz.pojo.dto.ProgramServiceDto;
+import kz.open.sankaz.pojo.dto.TourDto;
+import kz.open.sankaz.pojo.dto.TourProgramDto;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.listener.event.BeforeCreateEvent;
 import kz.open.sankaz.listener.event.BeforeDeleteEvent;

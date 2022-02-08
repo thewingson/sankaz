@@ -1,6 +1,6 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.dto.*;
+import kz.open.sankaz.pojo.dto.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
