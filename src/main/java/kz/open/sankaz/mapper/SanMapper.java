@@ -30,43 +30,20 @@ public abstract class SanMapper {
     protected RoomMapper roomMapper;
     @Lazy
     @Autowired
-    protected HyperLinkMapper hyperLinkMapper;
-    @Lazy
-    @Autowired
     protected ItemPicMapper itemPicMapper;
 
     @Named("sanToDto")
     @Mapping(target = "sanTypes", ignore = true)
     @Mapping(target = "rooms", ignore = true)
     @Mapping(target = "reviews", ignore = true)
-//    @Mapping(target = "links", ignore = true)
-//    @Mapping(target = "pics", ignore = true)
     abstract public SanDto sanToDto(San san);
     @IterableMapping(qualifiedByName = "sanToDto")
     abstract public List<SanDto> sanToDto(List<San> sans);
-
-//    @Named("sanToDtoWithAll")
-//    @Mapping(target = "sanTypes",
-//            expression = "java(categoryMapper.sanTypeToDto(san.getSanTypes()))")
-//    @Mapping(target = "rooms",
-//            expression = "java(roomMapper.roomToDto(san.getRooms()))")
-//    @Mapping(target = "reviews",
-//            expression = "java(reviewMapper.reviewToDto(san.getReviews()))")
-////    @Mapping(target = "links",
-////            expression = "java(hyperLinkMapper.hyperLinkToDto(san.getLinks()))")
-////    @Mapping(target = "pics",
-////            expression = "java(itemPicMapper.itemPicToDto(san.getPics()))")
-//    abstract public SanDto sanToDtoWithAll(San san);
-//    @IterableMapping(qualifiedByName = "sanToDtoWithAll")
-//    abstract public List<SanDto> sanToDtoWithAll(List<San> sans);
 
     @Named("sanToSanForMainDto")
     @Mapping(target = "picUrl", expression = "java(getPicFullUrl(san.getMainPicUrl()))")
     @Mapping(target = "rating", source = "san.rating")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
-//    @Mapping(target = "createdBy", ignore = true)
-//    @Mapping(target = "updatedBy", ignore = true)
-//    @Mapping(target = "deletedBy", ignore = true)
     abstract public SanForMainDto sanToSanForMainDto(San san);
     @IterableMapping(qualifiedByName = "sanToSanForMainDto")
     abstract public List<SanForMainDto> sanToSanForMainDto(List<San> sans);

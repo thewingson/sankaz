@@ -6,6 +6,9 @@ import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.model.*;
 import kz.open.sankaz.pojo.dto.*;
+import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
+import kz.open.sankaz.pojo.filter.RoomCreateFilter;
+import kz.open.sankaz.pojo.filter.SanCreateFilter;
 import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.repo.SanRepo;
 import kz.open.sankaz.service.*;
@@ -112,39 +115,33 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
-    public San updateOneDto(Long id, SanCreateDto dto) {
+    public San updateOneDto(Long id, SanCreateFilter filter) {
         log.info(getServiceClass() + ".updateOneDto() Started");
         log.info(getServiceClass() + ".updateOneDto() Checking San in DB");
         San san = getOne(id);
 
         log.info(getServiceClass() + ".addOneDto() Checking City in DB");
-        City city = cityService.getOne(dto.getCityId());
+        City city = cityService.getOne(filter.getCityId());
 
         List<SanType> sanTypes = new ArrayList<>();
         log.info(getServiceClass() + ".updateOneDto() Checking San Types in DB");
-        for (long type : dto.getSanTypes()) {
+        for (long type : filter.getSanTypes()) {
             sanTypes.add(sanTypeService.getOne(type));
         }
         san.setSanTypes(sanTypes);
 
-        if(!city.equals(san.getCity())){
             san.setCity(city);
+            san.setName(filter.getName());
+            san.setDescription(filter.getDescription());
+        if(filter.getSiteLink() != null){
+            san.setSiteLink(filter.getSiteLink());
         }
-        if(dto.getName() != null && !dto.getName().equals(san.getName())){
-            san.setName(dto.getName());
-        }
-        if(dto.getDescription() != null && !dto.getDescription().equals(san.getDescription())){
-            san.setDescription(dto.getDescription());
-        }
-        if(dto.getSiteLink() != null && !dto.getSiteLink().equals(san.getSiteLink())){
-            san.setSiteLink(dto.getSiteLink());
-        }
-        if(dto.getInstagramLink() != null && !dto.getInstagramLink().equals(san.getInstagramLink())){
-            san.setInstagramLink(dto.getInstagramLink());
+        if(filter.getInstagramLink() != null){
+            san.setInstagramLink(filter.getInstagramLink());
         }
 
-        if(dto.getTelNumbers() != null && dto.getTelNumbers().length > 0){
-            List<String> dtoTelNumbers = Arrays.asList(dto.getTelNumbers());
+        if(filter.getTelNumbers() != null && filter.getTelNumbers().length > 0){
+            List<String> dtoTelNumbers = Arrays.asList(filter.getTelNumbers());
             List<TelNumber> toDelete = new ArrayList<>();
             san.getTelNumbers().stream().forEach(telNumber -> {
                 if(!dtoTelNumbers.contains(telNumber.getValue())){
@@ -295,15 +292,15 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
-    public ReviewCreateDto addReview(Long sanId, ReviewCreateDto dto) {
+    public Review addReview(Long sanId, ReviewCreateFilter filter) {
         log.info(getServiceClass() + ".addReview() Started");
         log.info(getServiceClass() + ".addReview() Checking San in DB");
-        Review review = reviewMapper.reviewCreateDtoToReview(dto);
+        Review review = reviewMapper.reviewCreateFilterToReview(filter);
         San san = getOne(sanId);
-        SecUser user = userService.getUserByUsername(dto.getUsername());
+        SecUser user = userService.getUserByUsername(filter.getUsername());
 
-        if(dto.getParentReviewId() != null){
-            Review parentReview = reviewService.getOne(dto.getParentReviewId());
+        if(filter.getParentReviewId() != null){
+            Review parentReview = reviewService.getOne(filter.getParentReviewId());
             review.setParentReview(parentReview);
         }
         review.setSan(san);
@@ -312,24 +309,24 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         reviewService.addOne(review);
 
         log.info(getServiceClass() + ".addReview() Finished");
-        return reviewMapper.reviewToReviewCreateDto(review);
+        return review;
     }
 
     @Override
-    public RoomCreateDto addRoom(Long sanId, RoomCreateDto dto) {
+    public Room addRoom(Long sanId, RoomCreateFilter filter) {
         log.info(getServiceClass() + ".addRoom() Started");
         log.info(getServiceClass() + ".addRoom() Checking San in DB");
         San san = getOne(sanId);
 
         Room room = new Room();
         room.setSan(san);
-        room.setPrice(dto.getPrice());
-        room.setName(dto.getName());
-        room.setDescription(dto.getDescription());
+        room.setPrice(filter.getPrice());
+        room.setName(filter.getName());
+        room.setDescription(filter.getDescription());
         roomService.addOne(room);
 
         log.info(getServiceClass() + ".addRoom() Finished");
-        return roomMapper.roomToRoomCreateDto(room);
+        return room;
     }
 
     @Override
@@ -380,7 +377,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Override
     public List<SanForMainDto> getAllForMain(SanForMainFilter filter) {
 //        List<San> result = sanRepo.getAllBySanForMainFilter(filter.getCityId(), filter.getStartDate(), filter.getEndDate());
-        List<San> result = sanRepo.getAllBySanForMainFilter(filter.getCityId());
+        List<San> result = sanRepo.getAllBySanForMainFilter(filter.getCityId()); // TODO: add other filters after Bokking creation
 
         return result.stream().map(san -> {
             SanForMainDto dto = new SanForMainDto();
@@ -406,28 +403,33 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
-    public San addOneDto(SanCreateDto dto) {
+    public San createSan(SanCreateFilter filter) {
         log.info(getServiceClass() + ".addOneDto() Started");
 
         log.info(getServiceClass() + ".addOneDto() Checking City in DB");
-        City city = cityService.getOne(dto.getCityId());
+        City city = cityService.getOne(filter.getCityId());
 
         List<SanType> sanTypes = new ArrayList<>();
         log.info(getServiceClass() + ".addOneDto() Checking San Types in DB");
-        for (long type : dto.getSanTypes()) {
+        for (long type : filter.getSanTypes()) {
             sanTypes.add(sanTypeService.getOne(type));
         }
 
         log.info(getServiceClass() + ".addOneDto() Creating San");
         San san = new San();
-        san.setName(dto.getName());
-        san.setDescription(dto.getDescription());
-        san.setSiteLink(dto.getSiteLink());
-        san.setInstagramLink(dto.getInstagramLink());
-        san.setSanTypes(sanTypes);
+        san.setName(filter.getName());
+        san.setDescription(filter.getDescription());
         san.setCity(city);
+        san.setSanTypes(sanTypes);
 
-        for (String telNumber : dto.getTelNumbers()) {
+        if(filter.getSiteLink() != null){
+            san.setSiteLink(filter.getSiteLink());
+        }
+        if(filter.getInstagramLink() != null){
+            san.setInstagramLink(filter.getInstagramLink());
+        }
+
+        for (String telNumber : filter.getTelNumbers()) {
             TelNumber number = new TelNumber();
             number.setValue(telNumber);
             telNumberService.addOne(number);
@@ -436,6 +438,11 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
         log.info(getServiceClass() + ".addOneDto() Finished");
         return addOne(san);
+    }
+
+    @Override
+    public San addOneDto(SanCreateDto dto) {
+        return null;
     }
 
     @Override

@@ -1,12 +1,14 @@
 package kz.open.sankaz.rest;
 
-import kz.open.sankaz.pojo.dto.*;
+import kz.open.sankaz.pojo.filter.*;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -22,18 +24,18 @@ public class OrganizationAuthRest {
     }
 
     @GetMapping("/numbers/is-free")
-    public ResponseEntity<?> isNumberFree(@RequestBody NumberDto numberDto) {
+    public ResponseEntity<?> isNumberFree(@Valid @RequestBody TelNumberFilter filter) {
         try {
-            return ResponseModel.success(authService.isNumberFree(numberDto.getTelNumber()));
+            return ResponseModel.success(authService.isNumberFree(filter.getTelNumber()));
         } catch (RuntimeException e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @PostMapping("/send-conf")
-    public ResponseEntity<?> sendConfirmationNumber(@RequestBody ResetPasswordDto resetPasswordDto) {
+    public ResponseEntity<?> sendConfirmationNumber(@Valid @RequestBody OrganizationConfirmationNumberFilter filter) {
         try {
-            authService.sendConfirmationNumberOrganization(resetPasswordDto);
+            authService.sendConfirmationNumberOrganization(filter.getTelNumber(), filter.getPassword(), filter.getConfirmPassword());
             return ResponseModel.successPure();
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
@@ -41,18 +43,18 @@ public class OrganizationAuthRest {
     }
 
     @PostMapping("/check-conf")
-    public ResponseEntity<?> checkConfirmationNumber(@RequestBody RegisterOrganizationDto registerDto) {
+    public ResponseEntity<?> checkConfirmationNumber(@Valid @RequestBody OrganizationRegisterFilter filter) {
         try {
-            return ResponseModel.success(authService.checkConfirmationNumberOrganization(registerDto));
+            return ResponseModel.success(authService.checkConfirmationNumberOrganization(filter.getTelNumber(), filter.getPassword(), filter.getConfirmationNumber()));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
     }
 
     @PostMapping("/register-org")
-    public ResponseEntity<?> registerOrganization(@RequestBody RegisterOrgDto registerOrgDto) {
+    public ResponseEntity<?> registerOrganization(@RequestBody OrganizationRegisterFinishFilter filter) {
         try {
-            authService.registerOrganization(registerOrgDto);
+            authService.registerOrganization(filter);
             return ResponseModel.successPure();
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
@@ -60,18 +62,18 @@ public class OrganizationAuthRest {
     }
 
     @GetMapping("/check-status")
-    public ResponseEntity<?> getOrganizationConfirmationStatus(@RequestBody NumberDto numberDto) {
+    public ResponseEntity<?> getOrganizationConfirmationStatus(@Valid @RequestBody TelNumberFilter filter) {
         try {
-            return ResponseModel.success(authService.getOrganizationConfirmationStatus(numberDto));
+            return ResponseModel.success(authService.getOrganizationConfirmationStatus(filter.getTelNumber()));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
     }
 
     @PostMapping("/send-reset")
-    public ResponseEntity<?> sedResetNumber(@RequestBody NumberDto numberDto) {
+    public ResponseEntity<?> sedResetNumber(@Valid @RequestBody TelNumberFilter filter) {
         try {
-            authService.sendResetNumber(numberDto);
+            authService.sendResetNumber(filter.getTelNumber());
             return ResponseModel.successPure();
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
@@ -79,9 +81,9 @@ public class OrganizationAuthRest {
     }
 
     @PostMapping("/check-reset")
-    public ResponseEntity<?> checkResetNumber(@RequestBody RegisterDto registerDto) {
+    public ResponseEntity<?> checkResetNumber(@Valid @RequestBody RegisterFilter registerFilter) {
         try {
-            authService.checkResetNumber(registerDto);
+            authService.checkResetNumber(registerFilter.getTelNumber(), registerFilter.getResetNumber());
             return ResponseModel.successPure();
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
@@ -89,9 +91,9 @@ public class OrganizationAuthRest {
     }
 
     @PostMapping("/reset-pass")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordFilter filter) {
         try {
-            return ResponseModel.success(authService.resetPassword(resetPasswordDto));
+            return ResponseModel.success(authService.resetPassword(filter.getTelNumber(), filter.getPassword(), filter.getConfirmPassword()));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

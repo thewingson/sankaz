@@ -1,13 +1,18 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.pojo.dto.*;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.listener.event.AfterDeleteEvent;
 import kz.open.sankaz.listener.event.BeforeDeleteEvent;
 import kz.open.sankaz.mapper.SecUserMapper;
+import kz.open.sankaz.model.City;
+import kz.open.sankaz.model.Gender;
 import kz.open.sankaz.model.ItemPic;
 import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.pojo.dto.*;
+import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.repo.UserRepo;
+import kz.open.sankaz.service.CityService;
+import kz.open.sankaz.service.GenderService;
 import kz.open.sankaz.service.ItemPicService;
 import kz.open.sankaz.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,10 +38,19 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     private ItemPicService picService;
 
     @Autowired
+    private GenderService genderService;
+
+    @Autowired
+    private CityService cityService;
+
+    @Autowired
     private SecUserMapper userMapper;
 
     @Value("${application.file.upload.path}")
     private String APPLICATION_UPLOAD_PATH;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepo userRepo) {
@@ -103,38 +118,40 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
 
     @Override
     public SecUserDto updateOneDto(Long id, SecUserEditDto dto) {
-        SecUser user = getOne(id);
-        if(dto.getFirstName() != null && !dto.getFirstName().equals(user.getFirstName())){
-            user.setFirstName(dto.getFirstName());
-        }
-        if(dto.getLastName() != null && !dto.getLastName().equals(user.getLastName())){
-            user.setLastName(dto.getLastName());
-        }
-        if(dto.getGender() != null && !dto.getGender().equals(user.getGender())){
-            user.setGender(dto.getGender());
-        }
-        if(dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())){
-            user.setEmail(dto.getEmail());
-        }
-        if(dto.getCity() != null && !dto.getCity().equals(user.getCity())){
-            user.setCity(dto.getCity());
-        }
-        return userMapper.userToDto(editOneById(user));
+        return null;
     }
 
     @Override
-    public SecUserDto changePassword(Long id, ChangePasswordDto dto) {
+    public SecUser updateProfile(Long id, SecUserEditFilter filter) {
         SecUser user = getOne(id);
-        if(dto.getPassword() == null || dto.getConfirmPassword() == null
-                || dto.getPassword().isEmpty() || dto.getConfirmPassword().isEmpty()){
-            throw new RuntimeException("You cannot set an empty password!");
+        user.setFirstName(filter.getFirstName());
+        user.setLastName(filter.getLastName());
+        user.setEmail(filter.getEmail());
+        if (filter.getGenderId() != null) {
+            Gender gender = genderService.getOne(filter.getGenderId());
+            if(!gender.equals(user.getGender())){
+                user.setGender(gender);
+            }
         }
-        if(dto.getPassword().equals(user.getPassword())){
-            throw new RuntimeException("It matches with old password!");
+        if(filter.getCityId() != null){
+            City city = cityService.getOne(filter.getCityId());
+            if(!city.equals(user.getCity())){
+                user.setCity(city);
+            }
         }
-        if(!dto.getPassword().equals(dto.getConfirmPassword())){
-            throw new RuntimeException("Password mismatch!");
+        return user;
+    }
+
+    @Override
+    public SecUserDto changePassword(Long id, String password, String confirmPassword) {
+        SecUser user = getOne(id);
+//        if(password.equals(confirmPassword)){
+//            throw new RuntimeException("It matches with old password!");
+//        }
+        if(!password.equals(confirmPassword)){
+            throw new RuntimeException("Пароли не совпадают");
         }
+        user.setPassword(passwordEncoder.encode(password));
         return userMapper.userToDto(editOneById(user));
     }
 

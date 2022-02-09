@@ -1,6 +1,11 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.pojo.dto.*;
+import kz.open.sankaz.pojo.dto.ConfirmationStatusDto;
+import kz.open.sankaz.pojo.dto.NumberFreeDto;
+import kz.open.sankaz.pojo.dto.TokenDto;
+import kz.open.sankaz.pojo.filter.FinishRegFilter;
+import kz.open.sankaz.pojo.filter.OrganizationRegisterFinishFilter;
+import kz.open.sankaz.pojo.filter.RegisterFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,25 +19,25 @@ public interface AuthService {
 
     List<String> getNumbers();
 
-    int sendConfirmationNumber(NumberDto numberDto);
+    int sendConfirmationNumber(String telNumber);
 
-    int sendConfirmationNumberOrganization(ResetPasswordDto resetPasswordDto);
+    int sendConfirmationNumberOrganization(String telNumber, String password, String confirmPassword);
 
-    void checkConfirmationNumber(RegisterDto registerDto);
+    void checkConfirmationNumber(RegisterFilter filter);
 
-    TokenDto checkConfirmationNumberOrganization(RegisterOrganizationDto registerDto);
+    TokenDto checkConfirmationNumberOrganization(String telNumber, String password, int confirmNumber);
 
-    TokenDto finishRegistration(FinishRegDto finishRegDto);
+    TokenDto finishRegistration(FinishRegFilter filter);
 
-    void registerOrganization(RegisterOrgDto registerOrgDto);
+    void registerOrganization(OrganizationRegisterFinishFilter filter);
 
-    int sendResetNumber(NumberDto numberDto);
+    int sendResetNumber(String telNumber);
 
-    TokenDto resetPassword(ResetPasswordDto resetPasswordDto);
+    TokenDto resetPassword(String telNumber, String password, String confirmPassword);
 
-    void checkResetNumber(RegisterDto registerDto);
+    void checkResetNumber(String telNumber, int resetNumber);
 
     NumberFreeDto isNumberFree(String telNumber);
 
-    ConfirmationStatusDto getOrganizationConfirmationStatus(NumberDto numberDto);
+    ConfirmationStatusDto getOrganizationConfirmationStatus(String telNumber);
 }

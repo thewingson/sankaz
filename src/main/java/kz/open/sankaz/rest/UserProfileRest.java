@@ -1,7 +1,7 @@
 package kz.open.sankaz.rest;
 
-import kz.open.sankaz.pojo.dto.ChangePasswordDto;
-import kz.open.sankaz.pojo.dto.SecUserEditDto;
+import kz.open.sankaz.pojo.filter.ChangePasswordFilter;
+import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.AuthService;
 import kz.open.sankaz.service.UserService;
@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -48,9 +50,9 @@ public class UserProfileRest {
 
     @PutMapping("/profiles/{userId}")
     public ResponseEntity<?> editUser(@PathVariable("userId") Long userId,
-                                                    @RequestBody SecUserEditDto userEditDto) {
+                                                    @Valid @RequestBody SecUserEditFilter filter) {
         try {
-            userService.updateOneDto(userId, userEditDto);
+            userService.updateProfile(userId, filter);
             return ResponseModel.successPure();
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
@@ -59,9 +61,9 @@ public class UserProfileRest {
 
     @PutMapping("/profiles/{userId}/change-pass")
     public ResponseEntity<?> changePassword(@PathVariable("userId") Long userId,
-                                      @RequestBody ChangePasswordDto passwordDto) {
+                                            @Valid @RequestBody ChangePasswordFilter filter) {
         try {
-            userService.changePassword(userId, passwordDto);
+            userService.changePassword(userId, filter.getPassword(), filter.getConfirmPassword());
             return ResponseModel.successPure();
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());

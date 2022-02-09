@@ -1,10 +1,10 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.pojo.dto.OrganizationAddDataDto;
-import kz.open.sankaz.pojo.dto.OrganizationDto;
-import kz.open.sankaz.pojo.dto.OrganizationFilterDto;
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.pojo.dto.OrganizationDto;
+import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
+import kz.open.sankaz.pojo.filter.OrganizationFilterFilter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,12 +18,12 @@ public interface OrganizationService extends CommonService<Organization>, Common
 
     Organization getOrganizationByIin(String iin);
 
-    List<OrganizationDto> getAllByConfirmationStatuses(OrganizationFilterDto organizationFilter);
+    List<Organization> getAllByConfirmationStatuses(OrganizationFilterFilter filter);
 
     void approveOrganizationData(Long orgId);
     void rejectOrganizationData(Long orgId);
 
-    void finishProfile(Long orgId, OrganizationAddDataDto organizationAddDataDto);
+    void finishProfile(Long orgId, OrganizationEditFilter filter);
 
     void uploadPicture(Long orgId, MultipartFile pic) throws IOException;
     void uploadPicture(Long orgId, MultipartFile[] pic) throws IOException;

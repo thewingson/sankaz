@@ -1,14 +1,14 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.pojo.dto.OrganizationAddDataDto;
-import kz.open.sankaz.pojo.dto.OrganizationDto;
-import kz.open.sankaz.pojo.dto.OrganizationFilterDto;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.OrganizationMapper;
 import kz.open.sankaz.model.CompanyCategory;
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.SysFile;
+import kz.open.sankaz.pojo.dto.OrganizationDto;
+import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
+import kz.open.sankaz.pojo.filter.OrganizationFilterFilter;
 import kz.open.sankaz.repo.OrganizationRepo;
 import kz.open.sankaz.service.AuthService;
 import kz.open.sankaz.service.CompanyCategoryService;
@@ -100,8 +100,8 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     }
 
     @Override
-    public List<OrganizationDto> getAllByConfirmationStatuses(OrganizationFilterDto organizationFilter) {
-        return organizationMapper.organizationToDto(organizationRepo.findAllByConfirmationStatusInAndDeletedByIsNull(organizationFilter.getConfirmationStatuses()));
+    public List<Organization> getAllByConfirmationStatuses(OrganizationFilterFilter filter) {
+        return organizationRepo.findAllByConfirmationStatusInAndDeletedByIsNull(filter.getConfirmationStatuses());
     }
 
     @Override
@@ -133,36 +133,23 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     }
 
     @Override
-    public void finishProfile(Long orgId, OrganizationAddDataDto organizationAddDataDto) {
+    public void finishProfile(Long orgId, OrganizationEditFilter filter) {
         log.info("OrganizationServiceImpl. Starting update organization id: {}", orgId);
         Organization organization = getOne(orgId);
         if(!organization.getConfirmationStatus().equals("CONFIRMED")){
             log.warn("OrganizationServiceImpl. Organization {} has not confirmed", orgId);
             throw new RuntimeException("Данная организация еще не одобрена!");
         }
-        CompanyCategory category = companyCategoryService.getOneByCode(organizationAddDataDto.getCategoryCode());
+        CompanyCategory category = companyCategoryService.getOne(filter.getCategoryId());
 
-        if(organization.getCompanyCategory() == null){
-            organization.setCompanyCategory(category);
-        }
-        if(organization.getCompanyCategory() != null && !organization.getCompanyCategory().equals(category)){
-            organization.setCompanyCategory(category);
-        }
-        if(organizationAddDataDto.getCompanyName() != null && !organizationAddDataDto.getCompanyName().equals(organization.getCompanyName())){
-            organization.setCompanyName(organizationAddDataDto.getCompanyName());
-        }
-        if(organizationAddDataDto.getDescription() != null && !organizationAddDataDto.getDescription().equals(organization.getDescription())){
-            organization.setDescription(organizationAddDataDto.getDescription());
-        }
-        if(organizationAddDataDto.getAddress() != null && !organizationAddDataDto.getAddress().equals(organization.getAddress())){
-            organization.setAddress(organizationAddDataDto.getAddress());
-        }
-        if(organizationAddDataDto.getInstagramLink() != null && !organizationAddDataDto.getInstagramLink().equals(organization.getInstagramLink())){
-            organization.setInstagramLink(organizationAddDataDto.getInstagramLink());
-        }
-        if(organizationAddDataDto.getSiteLink() != null && !organizationAddDataDto.getSiteLink().equals(organization.getSiteLink())){
-            organization.setSiteLink(organizationAddDataDto.getSiteLink());
-        }
+        organization.setCompanyCategory(category);
+        organization.setCompanyCategory(category);
+        organization.setCompanyName(filter.getCompanyName());
+        organization.setDescription(filter.getDescription());
+        organization.setAddress(filter.getAddress());
+        organization.setInstagramLink(filter.getInstagramLink());
+        organization.setSiteLink(filter.getSiteLink());
+
         editOneById(organization);
         log.info("OrganizationServiceImpl. Organization {} update has completed successfully", orgId);
     }

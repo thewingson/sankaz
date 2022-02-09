@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
+@DynamicUpdate
 @Table(name = "SEC_USER")
 @Getter
 @Setter
@@ -41,8 +43,10 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "EMAIL", unique = true)
     private String email;
 
-    @Column(name = "GENDER")
-    private String gender;
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE})
+    @JoinColumn(name = "GENDER_ID", foreignKey = @ForeignKey(name = "SEC_USER_GENDER_FK"))
+    @JsonManagedReference
+    private Gender gender;
 
     @Column(name = "TEL_NUMBER", nullable = false, unique = true)
     private String telNumber;
@@ -53,8 +57,10 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "LAST_NAME", nullable = false)
     private String lastName;
 
-    @Column(name = "CITY")
-    private String city;
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE})
+    @JoinColumn(name = "CITY_ID", foreignKey = @ForeignKey(name = "SEC_USER_CITY_FK"))
+    @JsonManagedReference
+    private City city;
 
     @Column(name = "ACTIVE", nullable = false)
     private boolean active = false;

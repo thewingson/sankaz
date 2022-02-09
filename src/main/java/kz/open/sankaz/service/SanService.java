@@ -1,7 +1,15 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.pojo.dto.*;
+import kz.open.sankaz.model.Review;
+import kz.open.sankaz.model.Room;
 import kz.open.sankaz.model.San;
+import kz.open.sankaz.pojo.dto.FileUrlDto;
+import kz.open.sankaz.pojo.dto.SanCreateDto;
+import kz.open.sankaz.pojo.dto.SanDto;
+import kz.open.sankaz.pojo.dto.SanForMainDto;
+import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
+import kz.open.sankaz.pojo.filter.RoomCreateFilter;
+import kz.open.sankaz.pojo.filter.SanCreateFilter;
 import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,8 +25,10 @@ public interface SanService extends CommonService<San>, CommonDtoService<San, Sa
     /***
      * for DTO
      */
+    San createSan(SanCreateFilter filter);
+
     San addOneDto(SanCreateDto dto);
-    San updateOneDto(Long id, SanCreateDto dto);
+    San updateOneDto(Long id, SanCreateFilter filter);
 
     SanDto addSanTypes(Long id, Long[] sanTypes);
 
@@ -32,9 +42,9 @@ public interface SanService extends CommonService<San>, CommonDtoService<San, Sa
 
     void deletePics(Long sanId, Long[] pics);
 
-    ReviewCreateDto addReview(Long sanId, ReviewCreateDto dto);
+    Review addReview(Long sanId, ReviewCreateFilter filter);
 
-    RoomCreateDto addRoom(Long sanId, RoomCreateDto dto);
+    Room addRoom(Long sanId, RoomCreateFilter filter);
 
     List<FileUrlDto> addRoomPics(Long roomId, MultipartFile[] pics) throws IOException;
 

@@ -10,7 +10,7 @@ import lombok.Setter;
 public class SecUserEditDto extends AbstractDto {
     private String firstName;
     private String lastName;
-    private String gender;
+    private Long genderId;
     private String email;
-    private String city;
+    private Long cityId;
 }

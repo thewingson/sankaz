@@ -15,6 +15,8 @@ import java.util.List;
 public abstract class SecUserMapper {
     @Named("userToDto")
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "city", ignore = true)
+    @Mapping(target = "gender", ignore = true)
     @Mapping(target = "roles", expression = "java(roleToDto(secUser.getRoles()))")
     abstract public SecUserDto userToDto(SecUser secUser);
     @IterableMapping(qualifiedByName = "userToDto")
@@ -26,7 +28,8 @@ public abstract class SecUserMapper {
     abstract public List<SecRoleDto> roleToDto(List<SecRole> roles);
 
     @Named("dtoToUser")
-//    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "city", ignore = true)
+    @Mapping(target = "gender", ignore = true)
     @Mapping(target = "roles", expression = "java(dtoToRole(secUserDto.getRoles()))")
     abstract public SecUser dtoToUser(SecUserDto secUserDto);
     @IterableMapping(qualifiedByName = "dtoToUser")

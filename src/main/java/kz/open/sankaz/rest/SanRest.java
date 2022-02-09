@@ -1,8 +1,9 @@
 package kz.open.sankaz.rest;
 
+import kz.open.sankaz.mapper.ReviewMapper;
+import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
-import kz.open.sankaz.pojo.dto.*;
-import kz.open.sankaz.pojo.filter.SanForMainFilter;
+import kz.open.sankaz.pojo.filter.*;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.ReviewService;
 import kz.open.sankaz.service.RoomService;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/sans")
@@ -29,12 +32,18 @@ public class SanRest {
     private SanMapper sanMapper;
 
     @Autowired
+    private ReviewMapper reviewMapper;
+
+    @Autowired
+    private RoomMapper roomMapper;
+
+    @Autowired
     public SanRest(SanService sanService) {
         this.sanService = sanService;
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll(@RequestBody SanForMainFilter filter) {
+    public ResponseEntity<?> getAll(@Valid @RequestBody SanForMainFilter filter) {
         try{
             return ResponseModel.success(sanService.getAllForMain(filter));
         } catch (Exception e){
@@ -52,9 +61,9 @@ public class SanRest {
     }
 
     @PostMapping
-    public ResponseEntity<?> addOne(@RequestBody SanCreateDto sanDto) {
+    public ResponseEntity<?> addOne(@Valid @RequestBody SanCreateFilter filter) {
         try{
-            return ResponseModel.success(sanMapper.sanToDto(sanService.addOneDto(sanDto)));
+            return ResponseModel.success(sanMapper.sanToDto(sanService.createSan(filter)));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -72,9 +81,9 @@ public class SanRest {
 
     @PutMapping("/{sanId}")
     public ResponseEntity<?> editOneById(@PathVariable(name = "sanId") Long sanId,
-                                         @RequestBody SanCreateDto sanDto) {
+                                         @Valid @RequestBody SanCreateFilter filter) {
         try{
-            sanService.updateOneDto(sanId, sanDto);
+            sanService.updateOneDto(sanId, filter);
             return ResponseModel.successPure();
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -83,9 +92,9 @@ public class SanRest {
 
     @PutMapping("/{sanId}/san-types/list")
     public ResponseEntity<?> addSanTypes(@PathVariable(name = "sanId") Long sanId,
-                                           @RequestBody SanAddDeleteTypesDto dto) {
+                                         @Valid @RequestBody SanAddDeleteTypesFilter filter) {
         try {
-            return ResponseModel.success(sanService.addSanTypes(sanId, dto.getSanTypeIds()));
+            return ResponseModel.success(sanService.addSanTypes(sanId, filter.getSanTypeIds()));
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -93,9 +102,9 @@ public class SanRest {
 
     @DeleteMapping("{sanId}/san-types/list")
     public ResponseEntity<?> deleteSanTypes(@PathVariable(name = "sanId") Long sanId,
-                                            @RequestBody SanAddDeleteTypesDto dto) {
+                                            @Valid @RequestBody SanAddDeleteTypesFilter filter) {
         try {
-            sanService.deleteSanTypes(sanId, dto.getSanTypeIds());
+            sanService.deleteSanTypes(sanId, filter.getSanTypeIds());
             return ResponseModel.successPure();
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -104,9 +113,9 @@ public class SanRest {
 
     @PutMapping("/{sanId}/tel-numbers/list")
     public ResponseEntity<?> addTelNumbers(@PathVariable(name = "sanId") Long sanId,
-                                         @RequestBody SanAddDeleteNumbersDto dto) {
+                                           @Valid @RequestBody SanAddDeleteNumbersFilter filter) {
         try {
-            return ResponseModel.success(sanService.addTelNumbers(sanId, dto.getTelNumbers()));
+            return ResponseModel.success(sanService.addTelNumbers(sanId, filter.getTelNumbers()));
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -114,9 +123,9 @@ public class SanRest {
 
     @DeleteMapping("{sanId}/tel-numbers/list")
     public ResponseEntity<?> deleteTelNumbers(@PathVariable(name = "sanId") Long sanId,
-                                            @RequestBody SanAddDeleteNumbersDto dto) {
+                                              @Valid @RequestBody SanAddDeleteNumbersFilter filter) {
         try {
-            sanService.deleteTelNumbers(sanId, dto.getTelNumbers());
+            sanService.deleteTelNumbers(sanId, filter.getTelNumbers());
             return ResponseModel.successPure();
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -135,9 +144,9 @@ public class SanRest {
 
     @DeleteMapping("{sanId}/pics/list")
     public ResponseEntity<?> deletePic(@PathVariable(name = "sanId") Long sanId,
-                                        @RequestBody SanDeletePicsDto dto) {
+                                       @Valid @RequestBody SanDeletePicsFilter filter) {
         try {
-            sanService.deletePics(sanId, dto.getPicIds());
+            sanService.deletePics(sanId, filter.getPicIds());
             return ResponseModel.successPure();
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -146,9 +155,9 @@ public class SanRest {
 
     @PutMapping("/{sanId}/reviews")
     public ResponseEntity<?> addReview(@PathVariable(name = "sanId") Long sanId,
-                                     @RequestBody ReviewCreateDto dto) {
+                                       @Valid @RequestBody ReviewCreateFilter filter) {
         try {
-            return ResponseModel.success(sanService.addReview(sanId, dto));
+            return ResponseModel.success(reviewMapper.reviewToReviewCreateDto(sanService.addReview(sanId, filter)));
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -167,9 +176,9 @@ public class SanRest {
 
     @PutMapping("/{sanId}/rooms")
     public ResponseEntity<?> addRoom(@PathVariable(name = "sanId") Long sanId,
-                                       @RequestBody RoomCreateDto dto) {
+                                     @Valid @RequestBody RoomCreateFilter filter) {
         try {
-            return ResponseModel.success(sanService.addRoom(sanId, dto));
+            return ResponseModel.success(roomMapper.roomToRoomCreateDto(sanService.addRoom(sanId, filter)));
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -177,7 +186,7 @@ public class SanRest {
 
     @DeleteMapping("/{sanId}/rooms/{roomId}")
     public ResponseEntity<?> deleteRoom(@PathVariable(name = "sanId") Long sanId,
-                                          @PathVariable(name = "roomId") Long roomId) {
+                                        @PathVariable(name = "roomId") Long roomId) {
         try {
             roomService.deleteOneByIdSoft(roomId);
             return ResponseModel.successPure();
@@ -200,9 +209,9 @@ public class SanRest {
     @DeleteMapping("{sanId}/rooms/{roomId}/pics/list")
     public ResponseEntity<?> deleteRoomPic(@PathVariable(name = "sanId") Long sanId,
                                            @PathVariable(name = "roomId") Long roomId,
-                                           @RequestBody SanDeletePicsDto dto) {
+                                           @Valid @RequestBody SanDeletePicsFilter filter) {
         try {
-            sanService.deleteRoomPics(roomId, dto.getPicIds());
+            sanService.deleteRoomPics(roomId, filter.getPicIds());
             return ResponseModel.successPure();
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());

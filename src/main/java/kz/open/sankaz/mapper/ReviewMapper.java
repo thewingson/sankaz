@@ -4,6 +4,7 @@ import kz.open.sankaz.pojo.dto.ReviewCreateDto;
 import kz.open.sankaz.pojo.dto.ReviewDto;
 import kz.open.sankaz.model.Review;
 import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -47,14 +48,14 @@ public abstract class ReviewMapper {
     /**
      * DTO to Review
      * */
-    @Named("reviewCreateDtoToReview")
+    @Named("reviewCreateFilterToReview")
     @Mapping(target = "createTs", expression = "java(getNewCreateTs())")
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "san", ignore = true)
     @Mapping(target = "parentReview", ignore = true)
-    abstract public Review reviewCreateDtoToReview(ReviewCreateDto dto);
-    @IterableMapping(qualifiedByName = "reviewCreateDtoToReview")
-    abstract public List<Review> reviewCreateDtoToReview(List<ReviewCreateDto> dtos);
+    abstract public Review reviewCreateFilterToReview(ReviewCreateFilter filter);
+    @IterableMapping(qualifiedByName = "reviewCreateFilterToReview")
+    abstract public List<Review> reviewCreateFilterToReview(List<ReviewCreateFilter> filter);
 
     public String getUsernameFromUser(SecUser user){
         if(user.getFullName() != null && !user.getFullName().isEmpty()){

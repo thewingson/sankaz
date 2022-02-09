@@ -1,5 +1,13 @@
 server:
   port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 spring:
   jpa:

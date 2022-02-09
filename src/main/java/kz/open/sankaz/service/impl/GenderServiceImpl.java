@@ -1,10 +1,8 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.model.City;
 import kz.open.sankaz.model.Gender;
-import kz.open.sankaz.model.RoomType;
-import kz.open.sankaz.repo.dictionary.CityRepo;
-import kz.open.sankaz.service.CityService;
+import kz.open.sankaz.repo.dictionary.GenderRepo;
+import kz.open.sankaz.service.GenderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,14 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @Transactional
-public class CityServiceImpl extends AbstractDictionaryLangService<City, CityRepo> implements CityService {
+public class GenderServiceImpl extends AbstractDictionaryLangService<Gender, GenderRepo> implements GenderService {
 
-    private final CityRepo cityRepo;
+    private final GenderRepo genderRepo;
 
 
-    public CityServiceImpl(CityRepo cityRepo) {
-        super(cityRepo);
-        this.cityRepo = cityRepo;
+    public GenderServiceImpl(GenderRepo genderRepo) {
+        super(genderRepo);
+        this.genderRepo = genderRepo;
     }
 
     @Override
