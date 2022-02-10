@@ -5,13 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SanAddDeleteTypesFilter extends BaseFilter {
-    @NotNull
-    private Long sanTypeId;
+public class ReviewBySanIdFilter extends BaseFilter {
+    private List<Float> ratings;
 }

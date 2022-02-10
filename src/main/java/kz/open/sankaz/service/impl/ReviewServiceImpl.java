@@ -6,6 +6,7 @@ import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.model.Review;
 import kz.open.sankaz.model.San;
 import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.pojo.filter.ReviewBySanIdFilter;
 import kz.open.sankaz.repo.ReviewRepo;
 import kz.open.sankaz.service.ReviewService;
 import kz.open.sankaz.service.SanService;
@@ -112,6 +113,11 @@ public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> imple
     }
 
     @Override
+    public List<Review> getAllBySanId(Long sanId) {
+        return repo.getAllByDeletedByIsNullAndSanId(sanId);
+    }
+
+    @Override
     public Review addDto(Long id, ReviewDto reviewDto) {
         SanDto sanDto = new SanDto();
         sanDto.setId(id);
@@ -126,6 +132,11 @@ public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> imple
             reviews.add(addDto(id, reviewDto));
         });
         return reviews;
+    }
+
+    @Override
+    public List<Review> getAllByFilter(Long sanId, ReviewBySanIdFilter filter) {
+        return repo.getAllByDeletedByIsNullAndSanIdAndRatingIn(sanId, filter.getRatings());
     }
 
     @Override

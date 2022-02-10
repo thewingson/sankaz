@@ -1,8 +1,11 @@
 package kz.open.sankaz.mapper;
 
+import kz.open.sankaz.model.Room;
+import kz.open.sankaz.model.SysFile;
+import kz.open.sankaz.pojo.dto.RoomByIdDto;
 import kz.open.sankaz.pojo.dto.RoomCreateDto;
 import kz.open.sankaz.pojo.dto.RoomDto;
-import kz.open.sankaz.model.Room;
+import kz.open.sankaz.pojo.dto.RoomInSanByIdDto;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -44,6 +47,33 @@ public abstract class RoomMapper {
 
     public List<String> getPicUrlsFromRoom(Room room){
         return room.getPics().stream().map(sysFile -> APPLICATION_UPLOAD_PATH + sysFile.getFileName()).collect(Collectors.toList());
+    }
+
+    @Named("roomToRoomInSanByIdDto")
+    @Mapping(target = "mainPicUrl", expression = "java( getFirstPicUrlFromSysFiles(room.getPics()) )")
+    abstract public RoomInSanByIdDto roomToRoomInSanByIdDto(Room room);
+    @IterableMapping(qualifiedByName = "roomToRoomInSanByIdDto")
+    abstract public List<RoomInSanByIdDto> roomToRoomInSanByIdDto(List<Room> rooms);
+
+    @Named("roomToRoomByIdDto")
+    @Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles(room.getPics()) )")
+    abstract public RoomByIdDto roomToRoomByIdDto(Room room);
+    @IterableMapping(qualifiedByName = "roomToRoomByIdDto")
+    abstract public List<RoomByIdDto> roomToRoomByIdDto(List<Room> rooms);
+
+
+    protected String getFirstPicUrlFromSysFiles(List<SysFile> pics){
+        if(pics != null && !pics.isEmpty()){
+            return APPLICATION_UPLOAD_PATH + pics.get(0).getFileName();
+        }
+        return null;
+    }
+
+    protected List<String> getPicUrlsFromSysFiles(List<SysFile> pics){
+        if(pics != null && !pics.isEmpty()){
+            return pics.stream().map(sysFile -> APPLICATION_UPLOAD_PATH + sysFile.getFileName()).collect(Collectors.toList());
+        }
+        return null;
     }
 
 }

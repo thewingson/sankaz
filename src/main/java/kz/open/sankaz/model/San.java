@@ -43,19 +43,15 @@ public class San extends AbstractEntity{
             inverseJoinColumns = @JoinColumn(name = "TEL_NUMBER_ID", foreignKey = @ForeignKey(name = "SAN_TEL_NUMBERS_NUMBER_FK")))
     private List<TelNumber> telNumbers;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST})
-    @JoinTable(
-            name = "SAN_TYPES",
-            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_TYPES_SAN_FK")),
-            inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID", foreignKey = @ForeignKey(name = "SAN_TYPES_TYPE_FK")))
-    private List<SanType> sanTypes;
+    @ManyToOne
+    @JoinColumn(name = "SAN_TYPE_ID", foreignKey = @ForeignKey(name = "SAN_TYPE_FK"), nullable = false)
+    @JsonManagedReference
+    private SanType sanType;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST})
-    @JoinTable(
-            name = "SAN_PICS",
-            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_PICS_SAN_FK")),
-            inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_PICS_PIC_FK")))
-    private List<SysFile> pics;
+    @ManyToOne
+    @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_PIC_FK"))
+    @JsonManagedReference
+    private SysFile pic;
 
     @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
     @JsonBackReference
@@ -69,17 +65,6 @@ public class San extends AbstractEntity{
     @JoinColumn(name = "CITY_ID", foreignKey = @ForeignKey(name = "SAN_CITY_FK"), nullable = false)
     @JsonManagedReference
     private City city;
-
-    public void addSanType(SanType sanType){
-        if(getSanTypes() == null){
-            this.sanTypes = new ArrayList<>();
-        }
-        sanTypes.add(sanType);
-    }
-
-    public void deleteSanType(SanType sanType){
-        sanTypes.remove(sanType);
-    }
 
     public void addTelNumber(TelNumber telNumber){
         if(getTelNumbers() == null){
@@ -107,32 +92,6 @@ public class San extends AbstractEntity{
         }
     }
 
-    public void addPic(SysFile pic){
-        if(getPics() == null){
-            this.pics = new ArrayList<>();
-        }
-        pics.add(pic);
-    }
-
-    public void addPics(List<SysFile> pics){
-        if(getPics() == null){
-            this.pics = new ArrayList<>();
-        }
-        this.pics.addAll(pics);
-    }
-
-    public void deletePic(SysFile pic){
-        if(!getPics().isEmpty()){
-            getPics().remove(pic);
-        }
-    }
-
-    public void deletePics(List<SysFile> pics){
-        if(!getPics().isEmpty()){
-            this.getPics().removeAll(pics);
-        }
-    }
-
     public Float getRating(){
         return (float)getReviews().stream().mapToDouble(Review::getRating).average().orElse(0.0);
     }
@@ -142,12 +101,7 @@ public class San extends AbstractEntity{
     }
 
     public SysFile getMainPic(){
-        List<SysFile> pics = getPics();
-        if(pics != null && !pics.isEmpty()){
-            return pics.get(0);
-        } else{
-            return null;
-        }
+        return pic;
     }
 
     public String getMainPicUrl(){

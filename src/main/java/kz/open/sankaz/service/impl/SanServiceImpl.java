@@ -5,7 +5,10 @@ import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.model.*;
-import kz.open.sankaz.pojo.dto.*;
+import kz.open.sankaz.pojo.dto.FileUrlDto;
+import kz.open.sankaz.pojo.dto.SanCreateDto;
+import kz.open.sankaz.pojo.dto.SanDto;
+import kz.open.sankaz.pojo.dto.SanForMainDto;
 import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import kz.open.sankaz.pojo.filter.SanCreateFilter;
@@ -100,10 +103,9 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         san.setDescription(sanDto.getDescription());
         san.setName(sanDto.getName());
 
-        if(sanDto.getSanTypes()!= null && !sanDto.getSanTypes().isEmpty()){
-            List<SanType> sanTypesByCode = sanTypeService
-                    .getAllByCodeIn(sanDto.getSanTypes().stream().map(SanTypeDto::getCode).collect(Collectors.toList()));
-            san.setSanTypes(sanTypesByCode);
+        if(sanDto.getSanTypeId()!= null){
+            SanType sanTypeByCode = sanTypeService.getOne(sanDto.getSanTypeId());
+            san.setSanType(sanTypeByCode);
         }
 
         return addOne(san);
@@ -125,10 +127,10 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
         List<SanType> sanTypes = new ArrayList<>();
         log.info(getServiceClass() + ".updateOneDto() Checking San Types in DB");
-        for (long type : filter.getSanTypes()) {
-            sanTypes.add(sanTypeService.getOne(type));
+        if(filter.getSanTypeId()!= null){
+            SanType sanTypeByCode = sanTypeService.getOne(filter.getSanTypeId());
+            san.setSanType(sanTypeByCode);
         }
-        san.setSanTypes(sanTypes);
 
             san.setCity(city);
             san.setName(filter.getName());
@@ -171,36 +173,20 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
-    public SanDto addSanTypes(Long id, Long[] sanTypes) {
-        log.info(getServiceClass() + ".addSanTypes() Started");
-        log.info(getServiceClass() + ".addSanTypes() Checking San in DB");
+    public San changeSanType(Long id, Long sanTypeId) {
+        log.info(getServiceClass() + ".changeSanType() Started");
+        log.info(getServiceClass() + ".changeSanType() Checking San in DB");
         San san = getOne(id);
 
-        log.info(getServiceClass() + ".addSanTypes() Checking San Types in DB");
-        for (long typeId : sanTypes) {
-            san.addSanType(sanTypeService.getOne(typeId));
-        }
+        log.info(getServiceClass() + ".changeSanType() Checking San Types in DB");
+        san.setSanType(sanTypeService.getOne(sanTypeId));
 
-        log.info(getServiceClass() + ".addSanTypes() Finished");
-        return sanMapper.sanToDto(editOneById(san));
+        log.info(getServiceClass() + ".changeSanType() Finished");
+        return san;
     }
 
     @Override
-    public void deleteSanTypes(Long id, Long[] sanTypes) {
-        log.info(getServiceClass() + ".deleteSanTypes() Started");
-        log.info(getServiceClass() + ".deleteSanTypes() Checking San in DB");
-        San san = getOne(id);
-
-        log.info(getServiceClass() + ".deleteSanTypes() Checking San Types in DB");
-        for (long typeId : sanTypes) {
-            san.deleteSanType(sanTypeService.getOne(typeId));
-        }
-
-        log.info(getServiceClass() + ".deleteSanTypes() Finished");
-    }
-
-    @Override
-    public SanDto addTelNumbers(Long id, String[] telNumbers) {
+    public San addTelNumbers(Long id, String[] telNumbers) {
         log.info(getServiceClass() + ".addTelNumbers() Started");
         log.info(getServiceClass() + ".addTelNumbers() Checking San in DB");
         San san = getOne(id);
@@ -222,7 +208,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         }
 
         log.info(getServiceClass() + ".addTelNumbers() Finished");
-        return sanMapper.sanToDto(editOneById(san));
+        return san;
     }
 
     @Override
@@ -247,48 +233,35 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
-    public List<FileUrlDto> addPics(Long id, MultipartFile[] pics) throws IOException {
+    public FileUrlDto changePic(Long id, MultipartFile pic) throws IOException {
         log.info(getServiceClass() + ".addPics() Started");
         log.info(getServiceClass() + ".addPics() Checking San in DB");
         San san = getOne(id);
 
-        for(MultipartFile pic : pics){
-            if (!pic.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(APPLICATION_UPLOAD_PATH);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdir();
-                }
-
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-                String fileNameWithPath = APPLICATION_UPLOAD_PATH + "/" + resultFilename;
-
-                pic.transferTo(new File(fileNameWithPath));
-
-                SysFile file = new SysFile();
-                file.setFileName(resultFilename);
-                file.setExtension(pic.getContentType());
-                file.setSize(pic.getSize());
-                file = sysFileService.addOne(file);
-
-                san.addPic(file);
+        if (!pic.getOriginalFilename().isEmpty()) {
+            File uploadDir = new File(APPLICATION_UPLOAD_PATH);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdir();
             }
+
+            String uuidFile = UUID.randomUUID().toString();
+            String resultFilename = uuidFile + "." + pic.getOriginalFilename();
+            String fileNameWithPath = APPLICATION_UPLOAD_PATH + "/" + resultFilename;
+
+            pic.transferTo(new File(fileNameWithPath));
+
+            SysFile file = new SysFile();
+            file.setFileName(resultFilename);
+            file.setExtension(pic.getContentType());
+            file.setSize(pic.getSize());
+            file = sysFileService.addOne(file);
+
+            san.setPic(file);
         }
 
-        log.info(getServiceClass() + ".addPics() Finished");
-        return fileMapper.fileToFileUrlDto(editOneById(san).getPics());
-    }
-
-    @Override
-    public void deletePics(Long sanId, Long[] pics) {
-        log.info(getServiceClass() + ".deletePics() Started");
-        log.info(getServiceClass() + ".deletePics() Checking San in DB");
-        San san = getOne(sanId);
-
-        List<SysFile> picsToDelete = sysFileService.getAllByIdIn(Arrays.asList(pics));
-        san.deletePics(picsToDelete);
         editOneById(san);
-        log.info(getServiceClass() + ".deletePics() Finished");
+        log.info(getServiceClass() + ".addPics() Finished");
+        return fileMapper.fileToFileUrlDto(san.getPic());
     }
 
     @Override
@@ -409,18 +382,15 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         log.info(getServiceClass() + ".addOneDto() Checking City in DB");
         City city = cityService.getOne(filter.getCityId());
 
-        List<SanType> sanTypes = new ArrayList<>();
         log.info(getServiceClass() + ".addOneDto() Checking San Types in DB");
-        for (long type : filter.getSanTypes()) {
-            sanTypes.add(sanTypeService.getOne(type));
-        }
+        SanType sanType = sanTypeService.getOne(filter.getSanTypeId());
 
         log.info(getServiceClass() + ".addOneDto() Creating San");
         San san = new San();
         san.setName(filter.getName());
         san.setDescription(filter.getDescription());
         san.setCity(city);
-        san.setSanTypes(sanTypes);
+        san.setSanType(sanType);
 
         if(filter.getSiteLink() != null){
             san.setSiteLink(filter.getSiteLink());

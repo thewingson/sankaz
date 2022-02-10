@@ -11,14 +11,16 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SanDto extends AbstractDto {
+public class SanByIdDto extends AbstractDto {
+    private String mainPicUrl;
     private String name;
+    private Float rating;
+    private String sanType;
     private String description;
+    private String geoLink;
+    private List<String> telNumbers;
     private String instagramLink;
     private String siteLink;
-    private Long sanTypeId;
-    private List<RoomDto> rooms;
-    private List<ReviewDto> reviews;
-    private List<HyperLinkDto> links;
-    private List<ItemPicDto> pics;
+    private Integer reviewCount;
+    private List<RoomInSanByIdDto> rooms;
 }

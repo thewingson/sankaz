@@ -1,9 +1,10 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.pojo.dto.ReviewCreateDto;
-import kz.open.sankaz.pojo.dto.ReviewDto;
 import kz.open.sankaz.model.Review;
 import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.pojo.dto.ReviewBySanIdDto;
+import kz.open.sankaz.pojo.dto.ReviewCreateDto;
+import kz.open.sankaz.pojo.dto.ReviewDto;
 import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -68,5 +69,12 @@ public abstract class ReviewMapper {
     public LocalDateTime getNewCreateTs(){
         return LocalDateTime.now();
     }
+
+    @Named("reviewToReviewBySanIdDto")
+    @Mapping(target = "username", source = "review.user.username")
+    @Mapping(target = "parentReviewId", source = "review.parentReview.id")
+    abstract public ReviewBySanIdDto reviewToReviewBySanIdDto(Review review);
+    @IterableMapping(qualifiedByName = "reviewToReviewBySanIdDto")
+    abstract public List<ReviewBySanIdDto> reviewToReviewBySanIdDto(List<Review> reviews);
 
 }

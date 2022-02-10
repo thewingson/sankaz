@@ -54,7 +54,7 @@ public class SanRest {
     @GetMapping("/{sanId}")
     public ResponseEntity<?> getOneById(@PathVariable(name = "sanId") Long sanId) {
         try{
-            return ResponseModel.success(sanService.getOneDto(sanId));
+            return ResponseModel.success(sanMapper.sanToSanByIdDto(sanService.getOne(sanId)));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -90,22 +90,11 @@ public class SanRest {
         }
     }
 
-    @PutMapping("/{sanId}/san-types/list")
-    public ResponseEntity<?> addSanTypes(@PathVariable(name = "sanId") Long sanId,
+    @PutMapping("/{sanId}/san-types")
+    public ResponseEntity<?> changeSanType(@PathVariable(name = "sanId") Long sanId,
                                          @Valid @RequestBody SanAddDeleteTypesFilter filter) {
         try {
-            return ResponseModel.success(sanService.addSanTypes(sanId, filter.getSanTypeIds()));
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @DeleteMapping("{sanId}/san-types/list")
-    public ResponseEntity<?> deleteSanTypes(@PathVariable(name = "sanId") Long sanId,
-                                            @Valid @RequestBody SanAddDeleteTypesFilter filter) {
-        try {
-            sanService.deleteSanTypes(sanId, filter.getSanTypeIds());
-            return ResponseModel.successPure();
+            return ResponseModel.success(sanMapper.sanToDto(sanService.changeSanType(sanId, filter.getSanTypeId())));
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -115,7 +104,7 @@ public class SanRest {
     public ResponseEntity<?> addTelNumbers(@PathVariable(name = "sanId") Long sanId,
                                            @Valid @RequestBody SanAddDeleteNumbersFilter filter) {
         try {
-            return ResponseModel.success(sanService.addTelNumbers(sanId, filter.getTelNumbers()));
+            return ResponseModel.success(sanMapper.sanToDto(sanService.addTelNumbers(sanId, filter.getTelNumbers())));
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -132,22 +121,11 @@ public class SanRest {
         }
     }
 
-    @PutMapping("/{sanId}/pics/list")
-    public ResponseEntity<?> addPics(@PathVariable(name = "sanId") Long sanId,
-                                           @RequestParam("pics") MultipartFile[] pics) {
+    @PutMapping("/{sanId}/pics")
+    public ResponseEntity<?> changePic(@PathVariable(name = "sanId") Long sanId,
+                                           @RequestParam("pic") MultipartFile pic) {
         try {
-            return ResponseModel.success(sanService.addPics(sanId, pics));
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @DeleteMapping("{sanId}/pics/list")
-    public ResponseEntity<?> deletePic(@PathVariable(name = "sanId") Long sanId,
-                                       @Valid @RequestBody SanDeletePicsFilter filter) {
-        try {
-            sanService.deletePics(sanId, filter.getPicIds());
-            return ResponseModel.successPure();
+            return ResponseModel.success(sanService.changePic(sanId, pic));
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -159,6 +137,24 @@ public class SanRest {
         try {
             return ResponseModel.success(reviewMapper.reviewToReviewCreateDto(sanService.addReview(sanId, filter)));
         } catch (Exception e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/{sanId}/reviews")
+    public ResponseEntity<?> getReviews(@PathVariable(name = "sanId") Long sanId) {
+        try{
+            return ResponseModel.success(reviewMapper.reviewToReviewBySanIdDto(reviewService.getAllBySanId(sanId)));
+        } catch (Exception e){
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/{sanId}/reviews/filter")
+    public ResponseEntity<?> getReviewsByFilter(@PathVariable(name = "sanId") Long sanId, @Valid @RequestBody ReviewBySanIdFilter filter) {
+        try{
+            return ResponseModel.success(reviewMapper.reviewToReviewBySanIdDto(reviewService.getAllByFilter(sanId, filter)));
+        } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -214,6 +210,16 @@ public class SanRest {
             sanService.deleteRoomPics(roomId, filter.getPicIds());
             return ResponseModel.successPure();
         } catch (Exception e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/{sanId}/rooms/{roomId}")
+    public ResponseEntity<?> getRoom(@PathVariable(name = "sanId") Long sanId,
+                                     @PathVariable(name = "roomId") Long roomId) {
+        try{
+            return ResponseModel.success(roomMapper.roomToRoomByIdDto(roomService.getOne(roomId)));
+        } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

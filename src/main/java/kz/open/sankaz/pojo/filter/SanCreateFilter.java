@@ -24,7 +24,7 @@ public class SanCreateFilter extends BaseFilter {
     private String siteLink;
     private String[] telNumbers;
     @NotNull
-    private long[] sanTypes;
+    private Long sanTypeId;
     @NotNull
     private Long cityId;
 }

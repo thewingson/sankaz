@@ -30,17 +30,13 @@ public interface SanService extends CommonService<San>, CommonDtoService<San, Sa
     San addOneDto(SanCreateDto dto);
     San updateOneDto(Long id, SanCreateFilter filter);
 
-    SanDto addSanTypes(Long id, Long[] sanTypes);
+    San changeSanType(Long id, Long sanTypeId);
 
-    void deleteSanTypes(Long sanId, Long[] sanTypes);
-
-    SanDto addTelNumbers(Long id, String[] telNumbers);
+    San addTelNumbers(Long id, String[] telNumbers);
 
     void deleteTelNumbers(Long sanId, String[] telNumbers);
 
-    List<FileUrlDto> addPics(Long id, MultipartFile[] pics) throws IOException;
-
-    void deletePics(Long sanId, Long[] pics);
+    FileUrlDto changePic(Long id, MultipartFile pic) throws IOException;
 
     Review addReview(Long sanId, ReviewCreateFilter filter);
 
