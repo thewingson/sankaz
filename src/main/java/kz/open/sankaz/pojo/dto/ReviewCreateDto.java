@@ -5,11 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewCreateDto extends AbstractDto {
+    private LocalDateTime reviewDate;
     private Float rating;
     protected String text;
     protected String username;

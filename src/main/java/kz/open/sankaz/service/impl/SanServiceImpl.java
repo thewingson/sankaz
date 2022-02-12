@@ -102,6 +102,12 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         if(filter.getInstagramLink() != null){
             san.setInstagramLink(filter.getInstagramLink());
         }
+        if(filter.getLongitude() != null){
+            san.setLongitude(filter.getLongitude());
+        }
+        if(filter.getLatitude() != null){
+            san.setLatitude(filter.getLatitude());
+        }
 
         if(filter.getTelNumbers() != null && filter.getTelNumbers().length > 0){
             List<String> dtoTelNumbers = Arrays.asList(filter.getTelNumbers());
@@ -321,8 +327,18 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
             if(san.getMainPicUrl() != null) dto.setPicUrl(APPLICATION_UPLOAD_PATH + san.getMainPicUrl());
             dto.setRating(san.getRating());
             dto.setReviewCount(san.getReviewCount());
+            dto.setLongitude(san.getLongitude());
+            dto.setLatitude(san.getLatitude());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void addGeo(Long sanId, Double longitude, Double latitude) {
+        San san = getOne(sanId);
+        san.setLatitude(latitude);
+        san.setLongitude(longitude);
+        editOneById(san);
     }
 
     @Override
@@ -352,6 +368,12 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         }
         if(filter.getInstagramLink() != null){
             san.setInstagramLink(filter.getInstagramLink());
+        }
+        if(filter.getLongitude() != null){
+            san.setLongitude(filter.getLongitude());
+        }
+        if(filter.getLatitude() != null){
+            san.setLatitude(filter.getLatitude());
         }
 
         for (String telNumber : filter.getTelNumbers()) {

@@ -27,12 +27,12 @@ public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> imple
 
     @Override
     public List<Review> getAllBySanId(Long sanId) {
-        return repo.getAllByDeletedByIsNullAndSanId(sanId);
+        return repo.getAllBySanId(sanId);
     }
 
     @Override
     public List<Review> getAllByFilter(Long sanId, ReviewBySanIdFilter filter) {
-        return repo.getAllByDeletedByIsNullAndSanIdAndRatingIn(sanId, filter.getRatings());
+        return repo.getAllBySanIdAndRatingIn(sanId, filter.getRatings());
     }
 
     @Override

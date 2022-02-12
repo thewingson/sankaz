@@ -66,6 +66,12 @@ public class San extends AbstractEntity{
     @JsonManagedReference
     private City city;
 
+    @Column(name = "LONGITUDE")
+    private Double longitude;
+
+    @Column(name = "LATITUDE")
+    private Double latitude;
+
     public void addTelNumber(TelNumber telNumber){
         if(getTelNumbers() == null){
             this.telNumbers = new ArrayList<>();

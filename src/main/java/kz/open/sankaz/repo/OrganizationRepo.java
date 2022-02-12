@@ -10,10 +10,10 @@ import java.util.Optional;
 
 @Repository
 public interface OrganizationRepo extends CommonRepo<Organization> {
-    Optional<Organization> findByTelNumberAndDeletedByIsNull(@Param("telNumber") String telNumber);
-    Optional<Organization> findByUserAndDeletedByIsNull(@Param("user") SecUser user);
-    Optional<Organization> findByIbanAndDeletedByIsNull(@Param("iban") String iban);
-    Optional<Organization> findByIinAndDeletedByIsNull(@Param("iin") String iin);
+    Optional<Organization> findByTelNumber(@Param("telNumber") String telNumber);
+    Optional<Organization> findByUser(@Param("user") SecUser user);
+    Optional<Organization> findByIban(@Param("iban") String iban);
+    Optional<Organization> findByIin(@Param("iin") String iin);
 
-    List<Organization> findAllByConfirmationStatusInAndDeletedByIsNull(@Param("confirmationStatuses") List<String> confirmationStatuses);
+    List<Organization> findAllByConfirmationStatusIn(@Param("confirmationStatuses") List<String> confirmationStatuses);
 }

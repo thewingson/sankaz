@@ -58,14 +58,10 @@ public abstract class SanMapper {
 
     @Named("sanToSanByIdDto")
     @Mapping(target = "mainPicUrl", expression = "java( getPicUrlFromSysFile(san.getPic()) )")
-    @Mapping(target = "name")
     @Mapping(target = "rating", source = "san.rating")
     @Mapping(target = "sanType", source = "san.sanType.id")
-    @Mapping(target = "description")
     @Mapping(target = "geoLink", ignore = true)
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
-    @Mapping(target = "instagramLink")
-    @Mapping(target = "siteLink")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
     @Mapping(target = "rooms", expression = "java( roomMapper.roomToRoomInSanByIdDto(san.getRooms()) )")
     abstract public SanByIdDto sanToSanByIdDto(San san);

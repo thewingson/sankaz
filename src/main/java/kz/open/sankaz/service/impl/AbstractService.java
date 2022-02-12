@@ -33,7 +33,7 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
 
     @Override
     public E getOne(Long id) {
-        Optional<E> entityById = repo.getByIdAndDeletedByIsNull(id);
+        Optional<E> entityById = repo.findById(id);
         if(!entityById.isPresent()){
             Map<String, Object> params = new HashMap<>();
             params.put("ID", id);
@@ -48,7 +48,7 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
         if (params.containsKey("deleted") && (Boolean) params.get("deleted")) {
             entityById = repo.findById(id);
         } else {
-            entityById = repo.getByIdAndDeletedByIsNull(id);
+            entityById = repo.findById(id);
         }
         if(!entityById.isPresent()){
             Map<String, Object> errorParams = new HashMap<>();
@@ -60,7 +60,7 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
 
     @Override
     public List<E> getAll() {
-        return repo.getAllByDeletedByIsNull();
+        return repo.findAll();
     }
 
     @Override
@@ -68,7 +68,7 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
         if (params.containsKey("deleted") && (Boolean) params.get("deleted")) {
             return repo.findAll();
         } else {
-            return repo.getAllByDeletedByIsNull();
+            return repo.findAll();
         }
     }
 

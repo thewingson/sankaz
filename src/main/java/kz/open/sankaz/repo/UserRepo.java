@@ -10,8 +10,8 @@ import java.util.UUID;
 @Repository
 public interface UserRepo extends CommonRepo<SecUser> {
     Optional<SecUser> findByUsername(@Param("username") String username);
-    Optional<SecUser> findByEmailAndDeletedByIsNull(@Param("email") String email);
+    Optional<SecUser> findByEmail(@Param("email") String email);
     Optional<SecUser> findByTelNumber(@Param("telNumber") String telNumber);
-    SecUser findByDeletedByIsNullAndUsername(@Param("username") String username);
+    SecUser getByUsername(@Param("username") String username);
 //    SecUser findByConfirmationId(@Param("confirmationId") UUID confirmationId);
 }

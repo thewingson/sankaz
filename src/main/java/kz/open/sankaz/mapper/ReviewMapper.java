@@ -21,6 +21,7 @@ public abstract class ReviewMapper {
     protected SanMapper sanMapper;
 
     @Named("reviewToReviewCreateDto")
+    @Mapping(target = "reviewDate", source = "messageDate")
     @Mapping(target = "username", expression = "java(review.getUser().getUsername())")
     @Mapping(target = "fullName", expression = "java(getUsernameFromUser(review.getUser()))")
     @Mapping(target = "sanId", source = "san.id")
@@ -33,7 +34,6 @@ public abstract class ReviewMapper {
      * DTO to Review
      * */
     @Named("reviewCreateFilterToReview")
-    @Mapping(target = "createTs", expression = "java(getNewCreateTs())")
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "san", ignore = true)
     @Mapping(target = "parentReview", ignore = true)

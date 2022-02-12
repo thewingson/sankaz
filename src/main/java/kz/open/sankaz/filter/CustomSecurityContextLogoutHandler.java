@@ -45,7 +45,6 @@ public class CustomSecurityContextLogoutHandler implements LogoutSuccessHandler 
         JwtBlackList blackListItem = new JwtBlackList();
         blackListItem.setUsername(username);
         blackListItem.setAccessToken(token);
-        blackListItem.setCreatedBy(username);
         blackListItem.setAccessToken(token);
         jwtBlackListService.addOne(blackListItem);
         log.info("CustomSecurityContextLogoutHandler. Finished creating JwtBlackList");

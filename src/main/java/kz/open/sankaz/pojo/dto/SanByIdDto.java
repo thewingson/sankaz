@@ -23,4 +23,6 @@ public class SanByIdDto extends AbstractDto {
     private String siteLink;
     private Integer reviewCount;
     private List<RoomInSanByIdDto> rooms;
+    private Double longitude;
+    private Double latitude;
 }

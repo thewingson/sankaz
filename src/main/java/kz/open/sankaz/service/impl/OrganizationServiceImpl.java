@@ -56,7 +56,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
     @Override
     public Organization getOrganizationByTelNumber(String telNumber) {
-        Optional<Organization> organization = repo.findByTelNumberAndDeletedByIsNull(telNumber);
+        Optional<Organization> organization = repo.findByTelNumber(telNumber);
         if(!organization.isPresent()){
             Map<String, Object> params = new HashMap<>();
             params.put("telNumber", telNumber);
@@ -67,7 +67,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
     @Override
     public Organization getOrganizationByUser(SecUser user) {
-        Optional<Organization> organization = organizationRepo.findByUserAndDeletedByIsNull(user);
+        Optional<Organization> organization = organizationRepo.findByUser(user);
         if(!organization.isPresent()){
             Map<String, Object> params = new HashMap<>();
             params.put("user", user.getUsername());
@@ -78,7 +78,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
     @Override
     public Organization getOrganizationByIban(String iban) {
-        Optional<Organization> organization = repo.findByIbanAndDeletedByIsNull(iban);
+        Optional<Organization> organization = repo.findByIban(iban);
         if(!organization.isPresent()){
             Map<String, Object> params = new HashMap<>();
             params.put("iban", iban);
@@ -89,7 +89,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
     @Override
     public Organization getOrganizationByIin(String iin) {
-        Optional<Organization> organization = repo.findByIinAndDeletedByIsNull(iin);
+        Optional<Organization> organization = repo.findByIin(iin);
         if(!organization.isPresent()){
             Map<String, Object> params = new HashMap<>();
             params.put("iin", iin);
@@ -100,7 +100,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
     @Override
     public List<Organization> getAllByConfirmationStatuses(OrganizationFilterFilter filter) {
-        return organizationRepo.findAllByConfirmationStatusInAndDeletedByIsNull(filter.getConfirmationStatuses());
+        return organizationRepo.findAllByConfirmationStatusIn(filter.getConfirmationStatuses());
     }
 
     @Override

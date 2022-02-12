@@ -36,4 +36,6 @@ public interface SanService extends CommonService<San> {
     void deleteRoomPics(Long roomId, Long[] pics);
 
     List<SanForMainDto> getAllForMain(SanForMainFilter filter);
+
+    void addGeo(Long sanId, Double longitude, Double latitude);
 }

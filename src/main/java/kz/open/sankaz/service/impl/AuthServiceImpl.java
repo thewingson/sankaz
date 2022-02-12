@@ -285,7 +285,6 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setConfirmationNumber(0);
         userByNumber.setConfirmedTs(LocalDateTime.now());
         userByNumber.setConfirmedBy(userByNumber.getUsername());
-        userByNumber.setCreatedBy(userByNumber.getUsername());
         userByNumber.setActive(true);
         log.info("Searching for role");
         SecRole roleUser = roleService.getByName("ROLE_USER");
@@ -322,7 +321,6 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setConfirmationNumber(0);
         userByNumber.setConfirmedTs(LocalDateTime.now());
         userByNumber.setConfirmedBy(userByNumber.getUsername());
-        userByNumber.setCreatedBy(userByNumber.getUsername());
         userByNumber.setActive(true);
         log.info("Searching for role");
         SecRole roleUser = roleService.getByName("ROLE_ORG");

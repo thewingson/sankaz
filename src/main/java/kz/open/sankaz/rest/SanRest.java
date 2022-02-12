@@ -90,6 +90,17 @@ public class SanRest {
         }
     }
 
+    @PutMapping("/{sanId}/geo")
+    public ResponseEntity<?> changeGeo(@PathVariable(name = "sanId") Long sanId,
+                                         @Valid @RequestBody GeoFilter filter) {
+        try{
+            sanService.addGeo(sanId, filter.getLongitude(), filter.getLatitude());
+            return ResponseModel.successPure();
+        } catch (Exception e){
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
     @PutMapping("/{sanId}/san-types")
     public ResponseEntity<?> changeSanType(@PathVariable(name = "sanId") Long sanId,
                                          @Valid @RequestBody SanAddDeleteTypesFilter filter) {

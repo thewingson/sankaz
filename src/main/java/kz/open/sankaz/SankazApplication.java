@@ -29,7 +29,7 @@ public class SankazApplication {
 						  CompanyCategoryRepo companyCategoryRepo,
 						  PasswordEncoder passwordEncoder){
 		return  args -> {
-//			callScript(userRepo, roleRepo, sanTypeRepo, cityRepo, companyCategoryRepo, passwordEncoder);
+			callScript(userRepo, roleRepo, sanTypeRepo, cityRepo, companyCategoryRepo, passwordEncoder);
 		};
 	}
 
@@ -40,20 +40,20 @@ public class SankazApplication {
 								  CompanyCategoryRepo companyCategoryRepo,
 								  PasswordEncoder passwordEncoder) {
 		SecRole admin = new SecRole(null, "ROLE_ADMIN");
-		admin.setCreatedBy("admin");
-		admin.setCreateTs(LocalDateTime.now());
+//		admin.setCreatedBy("admin");
+//		admin.setCreateTs(LocalDateTime.now());
 		roleRepo.save(admin);
 		SecRole moderator = new SecRole(null, "ROLE_MODERATOR");
-		moderator.setCreatedBy("admin");
-		moderator.setCreateTs(LocalDateTime.now());
+//		moderator.setCreatedBy("admin");
+//		moderator.setCreateTs(LocalDateTime.now());
 		roleRepo.save(moderator);
 		SecRole manager = new SecRole(null, "ROLE_ORG");
-		manager.setCreatedBy("admin");
-		manager.setCreateTs(LocalDateTime.now());
+//		manager.setCreatedBy("admin");
+//		manager.setCreateTs(LocalDateTime.now());
 		roleRepo.save(manager);
 		SecRole user = new SecRole(null, "ROLE_USER");
-		user.setCreatedBy("admin");
-		user.setCreateTs(LocalDateTime.now());
+//		user.setCreatedBy("admin");
+//		user.setCreateTs(LocalDateTime.now());
 		roleRepo.save(user);
 
 		SecUser user1 = new SecUser();
@@ -74,8 +74,8 @@ public class SankazApplication {
 		user1.setConfirmedTs(LocalDateTime.now());
 		user1.setActive(true);
 		user1.setLoggedOut(false);
-		user1.setCreatedBy("admin");
-		user1.setCreateTs(LocalDateTime.now());
+//		user1.setCreatedBy("admin");
+//		user1.setCreateTs(LocalDateTime.now());
 		userRepo.save(user1);
 
 		SecUser user2 = new SecUser();
@@ -96,56 +96,56 @@ public class SankazApplication {
 		user2.setConfirmedTs(LocalDateTime.now());
 		user2.setActive(true);
 		user2.setLoggedOut(false);
-		user2.setCreatedBy("admin");
-		user2.setCreateTs(LocalDateTime.now());
+//		user2.setCreatedBy("admin");
+//		user2.setCreateTs(LocalDateTime.now());
 		userRepo.save(user2);
 
 		SanType sanType = new SanType();
 		sanType.setCode("type1");
 		sanType.setName("type 1");
 		sanType.setDescription("type tpe 1");
-		sanType.setCreatedBy("admin");
-		sanType.setCreateTs(LocalDateTime.now());
+//		sanType.setCreatedBy("admin");
+//		sanType.setCreateTs(LocalDateTime.now());
 		sanTypeRepo.save(sanType);
 
 		SanType sanType2 = new SanType();
 		sanType2.setCode("type2");
 		sanType2.setName("type 2");
 		sanType2.setDescription("type tpe 2");
-		sanType2.setCreatedBy("admin");
-		sanType2.setCreateTs(LocalDateTime.now());
+//		sanType2.setCreatedBy("admin");
+//		sanType2.setCreateTs(LocalDateTime.now());
 		sanTypeRepo.save(sanType2);
 
 		City city = new City();
 		city.setCode("ALM");
 		city.setName("Almaty");
 		city.setDescription("type tpe 2");
-		city.setCreatedBy("admin");
-		city.setCreateTs(LocalDateTime.now());
+//		city.setCreatedBy("admin");
+//		city.setCreateTs(LocalDateTime.now());
 		cityRepo.save(city);
 
 		City city2 = new City();
 		city2.setCode("AST");
 		city2.setName("Astana");
 		city2.setDescription("type tpe 2");
-		city2.setCreatedBy("admin");
-		city2.setCreateTs(LocalDateTime.now());
+//		city2.setCreatedBy("admin");
+//		city2.setCreateTs(LocalDateTime.now());
 		cityRepo.save(city2);
 
 		CompanyCategory companyCategory = new CompanyCategory();
 		companyCategory.setCode("ALM");
 		companyCategory.setName("Almaty");
 		companyCategory.setDescription("type tpe 2");
-		companyCategory.setCreatedBy("admin");
-		companyCategory.setCreateTs(LocalDateTime.now());
+//		companyCategory.setCreatedBy("admin");
+//		companyCategory.setCreateTs(LocalDateTime.now());
 		companyCategoryRepo.save(companyCategory);
 
 		CompanyCategory companyCategory1 = new CompanyCategory();
 		companyCategory1.setCode("AST");
 		companyCategory1.setName("Astana");
 		companyCategory1.setDescription("type tpe 2");
-		companyCategory1.setCreatedBy("admin");
-		companyCategory1.setCreateTs(LocalDateTime.now());
+//		companyCategory1.setCreatedBy("admin");
+//		companyCategory1.setCreateTs(LocalDateTime.now());
 		companyCategoryRepo.save(companyCategory1);
 	}
 

@@ -64,7 +64,7 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return repo.findByDeletedByIsNullAndUsername(username);
+        return repo.getByUsername(username);
     }
 
     @Override
@@ -194,7 +194,7 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
 
     @Override
     public SecUser getUserByEmail(String email) {
-        Optional<SecUser> secUser = repo.findByEmailAndDeletedByIsNull(email);
+        Optional<SecUser> secUser = repo.findByEmail(email);
         if(!secUser.isPresent()){
             Map<String, Object> params = new HashMap<>();
             params.put("email", email);
