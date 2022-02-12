@@ -4,7 +4,6 @@ import kz.open.sankaz.model.Room;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.dto.RoomByIdDto;
 import kz.open.sankaz.pojo.dto.RoomCreateDto;
-import kz.open.sankaz.pojo.dto.RoomDto;
 import kz.open.sankaz.pojo.dto.RoomInSanByIdDto;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -24,19 +23,6 @@ public abstract class RoomMapper {
 
     @Value("${application.file.upload.path}")
     private String APPLICATION_UPLOAD_PATH;
-
-    @Named("roomToDto")
-    @Mapping(target = "san", ignore = true)
-    abstract public RoomDto roomToDto(Room room);
-    @IterableMapping(qualifiedByName = "roomToDto")
-    abstract public List<RoomDto> roomToDto(List<Room> rooms);
-
-    @Named("roomToDtoWithSan")
-    @Mapping(target = "san",
-            expression = "java(sanMapper.sanToDto(room.getSan()))")
-    abstract public RoomDto roomToDtoWithSan(Room room);
-    @IterableMapping(qualifiedByName = "roomToDtoWithSan")
-    abstract public List<RoomDto> roomToDtoWithSan(List<Room> rooms);
 
     @Named("roomToRoomCreateDto")
     @Mapping(target = "sanId", source = "room.san.id")

@@ -1,5 +1,6 @@
 package kz.open.sankaz.rest;
 
+import kz.open.sankaz.mapper.SecUserMapper;
 import kz.open.sankaz.pojo.filter.ChangePasswordFilter;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.response.ResponseModel;
@@ -24,6 +25,9 @@ public class UserProfileRest {
     private final AuthService authService;
 
     @Autowired
+    private SecUserMapper userMapper;
+
+    @Autowired
     public UserProfileRest(UserService userService, AuthService authService) {
         this.userService = userService;
         this.authService = authService;
@@ -33,7 +37,7 @@ public class UserProfileRest {
     @GetMapping("/profiles")
     public ResponseEntity<?> getUsers() {
         try {
-            return ResponseModel.success(userService.getAllDto());
+            return ResponseModel.success(userMapper.userToDto(userService.getAll()));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
@@ -42,7 +46,7 @@ public class UserProfileRest {
     @GetMapping("/profiles/{userId}")
     public ResponseEntity<?> getUser(@PathVariable("userId") Long userId) {
         try {
-            return ResponseModel.success(userService.getOneDto(userId));
+            return ResponseModel.success(userMapper.userToDto(userService.getOne(userId)));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

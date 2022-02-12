@@ -1,17 +1,14 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.pojo.dto.ServiceCategoryDto;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.ServiceCategory;
+import kz.open.sankaz.pojo.dto.ServiceCategoryDto;
 import kz.open.sankaz.repo.dictionary.ServiceCategoryRepo;
 import kz.open.sankaz.service.ServiceCategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -32,21 +29,6 @@ public class ServiceCategoryServiceImpl extends AbstractDictionaryService<Servic
     @Override
     protected Class getCurrentClass() {
         return ServiceCategory.class;
-    }
-
-    @Override
-    public ServiceCategoryDto getOneDto(Long id) {
-        return null;
-    }
-
-    @Override
-    public List<ServiceCategoryDto> getAllDto() {
-        return null;
-    }
-
-    @Override
-    public List<ServiceCategoryDto> getAllDto(Map<String, Object> params) {
-        return null;
     }
 
     @Override
@@ -74,10 +56,5 @@ public class ServiceCategoryServiceImpl extends AbstractDictionaryService<Servic
             serviceCategory.setDescriptionKz(dto.getDescriptionKz());
         }
         return editOneById(serviceCategory);
-    }
-
-    @Override
-    public ServiceCategory updateOneDto(Map<String, Object> params, ServiceCategoryDto dto) {
-        return null;
     }
 }

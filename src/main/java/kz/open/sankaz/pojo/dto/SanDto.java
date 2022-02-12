@@ -19,6 +19,5 @@ public class SanDto extends AbstractDto {
     private Long sanTypeId;
     private List<RoomDto> rooms;
     private List<ReviewDto> reviews;
-    private List<HyperLinkDto> links;
     private List<ItemPicDto> pics;
 }

@@ -1,6 +1,6 @@
 package kz.open.sankaz.rest;
 
-import kz.open.sankaz.pojo.dto.*;
+import kz.open.sankaz.mapper.OrganizationMapper;
 import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.OrganizationService;
@@ -21,6 +21,9 @@ public class OrganizationRest {
     private final OrganizationService organizationService;
 
     @Autowired
+    private OrganizationMapper organizationMapper;
+
+    @Autowired
     public OrganizationRest(OrganizationService organizationService) {
         this.organizationService = organizationService;
     }
@@ -28,7 +31,7 @@ public class OrganizationRest {
     @GetMapping("/{orgId}")
     public ResponseEntity<?> getOne(@PathVariable Long orgId) {
         try {
-            return ResponseModel.success(organizationService.getOneDto(orgId));
+            return ResponseModel.success(organizationMapper.organizationToDtoWithAddData(organizationService.getOne(orgId)));
         } catch (RuntimeException e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

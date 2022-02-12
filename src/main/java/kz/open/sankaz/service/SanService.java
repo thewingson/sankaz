@@ -4,8 +4,6 @@ import kz.open.sankaz.model.Review;
 import kz.open.sankaz.model.Room;
 import kz.open.sankaz.model.San;
 import kz.open.sankaz.pojo.dto.FileUrlDto;
-import kz.open.sankaz.pojo.dto.SanCreateDto;
-import kz.open.sankaz.pojo.dto.SanDto;
 import kz.open.sankaz.pojo.dto.SanForMainDto;
 import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
@@ -16,18 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-public interface SanService extends CommonService<San>, CommonDtoService<San, SanDto> {
-
-    /***
-     * for Entity
-     */
-
-    /***
-     * for DTO
-     */
+public interface SanService extends CommonService<San> {
     San createSan(SanCreateFilter filter);
 
-    San addOneDto(SanCreateDto dto);
     San updateOneDto(Long id, SanCreateFilter filter);
 
     San changeSanType(Long id, Long sanTypeId);

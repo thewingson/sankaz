@@ -1,18 +1,15 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.pojo.dto.CompanyCategoryDto;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.CompanyCategory;
+import kz.open.sankaz.pojo.dto.CompanyCategoryDto;
 import kz.open.sankaz.repo.dictionary.CompanyCategoryRepo;
 import kz.open.sankaz.service.CompanyCategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -33,21 +30,6 @@ public class CompanyCategoryServiceImpl extends AbstractDictionaryService<Compan
     @Override
     protected Class getCurrentClass() {
         return CompanyCategory.class;
-    }
-
-    @Override
-    public CompanyCategoryDto getOneDto(Long id) {
-        return null;
-    }
-
-    @Override
-    public List<CompanyCategoryDto> getAllDto() {
-        return null;
-    }
-
-    @Override
-    public List<CompanyCategoryDto> getAllDto(Map<String, Object> params) {
-        return null;
     }
 
     @Override
@@ -89,11 +71,6 @@ public class CompanyCategoryServiceImpl extends AbstractDictionaryService<Compan
             companyCategory.setDescriptionKz(dto.getDescriptionKz());
         }
         return editOneById(companyCategory);
-    }
-
-    @Override
-    public CompanyCategory updateOneDto(Map<String, Object> params, CompanyCategoryDto dto) {
-        return null;
     }
 
     @Override

@@ -6,7 +6,6 @@ import kz.open.sankaz.model.CompanyCategory;
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.SysFile;
-import kz.open.sankaz.pojo.dto.OrganizationDto;
 import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
 import kz.open.sankaz.pojo.filter.OrganizationFilterFilter;
 import kz.open.sankaz.repo.OrganizationRepo;
@@ -213,35 +212,5 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     @Override
     protected Class getCurrentClass() {
         return Organization.class;
-    }
-
-    @Override
-    public OrganizationDto getOneDto(Long id) {
-        return organizationMapper.organizationToDtoWithAddData(getOne(id));
-    }
-
-    @Override
-    public List<OrganizationDto> getAllDto() {
-        return organizationMapper.organizationToDto(getAll());
-    }
-
-    @Override
-    public List<OrganizationDto> getAllDto(Map<String, Object> params) {
-        return organizationMapper.organizationToDtoWithAddData(getAll(params));
-    }
-
-    @Override
-    public Organization addOneDto(OrganizationDto dto) {
-        return null;
-    }
-
-    @Override
-    public Organization updateOneDto(Long id, OrganizationDto dto) {
-        return null;
-    }
-
-    @Override
-    public Organization updateOneDto(Map<String, Object> params, OrganizationDto dto) {
-        return null;
     }
 }

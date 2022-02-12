@@ -8,7 +8,9 @@ import kz.open.sankaz.model.City;
 import kz.open.sankaz.model.Gender;
 import kz.open.sankaz.model.ItemPic;
 import kz.open.sankaz.model.SecUser;
-import kz.open.sankaz.pojo.dto.*;
+import kz.open.sankaz.pojo.dto.ItemPicDto;
+import kz.open.sankaz.pojo.dto.PictureDto;
+import kz.open.sankaz.pojo.dto.SecUserDto;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.repo.UserRepo;
 import kz.open.sankaz.service.CityService;
@@ -27,7 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -114,11 +119,6 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
             throw new EntityNotFoundException(getCurrentClass(), params);
         }
         return secUser.get();
-    }
-
-    @Override
-    public SecUserDto updateOneDto(Long id, SecUserEditDto dto) {
-        return null;
     }
 
     @Override
@@ -219,36 +219,4 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
         return SecUser.class;
     }
 
-//    @PreAuthorize("getUsernameById(id) == principal")
-    @Override
-    public SecUserDto getOneDto(Long id) {
-        // TODO: return full info if own account, hide password if other's account
-        SecUser user = getOne(id);
-        return userMapper.userToDto(user);
-    }
-
-    @Override
-    public List<SecUserDto> getAllDto() {
-        return userMapper.userToDto(getAll());
-    }
-
-    @Override
-    public List<SecUserDto> getAllDto(Map<String, Object> params) {
-        return userMapper.userToDto(getAll(params));
-    }
-
-    @Override
-    public SecUser addOneDto(SecUserDto dto) {
-        return null;
-    }
-
-    @Override
-    public SecUser updateOneDto(Long id, SecUserDto dto) {
-        return null;
-    }
-
-    @Override
-    public SecUser updateOneDto(Map<String, Object> params, SecUserDto dto) {
-        return null;
-    }
 }

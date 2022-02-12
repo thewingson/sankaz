@@ -1,5 +1,6 @@
 package kz.open.sankaz.rest.dictionary;
 
+import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.pojo.dto.SanTypeDto;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.SanTypeService;
@@ -14,10 +15,13 @@ public class SanTypeRest {
     @Autowired
     private SanTypeService sanTypeService;
 
+    @Autowired
+    private CategoryMapper categoryMapper;
+
     @GetMapping
     public ResponseEntity<?> getAll() {
         try{
-            return ResponseModel.success(sanTypeService.getAllDto());
+            return ResponseModel.success(categoryMapper.sanTypeToDto(sanTypeService.getAll()));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -26,7 +30,7 @@ public class SanTypeRest {
     @GetMapping("/{id}")
     public ResponseEntity<?> getOneById(@PathVariable(name = "id") Long id) {
         try{
-            return ResponseModel.success(sanTypeService.getOneDto(id));
+            return ResponseModel.success(categoryMapper.sanTypeToDto(sanTypeService.getOne(id)));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

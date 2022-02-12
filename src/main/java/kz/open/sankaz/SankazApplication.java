@@ -2,10 +2,10 @@ package kz.open.sankaz;
 
 import kz.open.sankaz.model.*;
 import kz.open.sankaz.repo.RoleRepo;
+import kz.open.sankaz.repo.UserRepo;
 import kz.open.sankaz.repo.dictionary.CityRepo;
 import kz.open.sankaz.repo.dictionary.CompanyCategoryRepo;
 import kz.open.sankaz.repo.dictionary.SanTypeRepo;
-import kz.open.sankaz.repo.UserRepo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,12 +29,7 @@ public class SankazApplication {
 						  CompanyCategoryRepo companyCategoryRepo,
 						  PasswordEncoder passwordEncoder){
 		return  args -> {
-			callScript(userRepo,
-					roleRepo,
-					sanTypeRepo,
-					cityRepo,
-					companyCategoryRepo,
-					passwordEncoder);
+//			callScript(userRepo, roleRepo, sanTypeRepo, cityRepo, companyCategoryRepo, passwordEncoder);
 		};
 	}
 

@@ -37,7 +37,7 @@ public class ModeratorRest {
     @GetMapping("/orgs/{orgId}")
     public ResponseEntity<?> getAllOrganizations(@PathVariable("orgId") Long orgId) {
         try {
-            return ResponseModel.success(organizationService.getOneDto(orgId));
+            return ResponseModel.success(organizationMapper.organizationToDtoWithAddData(organizationService.getOne(orgId)));
         } catch (RuntimeException e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

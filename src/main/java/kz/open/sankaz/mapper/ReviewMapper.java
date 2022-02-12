@@ -4,7 +4,6 @@ import kz.open.sankaz.model.Review;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.pojo.dto.ReviewBySanIdDto;
 import kz.open.sankaz.pojo.dto.ReviewCreateDto;
-import kz.open.sankaz.pojo.dto.ReviewDto;
 import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -20,22 +19,6 @@ public abstract class ReviewMapper {
 
     @Autowired
     protected SanMapper sanMapper;
-
-    @Named("reviewToDto")
-    @Mapping(target = "san", ignore = true)
-    @Mapping(target = "parentReview", ignore = true)
-    abstract public ReviewDto reviewToDto(Review review);
-    @IterableMapping(qualifiedByName = "reviewToDto")
-    abstract public List<ReviewDto> reviewToDto(List<Review> reviews);
-
-    @Named("reviewToDtoWithSanAndParent")
-    @Mapping(target = "parentReview",
-            expression = "java(review.getParentReview().getId())")
-    @Mapping(target = "san",
-            expression = "java(sanMapper.sanToDto(review.getSan()))")
-    abstract public ReviewDto reviewToDtoWithSanAndParent(Review review);
-    @IterableMapping(qualifiedByName = "reviewToDtoWithSanAndParent")
-    abstract public List<ReviewDto> reviewToDtoWithSanAndParent(List<Review> reviews);
 
     @Named("reviewToReviewCreateDto")
     @Mapping(target = "username", expression = "java(review.getUser().getUsername())")

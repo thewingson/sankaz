@@ -1,18 +1,15 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.pojo.dto.RoomTypeDto;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.RoomType;
+import kz.open.sankaz.pojo.dto.RoomTypeDto;
 import kz.open.sankaz.repo.dictionary.RoomTypeRepo;
 import kz.open.sankaz.service.RoomTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -33,21 +30,6 @@ public class RoomTypeServiceImpl extends AbstractDictionaryService<RoomType, Roo
     @Override
     protected Class getCurrentClass() {
         return RoomType.class;
-    }
-
-    @Override
-    public RoomTypeDto getOneDto(Long id) {
-        return null;
-    }
-
-    @Override
-    public List<RoomTypeDto> getAllDto() {
-        return null;
-    }
-
-    @Override
-    public List<RoomTypeDto> getAllDto(Map<String, Object> params) {
-        return null;
     }
 
     @Override
@@ -89,11 +71,6 @@ public class RoomTypeServiceImpl extends AbstractDictionaryService<RoomType, Roo
             roomType.setDescriptionKz(dto.getDescriptionKz());
         }
         return editOneById(roomType);
-    }
-
-    @Override
-    public RoomType updateOneDto(Map<String, Object> params, RoomTypeDto dto) {
-        return null;
     }
 
     @Override

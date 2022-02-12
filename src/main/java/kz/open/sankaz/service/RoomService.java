@@ -1,19 +1,9 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.pojo.dto.RoomDto;
 import kz.open.sankaz.model.Room;
+import kz.open.sankaz.pojo.dto.RoomDto;
 
-import java.util.List;
-
-public interface RoomService extends CommonService<Room>, CommonDtoService<Room, RoomDto> {
-
-    /***
-     * for Entity
-     */
-
-    /***
-     * for DTO
-     */
-    Room addDto(Long sanId, RoomDto roomDto);
-    List<Room> addDto(Long sanId, List<RoomDto> roomDtos);
+public interface RoomService extends CommonService<Room> {
+    Room addOneDto(RoomDto roomDto);
+    Room updateOneDto(Long id, RoomDto roomDto);
 }

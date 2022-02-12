@@ -32,9 +32,6 @@ public abstract class SanMapper {
     @Lazy
     @Autowired
     protected RoomMapper roomMapper;
-    @Lazy
-    @Autowired
-    protected ItemPicMapper itemPicMapper;
 
     @Named("sanToDto")
     @Mapping(target = "sanTypeId", source = "san.sanType.id")

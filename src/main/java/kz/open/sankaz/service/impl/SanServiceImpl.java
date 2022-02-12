@@ -2,12 +2,9 @@ package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.mapper.FileMapper;
 import kz.open.sankaz.mapper.ReviewMapper;
-import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.model.*;
 import kz.open.sankaz.pojo.dto.FileUrlDto;
-import kz.open.sankaz.pojo.dto.SanCreateDto;
-import kz.open.sankaz.pojo.dto.SanDto;
 import kz.open.sankaz.pojo.dto.SanForMainDto;
 import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
@@ -25,7 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,9 +68,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Autowired
     private FileMapper fileMapper;
 
-    @Autowired
-    private RoomMapper roomMapper;
-
     @Value("${application.file.upload.path}")
     private String APPLICATION_UPLOAD_PATH;
 
@@ -79,42 +76,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         this.sanRepo = sanRepo;
     }
 
-    @Override
-    public SanDto getOneDto(Long id) {
-        San one = getOne(id);
-        return sanMapper.sanToDto(one);
-    }
-
-    @Override
-    public List<SanDto> getAllDto() {
-//        return sanMapper.sanToDto(getAll());
-        return sanMapper.sanToDto(getAll());
-    }
-
-    @Override
-    public List<SanDto> getAllDto(Map<String, Object> params) {
-        return sanMapper.sanToDto(getAll(params));
-    }
-
-    @Override
-    public San addOneDto(SanDto sanDto) {
-        log.info("SERVICE -> SanServiceImpl.addOneDto()");
-        San san = new San();
-        san.setDescription(sanDto.getDescription());
-        san.setName(sanDto.getName());
-
-        if(sanDto.getSanTypeId()!= null){
-            SanType sanTypeByCode = sanTypeService.getOne(sanDto.getSanTypeId());
-            san.setSanType(sanTypeByCode);
-        }
-
-        return addOne(san);
-    }
-
-    @Override
-    public San updateOneDto(Long id, SanDto dto) {
-        return null;
-    }
 
     @Override
     public San updateOneDto(Long id, SanCreateFilter filter) {
@@ -365,12 +326,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
-    public San updateOneDto(Map<String, Object> params, SanDto sanDto) {
-        // Backlog: потом, с помощью JOOQ
-        return null;
-    }
-
-    @Override
     protected Class getCurrentClass() {
         return San.class;
     }
@@ -408,11 +363,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
         log.info(getServiceClass() + ".addOneDto() Finished");
         return addOne(san);
-    }
-
-    @Override
-    public San addOneDto(SanCreateDto dto) {
-        return null;
     }
 
     @Override

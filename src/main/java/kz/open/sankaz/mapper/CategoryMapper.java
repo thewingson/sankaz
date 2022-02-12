@@ -25,21 +25,6 @@ public abstract class CategoryMapper {
     @IterableMapping(qualifiedByName = "sanTypeToDto")
     abstract public List<SanTypeDto> sanTypeToDto(List<SanType> sanTypes);
 
-    @Named("companyCategoryToDto")
-    abstract public CompanyCategoryDto companyCategoryToDto(CompanyCategory category);
-    @IterableMapping(qualifiedByName = "companyCategoryToDto")
-    abstract public List<CompanyCategoryDto> companyCategoryToDto(List<CompanyCategory> categories);
-
-    @Named("serviceCategoryToDto")
-    abstract public ServiceCategoryDto serviceCategoryToDto(ServiceCategory category);
-    @IterableMapping(qualifiedByName = "serviceCategoryToDto")
-    abstract public List<ServiceCategoryDto> serviceCategoryToDto(List<ServiceCategory> categories);
-
-    @Named("roomTypeToDto")
-    abstract public RoomTypeDto roomTypeToDto(RoomType roomType);
-    @IterableMapping(qualifiedByName = "roomTypeToDto")
-    abstract public List<RoomTypeDto> roomTypeToDto(List<RoomType> roomTypes);
-
     /**
      * from DTO to Entity
      * */

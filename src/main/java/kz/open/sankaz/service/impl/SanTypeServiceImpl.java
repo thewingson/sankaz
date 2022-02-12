@@ -1,9 +1,9 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.pojo.dto.SanTypeDto;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.SanType;
+import kz.open.sankaz.pojo.dto.SanTypeDto;
 import kz.open.sankaz.repo.dictionary.SanTypeRepo;
 import kz.open.sankaz.service.SanTypeService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -34,24 +32,6 @@ public class SanTypeServiceImpl extends AbstractDictionaryService<SanType, SanTy
     @Override
     public List<SanType> getAllByCodeIn(List<String> codes) {
         return sanTypeRepo.getAllByCodeIn(codes);
-    }
-
-    @Override
-    public SanTypeDto getOneDto(Long id) {
-        SanType one = getOne(id);
-        return categoryMapper.sanTypeToDto(one);
-    }
-
-    @Override
-    public List<SanTypeDto> getAllDto() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("deleted", false);
-        return categoryMapper.sanTypeToDto(getAll(params));
-    }
-
-    @Override
-    public List<SanTypeDto> getAllDto(Map<String, Object> params) {
-        return categoryMapper.sanTypeToDto(getAll(params));
     }
 
     @Override
@@ -100,12 +80,6 @@ public class SanTypeServiceImpl extends AbstractDictionaryService<SanType, SanTy
             sanType.setDescription(sanTypeDto.getDescription());
         }
         return editOneById(sanType);
-    }
-
-    @Override
-    public SanType updateOneDto(Map<String, Object> params, SanTypeDto sanTypeDto) {
-        // Backlog: потом, с помощью JOOQ
-        return null;
     }
 
     @Override
