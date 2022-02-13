@@ -46,7 +46,7 @@ public class UserProfileRest {
     @GetMapping("/profiles/{userId}")
     public ResponseEntity<?> getUser(@PathVariable("userId") Long userId) {
         try {
-            return ResponseModel.success(userMapper.userToDto(userService.getOne(userId)));
+            return ResponseModel.success(userMapper.userToOwnProfileDto(userService.getOne(userId)));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

@@ -17,7 +17,6 @@ public class SanByIdDto extends AbstractDto {
     private Float rating;
     private String sanType;
     private String description;
-    private String geoLink;
     private List<String> telNumbers;
     private String instagramLink;
     private String siteLink;

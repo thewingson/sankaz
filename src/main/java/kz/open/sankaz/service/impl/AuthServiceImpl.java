@@ -78,7 +78,6 @@ public class AuthServiceImpl implements AuthService {
     @Value("${security.account.confirm.link}")
     private String ACCOUNT_CONFIRM_LINK;
 
-    private static final String ACCOUNT_CONFIRM_MESSAGE = "\nWelcome to SanKaz!\nTo confirm activation, please, visit next link";
     private static final int CONFIRMATION_TIME_IN_MINUTES = 10;
 
     @Override
@@ -151,9 +150,9 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.clearRoles();
 
         userByNumber.setConfirmationStatus("ON_CONFIRMATION");
-        userByNumber.setConfirmedTs(null);
+        userByNumber.setConfirmedDate(null);
         userByNumber.setConfirmationNumber(getRandomConfirmationNumber());
-        userByNumber.setConfirmationNumberCreatedTs(LocalDateTime.now());
+        userByNumber.setConfirmationNumberCreatedDate(LocalDateTime.now());
         userByNumber.setTelNumber(telNumber);
         userByNumber.setUsername(telNumber);
         userByNumber.setPassword(passwordEncoder.encode("test"));
@@ -172,8 +171,8 @@ public class AuthServiceImpl implements AuthService {
         String sender = "SanKaz";
         String query = "";
         SmscApi smscApi = new SmscApi();
-//        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
-        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber());
+        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
+//        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber());
         log.info("End of sending confirmation number {}", telNumber);
         return userByNumber.getConfirmationNumber();
     }
@@ -203,9 +202,9 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.clearRoles();
 
         userByNumber.setConfirmationStatus("ON_CONFIRMATION");
-        userByNumber.setConfirmedTs(null);
+        userByNumber.setConfirmedDate(null);
         userByNumber.setConfirmationNumber(getRandomConfirmationNumber());
-        userByNumber.setConfirmationNumberCreatedTs(LocalDateTime.now());
+        userByNumber.setConfirmationNumberCreatedDate(LocalDateTime.now());
         userByNumber.setTelNumber(telNumber);
         userByNumber.setUsername(telNumber);
         userByNumber.setPassword(passwordEncoder.encode(password));
@@ -224,8 +223,8 @@ public class AuthServiceImpl implements AuthService {
         String sender = "SanKaz";
         String query = "";
         SmscApi smscApi = new SmscApi();
-//        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
-        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber());
+        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
+//        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber());
         log.info("End of sending confirmation number {}", telNumber);
         return userByNumber.getConfirmationNumber();
     }
@@ -243,7 +242,7 @@ public class AuthServiceImpl implements AuthService {
 
         userByNumber.setResetNumberStatus("ON_RESET");
         userByNumber.setResetNumber(getRandomConfirmationNumber());
-        userByNumber.setResetNumberCreatedTs(LocalDateTime.now());
+        userByNumber.setResetNumberCreatedDate(LocalDateTime.now());
         log.info("Updating user {}", userByNumber.getUsername());
         userService.editOneById(userByNumber);
         log.info("Sending confirmation number {}", telNumber);
@@ -257,8 +256,8 @@ public class AuthServiceImpl implements AuthService {
         String sender = "SanKaz";
         String query = "";
         SmscApi smscApi = new SmscApi();
-//        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
-        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), message);
+        smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
+//        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), message);
         log.info("End of sending confirmation number {}", telNumber);
         return userByNumber.getResetNumber();
     }
@@ -273,7 +272,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("Number has already confirmed! {}", filter.getConfirmationNumber());
             throw new RuntimeException("Номер уже подтвержден! Пожалуйста, закончите регистрацию.");
         }
-        if (LocalDateTime.now().isAfter(userByNumber.getConfirmationNumberCreatedTs().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
+        if (LocalDateTime.now().isAfter(userByNumber.getConfirmationNumberCreatedDate().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
             log.info("Confirmation number time is expired! {}", filter.getConfirmationNumber());
             throw new RuntimeException("Время номера подтверждения истек! Пожалуйста, отправьте еще раз!");
         }
@@ -283,7 +282,7 @@ public class AuthServiceImpl implements AuthService {
         }
         userByNumber.setConfirmationStatus("CONFIRMED");
         userByNumber.setConfirmationNumber(0);
-        userByNumber.setConfirmedTs(LocalDateTime.now());
+        userByNumber.setConfirmedDate(LocalDateTime.now());
         userByNumber.setConfirmedBy(userByNumber.getUsername());
         userByNumber.setActive(true);
         log.info("Searching for role");
@@ -309,7 +308,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("Number has already confirmed! {}", confirmNumber);
             throw new RuntimeException("Номер уже подтвержден! Пожалуйста, закончите регистрацию.");
         }
-        if (LocalDateTime.now().isAfter(userByNumber.getConfirmationNumberCreatedTs().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
+        if (LocalDateTime.now().isAfter(userByNumber.getConfirmationNumberCreatedDate().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
             log.info("Confirmation number time is expired! {}", confirmNumber);
             throw new RuntimeException("Время номера подтверждения истек! Пожалуйста, отправьте еще раз!");
         }
@@ -319,7 +318,7 @@ public class AuthServiceImpl implements AuthService {
         }
         userByNumber.setConfirmationStatus("CONFIRMED");
         userByNumber.setConfirmationNumber(0);
-        userByNumber.setConfirmedTs(LocalDateTime.now());
+        userByNumber.setConfirmedDate(LocalDateTime.now());
         userByNumber.setConfirmedBy(userByNumber.getUsername());
         userByNumber.setActive(true);
         log.info("Searching for role");
@@ -347,7 +346,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("Unable to check reset number! {}", resetNumber);
             throw new RuntimeException("Невозможно проверить номер. Пожалуйста, отправьте номер для сброса еще раз.");
         }
-        if (LocalDateTime.now().isAfter(userByNumber.getResetNumberCreatedTs().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
+        if (LocalDateTime.now().isAfter(userByNumber.getResetNumberCreatedDate().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
             log.info("Reset number time is expired! {}", resetNumber);
             throw new RuntimeException("Время для сброса истек! Пожалуйста, отправьте номер для сброса еще раз.");
         }
@@ -403,15 +402,11 @@ public class AuthServiceImpl implements AuthService {
         }
         if(filter.getCityId() != null){
             City city = cityService.getOne(filter.getCityId());
-            if(userByNumber.getCity() != null && !userByNumber.getCity().equals(city)){
-                userByNumber.setCity(city);
-            }
+            userByNumber.setCity(city);
         }
         if(filter.getGenderId() != null){
             Gender gender = genderService.getOne(filter.getGenderId());
-            if(userByNumber.getGender() != null && !userByNumber.getGender().equals(gender)){
-                userByNumber.setGender(gender);
-            }
+            userByNumber.setGender(gender);
         }
         if(!filter.getEmail().isEmpty()){
             try{
@@ -526,7 +521,7 @@ public class AuthServiceImpl implements AuthService {
         }
         // TODO: CHECK WITH OLD PASSWORD
 
-        userByNumber.setResetNumberCreatedTs(null);
+        userByNumber.setResetNumberCreatedDate(null);
         userByNumber.setPassword(passwordEncoder.encode(password));
         log.info("Updating user {}", telNumber);
         userService.editOneById(userByNumber);

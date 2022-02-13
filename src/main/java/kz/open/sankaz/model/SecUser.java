@@ -68,8 +68,8 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "LOGGED_OUT", nullable = false)
     private boolean loggedOut = false;
 
-    @Column(name = "CONFIRMED_TS")
-    private LocalDateTime confirmedTs;
+    @Column(name = "CONFIRMED_DATE")
+    private LocalDateTime confirmedDate;
 
     @Column(name = "CONFIRMED_BY")
     private String confirmedBy;
@@ -80,14 +80,14 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "CONFIRMATION_STATUS")
     private String confirmationStatus = "NEW"; // NEW ON_CONFIRMATION CONFIRMED FINISHED
 
-    @Column(name = "CONFIRMATION_NUMBER_CREATED_TS")
-    private LocalDateTime confirmationNumberCreatedTs;
+    @Column(name = "CONFIRMATION_NUMBER_CREATED_DATE")
+    private LocalDateTime confirmationNumberCreatedDate;
 
     @Column(name = "RESET_NUMBER")
     private int resetNumber;
 
-    @Column(name = "RESET_NUMBER_CREATED_TS")
-    private LocalDateTime resetNumberCreatedTs;
+    @Column(name = "RESET_NUMBER_CREATED_DATE")
+    private LocalDateTime resetNumberCreatedDate;
 
     @Column(name = "RESET_NUMBER_STATUS")
     private String resetNumberStatus = "EMPTY"; // EMPTY ON_RESET
@@ -99,10 +99,10 @@ public class SecUser extends AbstractEntity implements UserDetails{
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
     private List<SecRole> roles;
 
-    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SEC_USER_PIC_FK"))
     @JsonManagedReference
-    private ItemPic pic;
+    private SysFile pic;
 
     public SecUser(Long id,
                    String username,

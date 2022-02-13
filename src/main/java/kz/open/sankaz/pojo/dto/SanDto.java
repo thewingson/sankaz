@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,7 +15,4 @@ public class SanDto extends AbstractDto {
     private String instagramLink;
     private String siteLink;
     private Long sanTypeId;
-    private List<RoomDto> rooms;
-    private List<ReviewDto> reviews;
-    private List<ItemPicDto> pics;
 }

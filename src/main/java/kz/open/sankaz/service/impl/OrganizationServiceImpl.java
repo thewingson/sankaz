@@ -112,7 +112,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
             throw new RuntimeException("Данная организация уже одобрена!");
         }
         organization.setConfirmationStatus("CONFIRMED");
-        organization.setConfirmedTs(LocalDateTime.now());
+        organization.setConfirmedDate(LocalDateTime.now());
         organization.setConfirmedBy(authService.getCurrentUsername());
         log.info("OrganizationServiceImpl. Organization {} confirmed successfully", orgId);
     }
@@ -126,7 +126,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
             throw new RuntimeException("Данная организация уже отклонена!");
         }
         organization.setConfirmationStatus("REJECTED");
-        organization.setConfirmedTs(LocalDateTime.now());
+        organization.setConfirmedDate(LocalDateTime.now());
         organization.setConfirmedBy(authService.getCurrentUsername());
         log.info("OrganizationServiceImpl. Organization {} rejected successfully", orgId);
     }

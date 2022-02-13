@@ -5,6 +5,7 @@ import kz.open.sankaz.repo.RoleRepo;
 import kz.open.sankaz.repo.UserRepo;
 import kz.open.sankaz.repo.dictionary.CityRepo;
 import kz.open.sankaz.repo.dictionary.CompanyCategoryRepo;
+import kz.open.sankaz.repo.dictionary.GenderRepo;
 import kz.open.sankaz.repo.dictionary.SanTypeRepo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -26,10 +27,11 @@ public class SankazApplication {
 						  RoleRepo roleRepo,
 						  SanTypeRepo sanTypeRepo,
 						  CityRepo cityRepo,
+						  GenderRepo genderRepo,
 						  CompanyCategoryRepo companyCategoryRepo,
 						  PasswordEncoder passwordEncoder){
 		return  args -> {
-			callScript(userRepo, roleRepo, sanTypeRepo, cityRepo, companyCategoryRepo, passwordEncoder);
+			callScript(userRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
 		};
 	}
 
@@ -37,6 +39,7 @@ public class SankazApplication {
 								  RoleRepo roleRepo,
 								  SanTypeRepo sanTypeRepo,
 								  CityRepo cityRepo,
+								  GenderRepo genderRepo,
 								  CompanyCategoryRepo companyCategoryRepo,
 								  PasswordEncoder passwordEncoder) {
 		SecRole admin = new SecRole(null, "ROLE_ADMIN");
@@ -71,7 +74,7 @@ public class SankazApplication {
 		user1.setResetNumberStatus("EMPTY");
 		user1.setConfirmationNumber(0);
 		user1.setConfirmedBy("admin");
-		user1.setConfirmedTs(LocalDateTime.now());
+		user1.setConfirmedDate(LocalDateTime.now());
 		user1.setActive(true);
 		user1.setLoggedOut(false);
 //		user1.setCreatedBy("admin");
@@ -93,7 +96,7 @@ public class SankazApplication {
 		user2.setResetNumberStatus("EMPTY");
 		user2.setConfirmationNumber(0);
 		user2.setConfirmedBy("admin");
-		user2.setConfirmedTs(LocalDateTime.now());
+		user2.setConfirmedDate(LocalDateTime.now());
 		user2.setActive(true);
 		user2.setLoggedOut(false);
 //		user2.setCreatedBy("admin");
@@ -131,6 +134,22 @@ public class SankazApplication {
 //		city2.setCreatedBy("admin");
 //		city2.setCreateTs(LocalDateTime.now());
 		cityRepo.save(city2);
+
+		Gender gender = new Gender();
+		gender.setCode("MALE");
+		gender.setName("Муж");
+		gender.setDescription("Муж");
+//		gender.setCreatedBy("admin");
+//		gender.setCreateTs(LocalDateTime.now());
+		genderRepo.save(gender);
+
+		Gender gender2 = new Gender();
+		gender2.setCode("FEMALE");
+		gender2.setName("Жен");
+		gender2.setDescription("Жен");
+//		gender.setCreatedBy("admin");
+//		gender.setCreateTs(LocalDateTime.now());
+		genderRepo.save(gender2);
 
 		CompanyCategory companyCategory = new CompanyCategory();
 		companyCategory.setCode("ALM");

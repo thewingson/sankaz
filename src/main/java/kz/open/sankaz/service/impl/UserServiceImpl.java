@@ -4,18 +4,14 @@ import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.listener.event.AfterDeleteEvent;
 import kz.open.sankaz.listener.event.BeforeDeleteEvent;
 import kz.open.sankaz.mapper.SecUserMapper;
-import kz.open.sankaz.model.City;
-import kz.open.sankaz.model.Gender;
-import kz.open.sankaz.model.ItemPic;
-import kz.open.sankaz.model.SecUser;
-import kz.open.sankaz.pojo.dto.ItemPicDto;
+import kz.open.sankaz.model.*;
 import kz.open.sankaz.pojo.dto.PictureDto;
 import kz.open.sankaz.pojo.dto.SecUserDto;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.repo.UserRepo;
 import kz.open.sankaz.service.CityService;
 import kz.open.sankaz.service.GenderService;
-import kz.open.sankaz.service.ItemPicService;
+import kz.open.sankaz.service.SysFileService;
 import kz.open.sankaz.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +36,7 @@ import java.util.UUID;
 public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implements UserService {
 
     @Autowired
-    private ItemPicService picService;
+    private SysFileService fileService;
 
     @Autowired
     private GenderService genderService;
@@ -174,19 +170,20 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
 
         file.transferTo(new File(fileNameWithPath));
 
-        ItemPicDto picDto = new ItemPicDto();
-        picDto.setExtension(file.getContentType());
-        picDto.setFileName(file.getOriginalFilename());
-        picDto.setSize(String.valueOf(file.getSize()));
-        ItemPic itemPic = picService.addOneDto(picDto);
+        SysFile sysFile = new SysFile();
+        sysFile.setExtension(file.getContentType());
+        sysFile.setFileName(file.getOriginalFilename());
+        sysFile.setSize(file.getSize());
+        fileService.addOne(sysFile);
 
-        user.setPic(itemPic);
+        user.setPic(sysFile);
         editOneById(user);
         return new PictureDto(fileNameWithPath);
     }
 
     @Override
     public void deletePicture(Long userId) {
+        // TODO: remove pic file
         SecUser user = getOne(userId);
         user.setPic(null);
         editOneById(user);

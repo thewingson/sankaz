@@ -46,8 +46,8 @@ public class Organization extends AbstractEntity {
     @Column(name = "CONFIRMATION_STATUS")
     private String confirmationStatus = "NEW"; // NEW ON_CONFIRMATION CONFIRMED REJECTED
 
-    @Column(name = "CONFIRMED_TS")
-    private LocalDateTime confirmedTs;
+    @Column(name = "CONFIRMED_DATE")
+    private LocalDateTime confirmedDate;
 
     @Column(name = "CONFIRMED_BY")
     private String confirmedBy;
