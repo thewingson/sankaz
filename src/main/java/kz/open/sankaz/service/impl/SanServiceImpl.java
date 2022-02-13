@@ -68,8 +68,8 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Autowired
     private FileMapper fileMapper;
 
-    @Value("${application.file.upload.path}")
-    private String APPLICATION_UPLOAD_PATH;
+    @Value("${application.file.upload.path.image}")
+    private String APPLICATION_UPLOAD_PATH_IMAGE;
 
     public SanServiceImpl(SanRepo sanRepo) {
         super(sanRepo);
@@ -206,14 +206,14 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         San san = getOne(id);
 
         if (!pic.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(APPLICATION_UPLOAD_PATH);
+            File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
             if (!uploadDir.exists()) {
                 uploadDir.mkdir();
             }
 
             String uuidFile = UUID.randomUUID().toString();
             String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-            String fileNameWithPath = APPLICATION_UPLOAD_PATH + "/" + resultFilename;
+            String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
 
             pic.transferTo(new File(fileNameWithPath));
 
@@ -277,14 +277,14 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
         for(MultipartFile pic : pics){
             if (!pic.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(APPLICATION_UPLOAD_PATH);
+                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
                 if (!uploadDir.exists()) {
                     uploadDir.mkdir();
                 }
 
                 String uuidFile = UUID.randomUUID().toString();
                 String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-                String fileNameWithPath = APPLICATION_UPLOAD_PATH + "/" + resultFilename;
+                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
 
                 pic.transferTo(new File(fileNameWithPath));
 
@@ -324,7 +324,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
             dto.setId(san.getId());
             dto.setName(san.getName());
             dto.setDescription(san.getDescription());
-            if(san.getMainPicUrl() != null) dto.setPicUrl(APPLICATION_UPLOAD_PATH + san.getMainPicUrl());
+            if(san.getMainPicUrl() != null) dto.setPicUrl(APPLICATION_UPLOAD_PATH_IMAGE + san.getMainPicUrl());
             dto.setRating(san.getRating());
             dto.setReviewCount(san.getReviewCount());
             dto.setLongitude(san.getLongitude());

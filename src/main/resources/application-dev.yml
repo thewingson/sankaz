@@ -76,4 +76,5 @@ application:
       error: error
   file:
     upload:
-      path: /images
+      path:
+        image: /var/www/content/sankaz/images/

@@ -21,8 +21,8 @@ public abstract class RoomMapper {
     @Autowired
     protected SanMapper sanMapper;
 
-    @Value("${application.file.upload.path}")
-    private String APPLICATION_UPLOAD_PATH;
+    @Value("${application.file.upload.path.image}")
+    private String APPLICATION_UPLOAD_PATH_IMAGE;
 
     @Named("roomToRoomCreateDto")
     @Mapping(target = "sanId", source = "room.san.id")
@@ -32,7 +32,7 @@ public abstract class RoomMapper {
     abstract public List<RoomCreateDto> roomToRoomCreateDto(List<Room> rooms);
 
     public List<String> getPicUrlsFromRoom(Room room){
-        return room.getPics().stream().map(sysFile -> APPLICATION_UPLOAD_PATH + sysFile.getFileName()).collect(Collectors.toList());
+        return room.getPics().stream().map(sysFile -> APPLICATION_UPLOAD_PATH_IMAGE + sysFile.getFileName()).collect(Collectors.toList());
     }
 
     @Named("roomToRoomInSanByIdDto")
@@ -50,14 +50,14 @@ public abstract class RoomMapper {
 
     protected String getFirstPicUrlFromSysFiles(List<SysFile> pics){
         if(pics != null && !pics.isEmpty()){
-            return APPLICATION_UPLOAD_PATH + pics.get(0).getFileName();
+            return APPLICATION_UPLOAD_PATH_IMAGE + pics.get(0).getFileName();
         }
         return null;
     }
 
     protected List<String> getPicUrlsFromSysFiles(List<SysFile> pics){
         if(pics != null && !pics.isEmpty()){
-            return pics.stream().map(sysFile -> APPLICATION_UPLOAD_PATH + sysFile.getFileName()).collect(Collectors.toList());
+            return pics.stream().map(sysFile -> APPLICATION_UPLOAD_PATH_IMAGE + sysFile.getFileName()).collect(Collectors.toList());
         }
         return null;
     }

@@ -47,8 +47,8 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     @Autowired
     private SecUserMapper userMapper;
 
-    @Value("${application.file.upload.path}")
-    private String APPLICATION_UPLOAD_PATH;
+    @Value("${application.file.upload.path.image}")
+    private String APPLICATION_UPLOAD_PATH_IMAGE;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -159,14 +159,14 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
             throw new RuntimeException("Wrong file!");
         }
 
-        File uploadDir = new File(APPLICATION_UPLOAD_PATH);
+        File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
         if (!uploadDir.exists()) {
             uploadDir.mkdir();
         }
 
         String uuidFile = UUID.randomUUID().toString();
         String resultFilename = uuidFile + "." + file.getOriginalFilename();
-        fileNameWithPath = APPLICATION_UPLOAD_PATH + "/" + resultFilename;
+        fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
 
         file.transferTo(new File(fileNameWithPath));
 

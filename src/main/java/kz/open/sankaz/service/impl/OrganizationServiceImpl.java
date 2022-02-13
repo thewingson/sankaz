@@ -46,8 +46,8 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     @Autowired
     private AuthService authService;
 
-    @Value("${application.file.upload.path}")
-    private String APPLICATION_UPLOAD_PATH;
+    @Value("${application.file.upload.path.image}")
+    private String APPLICATION_UPLOAD_PATH_IMAGE;
 
     public OrganizationServiceImpl(OrganizationRepo organizationRepo) {
         super(organizationRepo);
@@ -158,14 +158,14 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         Organization organization = getOne(orgId);
         String fileNameWithPath = "";
         if (pic != null && !pic.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(APPLICATION_UPLOAD_PATH);
+            File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
             if (!uploadDir.exists()) {
                 uploadDir.mkdir();
             }
 
             String uuidFile = UUID.randomUUID().toString();
             String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-            fileNameWithPath = APPLICATION_UPLOAD_PATH + "/" + resultFilename;
+            fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
 
             pic.transferTo(new File(fileNameWithPath));
 
@@ -185,14 +185,14 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         Organization organization = getOne(orgId);
         for(MultipartFile pic : pics){
             if (!pic.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(APPLICATION_UPLOAD_PATH);
+                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
                 if (!uploadDir.exists()) {
                     uploadDir.mkdir();
                 }
 
                 String uuidFile = UUID.randomUUID().toString();
                 String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-                String fileNameWithPath = APPLICATION_UPLOAD_PATH + "/" + resultFilename;
+                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
 
                 pic.transferTo(new File(fileNameWithPath));
 

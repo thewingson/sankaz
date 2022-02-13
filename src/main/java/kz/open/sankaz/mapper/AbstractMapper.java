@@ -10,18 +10,18 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public abstract class AbstractMapper extends BaseMapper {
-    @Value("${application.file.upload.path}")
-    private String APPLICATION_UPLOAD_PATH;
+    @Value("${application.file.upload.path.image}")
+    private String APPLICATION_UPLOAD_PATH_IMAGE;
 
     protected String getPicUrlFromSysFile(SysFile file){
         if(file != null){
-            return APPLICATION_UPLOAD_PATH + file.getFileName();
+            return APPLICATION_UPLOAD_PATH_IMAGE + file.getFileName();
         }
         return null;
     }
 
     protected List<String> getPicUrlsFromSysFiles(List<SysFile> files){
-        return files.stream().map(sysFile -> APPLICATION_UPLOAD_PATH + sysFile.getFileName()).collect(Collectors.toList());
+        return files.stream().map(sysFile -> APPLICATION_UPLOAD_PATH_IMAGE + sysFile.getFileName()).collect(Collectors.toList());
     }
 
     protected List<String> getTelNumberValuesFromEntity(List<TelNumber> telNumbers){

@@ -79,4 +79,4 @@ application:
       error: error
   file:
     upload:
-      path: D:/images/
+      path: D:/var/www/content/sankaz/images/

@@ -31,6 +31,9 @@ spring:
   liquibase:
     enabled: false
     change-log: classpath:liquibase/changelog-master.xml
+  servlet:
+    multipart:
+      max-file-size: 2MB
 
 mail:
   host: localhost
@@ -76,4 +79,5 @@ application:
       error: error
   file:
     upload:
-      path: /images
+      path:
+        image: /var/www/content/sankaz/images/

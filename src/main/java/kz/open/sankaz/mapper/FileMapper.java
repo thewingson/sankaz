@@ -13,8 +13,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public abstract class FileMapper {
 
-    @Value("${application.file.upload.path}")
-    private String APPLICATION_UPLOAD_PATH;
+    @Value("${application.file.upload.path.image}")
+    private String APPLICATION_UPLOAD_PATH_IMAGE;
 
     @Named("fileToFileUrlDto")
     @Mapping(target = "picUrl", expression = "java(getUrlFromSysFile(file))")
@@ -23,7 +23,7 @@ public abstract class FileMapper {
     abstract public List<FileUrlDto> fileToFileUrlDto(List<SysFile> files);
 
     public String getUrlFromSysFile(SysFile file){
-        return APPLICATION_UPLOAD_PATH + "/" + file.getFileName();
+        return APPLICATION_UPLOAD_PATH_IMAGE + "/" + file.getFileName();
     }
 
 }
