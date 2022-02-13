@@ -50,6 +50,9 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     @Value("${application.file.upload.path.image}")
     private String APPLICATION_UPLOAD_PATH_IMAGE;
 
+    @Value("${application.file.download.path.image}")
+    private String APPLICATION_DOWNLOAD_PATH_IMAGE;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -178,7 +181,7 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
 
         user.setPic(sysFile);
         editOneById(user);
-        return new PictureDto(fileNameWithPath);
+        return new PictureDto(APPLICATION_DOWNLOAD_PATH_IMAGE + "/" + resultFilename);
     }
 
     @Override

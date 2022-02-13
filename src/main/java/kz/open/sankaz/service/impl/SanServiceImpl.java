@@ -71,6 +71,9 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Value("${application.file.upload.path.image}")
     private String APPLICATION_UPLOAD_PATH_IMAGE;
 
+    @Value("${application.file.download.path.image}")
+    private String APPLICATION_DOWNLOAD_PATH_IMAGE;
+
     public SanServiceImpl(SanRepo sanRepo) {
         super(sanRepo);
         this.sanRepo = sanRepo;
@@ -324,7 +327,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
             dto.setId(san.getId());
             dto.setName(san.getName());
             dto.setDescription(san.getDescription());
-            if(san.getMainPicUrl() != null) dto.setPicUrl(APPLICATION_UPLOAD_PATH_IMAGE + san.getMainPicUrl());
+            if(san.getMainPicUrl() != null) dto.setPicUrl(APPLICATION_DOWNLOAD_PATH_IMAGE + san.getMainPicUrl());
             dto.setRating(san.getRating());
             dto.setReviewCount(san.getReviewCount());
             dto.setLongitude(san.getLongitude());

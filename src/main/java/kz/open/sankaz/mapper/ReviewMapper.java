@@ -37,6 +37,7 @@ public abstract class ReviewMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "san", ignore = true)
     @Mapping(target = "parentReview", ignore = true)
+    @Mapping(target = "messageDate", ignore = true)
     abstract public Review reviewCreateFilterToReview(ReviewCreateFilter filter);
     @IterableMapping(qualifiedByName = "reviewCreateFilterToReview")
     abstract public List<Review> reviewCreateFilterToReview(List<ReviewCreateFilter> filter);

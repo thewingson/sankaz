@@ -81,3 +81,6 @@ application:
     upload:
       path:
         image: /var/www/content/sankaz/images/
+    download:
+      path:
+        image: /sankaz/images/

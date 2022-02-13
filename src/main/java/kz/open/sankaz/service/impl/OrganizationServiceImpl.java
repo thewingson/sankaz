@@ -49,6 +49,9 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     @Value("${application.file.upload.path.image}")
     private String APPLICATION_UPLOAD_PATH_IMAGE;
 
+    @Value("${application.file.download.path.image}")
+    private String APPLICATION_DOWNLOAD_PATH_IMAGE;
+
     public OrganizationServiceImpl(OrganizationRepo organizationRepo) {
         super(organizationRepo);
         this.organizationRepo = organizationRepo;

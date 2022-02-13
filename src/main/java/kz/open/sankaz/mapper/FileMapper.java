@@ -11,19 +11,18 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public abstract class FileMapper {
+public abstract class FileMapper extends AbstractMapper {
 
     @Value("${application.file.upload.path.image}")
     private String APPLICATION_UPLOAD_PATH_IMAGE;
 
+    @Value("${application.file.download.path.image}")
+    private String APPLICATION_DOWNLOAD_PATH_IMAGE;
+
     @Named("fileToFileUrlDto")
-    @Mapping(target = "picUrl", expression = "java(getUrlFromSysFile(file))")
+    @Mapping(target = "picUrl", expression = "java(getPicUrlFromSysFile(file))")
     abstract public FileUrlDto fileToFileUrlDto(SysFile file);
     @IterableMapping(qualifiedByName = "fileToFileUrlDto")
     abstract public List<FileUrlDto> fileToFileUrlDto(List<SysFile> files);
-
-    public String getUrlFromSysFile(SysFile file){
-        return APPLICATION_UPLOAD_PATH_IMAGE + "/" + file.getFileName();
-    }
 
 }

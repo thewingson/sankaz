@@ -79,4 +79,8 @@ application:
       error: error
   file:
     upload:
-      path: D:/var/www/content/sankaz/images/
+      path:
+        image: D:/var/www/content/sankaz/images/
+    download:
+      path:
+        image: D:/var/www/content/sankaz/images/
