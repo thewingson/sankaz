@@ -20,6 +20,10 @@ public abstract class AbstractMapper extends BaseMapper {
         return null;
     }
 
+    protected List<String> getPicUrlsFromSysFiles(List<SysFile> files){
+        return files.stream().map(sysFile -> APPLICATION_UPLOAD_PATH + sysFile.getFileName()).collect(Collectors.toList());
+    }
+
     protected List<String> getTelNumberValuesFromEntity(List<TelNumber> telNumbers){
         return telNumbers.stream().map(TelNumber::getValue).collect(Collectors.toList());
     }

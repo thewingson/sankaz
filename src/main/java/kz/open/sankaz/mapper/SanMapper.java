@@ -33,7 +33,7 @@ public abstract class SanMapper extends AbstractMapper {
     abstract public List<SanDto> sanToDto(List<San> sans);
 
     @Named("sanToSanForMainDto")
-    @Mapping(target = "picUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
+    @Mapping(target = "picUrl", expression = "java(getPicUrlFromSysFile(san.getPic()))")
     @Mapping(target = "rating", source = "san.rating")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
     abstract public SanForMainDto sanToSanForMainDto(San san);

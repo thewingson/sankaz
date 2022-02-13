@@ -1,21 +1,16 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.pojo.dto.OrganizationDto;
 import kz.open.sankaz.model.Organization;
+import kz.open.sankaz.pojo.dto.OrganizationDto;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
-public abstract class OrganizationMapper {
-
-    @Value("${application.file.upload.path}")
-    private String APPLICATION_UPLOAD_PATH;
+public abstract class OrganizationMapper extends AbstractMapper {
 
     @Named("organizationToDto")
     @Mapping(target = "user", ignore = true)
@@ -26,13 +21,9 @@ public abstract class OrganizationMapper {
     // with additional data
     @Named("organizationToDtoWithAddData")
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "picUrls", expression = "java(getPicUrlsFromOrganization(organization))")
+    @Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles( organization.getPics() ) )")
     abstract public OrganizationDto organizationToDtoWithAddData(Organization organization);
     @IterableMapping(qualifiedByName = "organizationToDtoWithAddData")
     abstract public List<OrganizationDto> organizationToDtoWithAddData(List<Organization> organizations);
-
-    public List<String> getPicUrlsFromOrganization(Organization organization){
-        return organization.getPics().stream().map(sysFile -> APPLICATION_UPLOAD_PATH + sysFile.getFileName()).collect(Collectors.toList());
-    }
 
 }
