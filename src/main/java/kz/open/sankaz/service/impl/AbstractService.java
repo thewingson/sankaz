@@ -6,6 +6,7 @@ import kz.open.sankaz.model.BaseEntity;
 import kz.open.sankaz.repo.CommonRepo;
 import kz.open.sankaz.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,12 @@ import java.util.Optional;
 
 @Transactional
 public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo<E>> implements CommonService<E> {
+
+    @Value("${application.file.upload.path.image}")
+    protected String APPLICATION_UPLOAD_PATH_IMAGE;
+
+    @Value("${application.file.download.path.image}")
+    protected String APPLICATION_DOWNLOAD_PATH_IMAGE;
 
     protected final R repo;
     @Autowired

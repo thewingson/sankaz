@@ -1,8 +1,10 @@
 package kz.open.sankaz.mapper;
 
 import kz.open.sankaz.model.Room;
+import kz.open.sankaz.model.RoomClass;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.dto.RoomByIdDto;
+import kz.open.sankaz.pojo.dto.RoomClassDto;
 import kz.open.sankaz.pojo.dto.RoomCreateDto;
 import kz.open.sankaz.pojo.dto.RoomInSanByIdDto;
 import org.mapstruct.IterableMapping;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
-public abstract class RoomMapper {
+public abstract class RoomMapper extends AbstractMapper {
 
     @Autowired
     protected SanMapper sanMapper;
@@ -50,16 +52,15 @@ public abstract class RoomMapper {
 
     protected String getFirstPicUrlFromSysFiles(List<SysFile> pics){
         if(pics != null && !pics.isEmpty()){
-            return APPLICATION_UPLOAD_PATH_IMAGE + pics.get(0).getFileName();
+            return getPicUrlFromSysFile(pics.get(0));
         }
         return null;
     }
 
-    protected List<String> getPicUrlsFromSysFiles(List<SysFile> pics){
-        if(pics != null && !pics.isEmpty()){
-            return pics.stream().map(sysFile -> APPLICATION_UPLOAD_PATH_IMAGE + sysFile.getFileName()).collect(Collectors.toList());
-        }
-        return null;
-    }
-
+    @Named("roomClassToDto")
+    @Mapping(target = "sanId", source = "roomClass.san.id")
+    @Mapping(target = "pics", expression = "java( fileToDto(roomClass.getPics()) )")
+    abstract public RoomClassDto roomClassToDto(RoomClass roomClass);
+    @IterableMapping(qualifiedByName = "roomClassToDto")
+    abstract public List<RoomClassDto> roomClassToDto(List<RoomClass> roomClass);
 }

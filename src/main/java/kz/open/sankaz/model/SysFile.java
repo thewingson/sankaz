@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "SYS_FILE")
@@ -28,4 +29,7 @@ public class SysFile extends AbstractEntity {
 
     @Column(name = "SIZE", nullable = false)
     private Long size;
+
+    @Column(name = "DELETED_DATE")
+    private LocalDate deletedDate;
 }

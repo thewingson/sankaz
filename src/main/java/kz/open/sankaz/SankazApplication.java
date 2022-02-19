@@ -2,6 +2,7 @@ package kz.open.sankaz;
 
 import kz.open.sankaz.model.*;
 import kz.open.sankaz.repo.RoleRepo;
+import kz.open.sankaz.repo.SanRepo;
 import kz.open.sankaz.repo.UserRepo;
 import kz.open.sankaz.repo.dictionary.CityRepo;
 import kz.open.sankaz.repo.dictionary.CompanyCategoryRepo;
@@ -24,6 +25,7 @@ public class SankazApplication {
 
 	@Bean
 	CommandLineRunner run(UserRepo userRepo,
+						  SanRepo sanRepo,
 						  RoleRepo roleRepo,
 						  SanTypeRepo sanTypeRepo,
 						  CityRepo cityRepo,
@@ -31,11 +33,12 @@ public class SankazApplication {
 						  CompanyCategoryRepo companyCategoryRepo,
 						  PasswordEncoder passwordEncoder){
 		return  args -> {
-			callScript(userRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
+			callScript(userRepo, sanRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
 		};
 	}
 
 	public static void callScript(UserRepo userRepo,
+								  SanRepo sanRepo,
 								  RoleRepo roleRepo,
 								  SanTypeRepo sanTypeRepo,
 								  CityRepo cityRepo,
@@ -170,6 +173,13 @@ public class SankazApplication {
 		companyCategory1.setName("companyCategory 2");
 		companyCategory1.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
 		companyCategoryRepo.save(companyCategory1);
+
+		San san = new San();
+		san.setName("test 1");
+		san.setDescription("test 1 test 1 test 1");
+		san.setSanType(sanType);
+		san.setCity(city);
+		sanRepo.save(san);
 
 	}
 

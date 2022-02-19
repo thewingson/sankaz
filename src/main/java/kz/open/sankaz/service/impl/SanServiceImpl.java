@@ -68,12 +68,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Autowired
     private FileMapper fileMapper;
 
-    @Value("${application.file.upload.path.image}")
-    private String APPLICATION_UPLOAD_PATH_IMAGE;
-
-    @Value("${application.file.download.path.image}")
-    private String APPLICATION_DOWNLOAD_PATH_IMAGE;
-
     public SanServiceImpl(SanRepo sanRepo) {
         super(sanRepo);
         this.sanRepo = sanRepo;
