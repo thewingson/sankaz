@@ -77,7 +77,7 @@ public class SankazApplication {
 		moderatorUser.setEmail("moderator@mail.kz");
 		moderatorUser.setUsername("+77770000001");
 		moderatorUser.setPassword(passwordEncoder.encode("123"));
-		moderatorUser.addRole(admin);
+		moderatorUser.addRole(moderator);
 		moderatorUser.setConfirmationStatus("FINISHED");
 		moderatorUser.setResetNumberStatus("EMPTY");
 		moderatorUser.setConfirmationNumber(0);

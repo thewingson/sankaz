@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import kz.open.sankaz.config.SmscApi;
-import kz.open.sankaz.exception.EntityNotFoundException;
+import kz.open.sankaz.exception.*;
 import kz.open.sankaz.mapper.SecUserMapper;
 import kz.open.sankaz.model.*;
 import kz.open.sankaz.pojo.dto.ConfirmationStatusDto;
@@ -270,15 +270,15 @@ public class AuthServiceImpl implements AuthService {
 
         if (userByNumber.getConfirmedBy() != null) {
             log.info("Number has already confirmed! {}", filter.getConfirmationNumber());
-            throw new RuntimeException("Номер уже подтвержден! Пожалуйста, закончите регистрацию.");
+            throw new NumberConfirmationException(NumberConfirmationExceptionMessages.NUMBER_ALREADY_CONFIRMED_CODE);
         }
         if (LocalDateTime.now().isAfter(userByNumber.getConfirmationNumberCreatedDate().plusMinutes(CONFIRMATION_TIME_IN_MINUTES))) {
             log.info("Confirmation number time is expired! {}", filter.getConfirmationNumber());
-            throw new RuntimeException("Время номера подтверждения истек! Пожалуйста, отправьте еще раз!");
+            throw new NumberConfirmationException(NumberConfirmationExceptionMessages.CONFIRMATION_TIME_IS_EXPIRED);
         }
         if (userByNumber.getConfirmationNumber() != filter.getConfirmationNumber()) {
             log.info("Invalid confirmation number! {}", filter.getConfirmationNumber());
-            throw new RuntimeException("Неправильный номер подтверждения!");
+            throw new NumberConfirmationException(NumberConfirmationExceptionMessages.INVALID_CONFIRMATION_NUMBER);
         }
         userByNumber.setConfirmationStatus("CONFIRMED");
         userByNumber.setConfirmationNumber(0);
@@ -370,6 +370,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("Checking tel number in DB");
             SecUser userByNumber = userService.getUserByTelNumber(telNumber);
             dto.setConfirmationStatus(userByNumber.getConfirmationStatus());
+            dto.setRoles(userByNumber.getRoles().stream().map(SecRole::getName).collect(Collectors.toList()));
         } catch (EntityNotFoundException e){
             isFree = true;
             dto.setConfirmationStatus("NEW");
@@ -390,6 +391,23 @@ public class AuthServiceImpl implements AuthService {
         } catch (EntityNotFoundException e){
             throw new RuntimeException("Указан неправильный номер для поиска!");
         }
+    }
+
+    @Override
+    public Organization getOwnProfile(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
+            String token = authorizationHeader.substring("Bearer ".length());
+            Algorithm algorithm = Algorithm.HMAC256(securityProperties.getSecurityTokenSecret().getBytes());
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            DecodedJWT decodedJWT = verifier.verify(token);
+            String username = decodedJWT.getSubject();
+
+            SecUser user = (SecUser) userService.loadUserByUsername(username);
+            Organization organization = organizationService.getOrganizationByUser(user);
+            return organization;
+        }
+        return null;
     }
 
     @Override
@@ -431,18 +449,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void registerOrganization(OrganizationRegisterFinishFilter filter) {
+    public Organization registerOrganization(OrganizationRegisterFinishFilter filter) {
         log.info("Start of finishing registration {}", filter.getTelNumber());
         log.info("Checking tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(getCurrentUsername());
         if(!userByNumber.getConfirmationStatus().equals("CONFIRMED") && !userByNumber.getConfirmationStatus().equals("FINISHED")){
-            throw new RuntimeException("Номер не подтвержден! Пожалуйста, подтвердите номер.");
+            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.NUMBER_NOT_CONFIRMED_CODE);
         }
 
         try{ // проверка email
             userService.getUserByEmail(filter.getEmail());
             log.warn("Email is busy {}", filter.getEmail());
-            throw new RuntimeException("Этот email занят другой организацией! Пожалуйста, введите другой email для огранизации.");
+            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.EMAIL_IS_BUSY_CODE);
         } catch (EntityNotFoundException e){
             log.info("Email is free {}", filter.getTelNumber());
         }
@@ -450,7 +468,7 @@ public class AuthServiceImpl implements AuthService {
         try{ // проверка iban
             organizationService.getOrganizationByIban(filter.getIban());
             log.warn("IBAN is busy {}", filter.getIban());
-            throw new RuntimeException("Этот IBAN занят другой организацией! Пожалуйста, введите другой IBAN для огранизации.");
+            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.IBAN_IS_BUSY_CODE);
         } catch (EntityNotFoundException e){
             log.info("IBAN is free {}", filter.getTelNumber());
         }
@@ -458,25 +476,22 @@ public class AuthServiceImpl implements AuthService {
         try{ // проверка iin
             organizationService.getOrganizationByIin(filter.getIin());
             log.warn("IIN is busy {}", filter.getIban());
-            throw new RuntimeException("Этот ИИН занят другой организацией! Пожалуйста, введите другой ИИН для огранизации.");
+            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.IIN_IS_BUSY_CODE);
         } catch (EntityNotFoundException e){
             log.info("IIN is free {}", filter.getTelNumber());
         }
 
-        if(!userByNumber.getConfirmationStatus().equals("CONFIRMED") && !userByNumber.getConfirmationStatus().equals("FINISHED")){
-            throw new RuntimeException("Номер не подтвержден! Пожалуйста, подтвердите номер.");
-        }
         try{ // проверка номера в организациях
             organizationService.getOrganizationByTelNumber(filter.getTelNumber());
             log.warn("Number is busy {}", filter.getTelNumber());
-            throw new RuntimeException("Этот номер занят другой организацией! Пожалуйста, введите другой номер для огранизации.");
+            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.TEL_NUMBER_IS_BUSY_CODE);
         } catch (EntityNotFoundException e){
             log.info("Number is free {}", filter.getTelNumber());
         }
         try{ // проверка организации по юзеру / один юзер - одна организация !
             organizationService.getOrganizationByUser(userByNumber);
             log.warn("User already has registered organization {}", userByNumber.getTelNumber());
-            throw new RuntimeException("Вы уже зарегистрировали организацию! Пользователь может создать только одну огранизацию.");
+            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.ORG_ALREADY_REGISTERED_CODE);
         } catch (EntityNotFoundException e){
             log.info("User did not registered any organization {}", userByNumber.getTelNumber());
         }
@@ -505,6 +520,7 @@ public class AuthServiceImpl implements AuthService {
         // TODO: send to Moderator through method or listener
         log.info("Organization creation is finished");
         log.info("End of finishing registration {}", filter.getTelNumber());
+        return organization;
     }
 
     @Override

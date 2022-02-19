@@ -1,5 +1,6 @@
 package kz.open.sankaz.service;
 
+import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.pojo.dto.ConfirmationStatusDto;
 import kz.open.sankaz.pojo.dto.NumberFreeDto;
 import kz.open.sankaz.pojo.dto.TokenDto;
@@ -29,7 +30,7 @@ public interface AuthService {
 
     TokenDto finishRegistration(FinishRegFilter filter);
 
-    void registerOrganization(OrganizationRegisterFinishFilter filter);
+    Organization registerOrganization(OrganizationRegisterFinishFilter filter);
 
     int sendResetNumber(String telNumber);
 
@@ -40,4 +41,6 @@ public interface AuthService {
     NumberFreeDto isNumberFree(String telNumber);
 
     ConfirmationStatusDto getOrganizationConfirmationStatus(String telNumber);
+
+    Organization getOwnProfile(HttpServletRequest request);
 }

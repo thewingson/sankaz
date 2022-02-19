@@ -1,5 +1,6 @@
 package kz.open.sankaz.rest;
 
+import kz.open.sankaz.mapper.OrganizationMapper;
 import kz.open.sankaz.pojo.filter.*;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.AuthService;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -19,6 +21,9 @@ public class OrganizationAuthRest {
     private final AuthService authService;
 
     @Autowired
+    private OrganizationMapper organizationMapper;
+
+    @Autowired
     public OrganizationAuthRest(AuthService authService) {
         this.authService = authService;
     }
@@ -27,6 +32,15 @@ public class OrganizationAuthRest {
     public ResponseEntity<?> isNumberFree(@Valid @RequestBody TelNumberFilter filter) {
         try {
             return ResponseModel.success(authService.isNumberFree(filter.getTelNumber()));
+        } catch (RuntimeException e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getOwnProfile(HttpServletRequest request) {
+        try {
+            return ResponseModel.success(organizationMapper.toOrganizationRegisterDto(authService.getOwnProfile(request)));
         } catch (RuntimeException e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -54,8 +68,7 @@ public class OrganizationAuthRest {
     @PostMapping("/register-org")
     public ResponseEntity<?> registerOrganization(@RequestBody OrganizationRegisterFinishFilter filter) {
         try {
-            authService.registerOrganization(filter);
-            return ResponseModel.successPure();
+            return ResponseModel.success(organizationMapper.toOrganizationRegisterDto(authService.registerOrganization(filter)));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

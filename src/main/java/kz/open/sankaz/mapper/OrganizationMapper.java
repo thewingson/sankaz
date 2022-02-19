@@ -2,6 +2,7 @@ package kz.open.sankaz.mapper;
 
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.pojo.dto.OrganizationDto;
+import kz.open.sankaz.pojo.dto.OrganizationRegisterDto;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,5 +26,10 @@ public abstract class OrganizationMapper extends AbstractMapper {
     abstract public OrganizationDto organizationToDtoWithAddData(Organization organization);
     @IterableMapping(qualifiedByName = "organizationToDtoWithAddData")
     abstract public List<OrganizationDto> organizationToDtoWithAddData(List<Organization> organizations);
+
+    @Named("organizationToOrganizationRegisterDto")
+    abstract public OrganizationRegisterDto toOrganizationRegisterDto(Organization organization);
+    @IterableMapping(qualifiedByName = "organizationToOrganizationRegisterDto")
+    abstract public List<OrganizationRegisterDto> toOrganizationRegisterDto(List<Organization> organizations);
 
 }

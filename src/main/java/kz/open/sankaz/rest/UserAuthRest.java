@@ -1,5 +1,6 @@
 package kz.open.sankaz.rest;
 
+import kz.open.sankaz.exception.NumberConfirmationException;
 import kz.open.sankaz.pojo.filter.FinishRegFilter;
 import kz.open.sankaz.pojo.filter.RegisterFilter;
 import kz.open.sankaz.pojo.filter.ResetPasswordFilter;
@@ -70,6 +71,8 @@ public class UserAuthRest {
         try {
             authService.checkConfirmationNumber(filter);
             return ResponseModel.successPure();
+        } catch (NumberConfirmationException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getReason());
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

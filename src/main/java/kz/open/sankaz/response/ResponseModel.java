@@ -20,6 +20,8 @@ public class ResponseModel<T> implements Serializable {
 
     String text;
 
+    String errorType;
+
     T data;
 
     public ResponseModel(@NonNull String type) {
@@ -42,10 +44,27 @@ public class ResponseModel<T> implements Serializable {
         this.data = data;
     }
 
+    public ResponseModel(@NonNull String type, String text, String errorType, T data) {
+        this.type = type;
+        this.text = text;
+        this.errorType = errorType;
+        this.data = data;
+    }
+
     public static ResponseEntity<?> error(HttpStatus errorCode, String errorText) {
         return ResponseEntity.status(errorCode).body(
                 ResponseModel.builder()
                         .type("error")
+                        .text(errorText)
+                        .build()
+        );
+    }
+
+    public static ResponseEntity<?> error(HttpStatus errorCode, String errorType, String errorText) {
+        return ResponseEntity.status(errorCode).body(
+                ResponseModel.builder()
+                        .type("error")
+                        .errorType(errorType)
                         .text(errorText)
                         .build()
         );
