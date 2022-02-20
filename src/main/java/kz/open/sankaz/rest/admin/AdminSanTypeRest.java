@@ -1,4 +1,4 @@
-package kz.open.sankaz.rest.dictionary;
+package kz.open.sankaz.rest.admin;
 
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.pojo.dto.SanTypeDto;
@@ -7,11 +7,13 @@ import kz.open.sankaz.service.SanTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
-@RequestMapping("/san-types")
-public class SanTypeRest {
+@RequestMapping("/admin/san-types")
+public class AdminSanTypeRest {
     @Autowired
     private SanTypeService sanTypeService;
 

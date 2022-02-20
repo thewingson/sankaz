@@ -1,72 +1,136 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.mapper.RoomMapper;
+import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.Room;
-import kz.open.sankaz.model.San;
-import kz.open.sankaz.pojo.dto.RoomDto;
+import kz.open.sankaz.model.SysFile;
+import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import kz.open.sankaz.repo.RoomRepo;
-import kz.open.sankaz.service.RoomService;
-import kz.open.sankaz.service.SanService;
+import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
 @Transactional
 public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements RoomService {
 
-    private final RoomRepo roomRepo;
+    @Autowired
+    private RoomClassDicService roomClassDicService;
 
     @Autowired
-    private RoomMapper roomMapper;
+    private SysFileService sysFileService;
+
+    @Lazy
+    @Autowired
+    private AuthService authService;
 
     @Autowired
-    private SanService sanService;
+    private OrganizationService organizationService;
 
 
     public RoomServiceImpl(RoomRepo roomRepo) {
         super(roomRepo);
-        this.roomRepo = roomRepo;
     }
 
     @Override
-    public Room addOneDto(RoomDto roomDto) {
-        log.info("SERVICE -> RoomServiceImpl.addOneDto()");
+    public Room addOne(RoomCreateFilter filter) {
+        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
         Room room = new Room();
-        room.setName(roomDto.getName());
-        room.setDescription(roomDto.getDescription());
-        room.setPrice(roomDto.getPrice());
-
-        San sanById = sanService
-                .getOne(roomDto.getSan().getId());
-        room.setSan(sanById);
-
+        room.setRoomClassDic(roomClassDicService.getOne(filter.getRoomClassDicId()));
+        room.setRoomNumber(filter.getRoomNumber());
+        room.setBedCount(filter.getBedCount());
+        room.setRoomCount(filter.getRoomCount());
+        room.setPrice(filter.getPrice());
         return addOne(room);
     }
 
     @Override
-    public Room updateOneDto(Long id, RoomDto roomDto) {
-        log.info("SERVICE -> RoomServiceImpl.updateOneDto()");
-        Room room = getOne(id);
-        if(roomDto.getName() != null && !roomDto.getName().equals(room.getName())){
-            room.setName(roomDto.getName());
-        }
-        if(roomDto.getDescription() != null && !roomDto.getDescription().equals(room.getDescription())){
-            room.setDescription(roomDto.getDescription());
-        }
-        if(roomDto.getSan() != null && !roomDto.getSan().getId().equals(room.getSan().getId())){
-            San sanById = sanService.getOne(roomDto.getSan().getId());
-            room.setSan(sanById);
-        }
+    public Room editOneById(Long roomId, RoomCreateFilter filter) {
+        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
+        Room room = getOne(roomId);
+        room.setRoomClassDic(roomClassDicService.getOne(filter.getRoomClassDicId()));
+        room.setRoomNumber(filter.getRoomNumber());
+        room.setBedCount(filter.getBedCount());
+        room.setRoomCount(filter.getRoomCount());
+        room.setPrice(filter.getPrice());
         return editOneById(room);
+    }
+
+    @Override
+    public List<SysFile> addPics(Long roomId, MultipartFile[] pics) throws IOException {
+        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
+        Room room = getOne(roomId);
+
+        for(MultipartFile pic : pics){
+            if (!pic.getOriginalFilename().isEmpty()) {
+                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdir();
+                }
+
+                String uuidFile = UUID.randomUUID().toString();
+                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
+                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
+
+                pic.transferTo(new File(fileNameWithPath));
+
+                SysFile file = new SysFile();
+                file.setFileName(resultFilename);
+                file.setExtension(pic.getContentType());
+                file.setSize(pic.getSize());
+                file = sysFileService.addOne(file);
+
+                room.addPic(file);
+            }
+        }
+
+        return editOneById(room).getPics();
+    }
+
+    @Override
+    public void deletePics(Long roomId, Long[] picIds) {
+        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
+        Room room = getOne(roomId);
+
+        List<SysFile> picsToDelete = sysFileService.getAllByIdIn(Arrays.asList(picIds));
+        picsToDelete.stream().forEach(file -> {
+            file.setDeletedDate(LocalDate.now());
+            sysFileService.editOneById(file);
+        });
+        room.deletePics(picsToDelete);
+        editOneById(room);
+    }
+
+    @Override
+    public boolean checkIfOwnRoom(Long roomId) {
+        String currentUsername = authService.getCurrentUsername();
+        Organization currentUsersOrganization = organizationService.getOrganizationByTelNumber(currentUsername);
+        Room roomById = getOne(roomId);
+        if(!roomById.getRoomClassDic().getSan().getOrganization().getId().equals(currentUsersOrganization.getId())){
+            throw new RuntimeException("Данная комната не прикреплен к вашему санаторию!");
+        }
+        return true;
     }
 
     @Override
     protected Class getCurrentClass() {
         return Room.class;
+    }
+
+    @Override
+    protected Class getServiceClass(){
+        return this.getClass();
     }
 
 }

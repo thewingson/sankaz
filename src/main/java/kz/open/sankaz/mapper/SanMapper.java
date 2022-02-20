@@ -1,6 +1,7 @@
 package kz.open.sankaz.mapper;
 
 import kz.open.sankaz.model.San;
+import kz.open.sankaz.pojo.dto.SanAdminDto;
 import kz.open.sankaz.pojo.dto.SanByIdDto;
 import kz.open.sankaz.pojo.dto.SanDto;
 import kz.open.sankaz.pojo.dto.SanForMainDto;
@@ -26,14 +27,25 @@ public abstract class SanMapper extends AbstractMapper {
     @Autowired
     protected RoomMapper roomMapper;
 
+    @Named("sanToAdminDto")
+    @Mapping(target = "sanTypeId", source = "san.sanType.id")
+    @Mapping(target = "cityId", source = "san.city.id")
+    @Mapping(target = "orgId", source = "san.organization.id")
+    @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
+    @Mapping(target = "pics", expression = "java( fileToDto(san.getPics()) )")
+    abstract public SanAdminDto sanToAdminDto(San san);
+    @IterableMapping(qualifiedByName = "sanToAdminDto")
+    abstract public List<SanAdminDto> sanToAdminDto(List<San> sans);
+
     @Named("sanToDto")
     @Mapping(target = "sanTypeId", source = "san.sanType.id")
+    @Mapping(target = "orgId", source = "san.organization.id")
     abstract public SanDto sanToDto(San san);
     @IterableMapping(qualifiedByName = "sanToDto")
     abstract public List<SanDto> sanToDto(List<San> sans);
 
     @Named("sanToSanForMainDto")
-    @Mapping(target = "picUrl", expression = "java(getPicUrlFromSysFile(san.getPic()))")
+    @Mapping(target = "picUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
     @Mapping(target = "rating", source = "san.rating")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
     abstract public SanForMainDto sanToSanForMainDto(San san);
@@ -41,7 +53,7 @@ public abstract class SanMapper extends AbstractMapper {
     abstract public List<SanForMainDto> sanToSanForMainDto(List<San> sans);
 
     @Named("sanToSanByIdDto")
-    @Mapping(target = "mainPicUrl", expression = "java( getPicUrlFromSysFile(san.getPic()) )")
+    @Mapping(target = "pics", expression = "java( fileToDto(san.getPics()) )")
     @Mapping(target = "rating", source = "san.rating")
     @Mapping(target = "sanType", source = "san.sanType.id")
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")

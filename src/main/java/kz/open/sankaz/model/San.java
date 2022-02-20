@@ -36,6 +36,11 @@ public class San extends AbstractEntity{
     @Column(name = "SITE_LINK")
     private String siteLink;
 
+    @ManyToOne
+    @JoinColumn(name = "ORG_ID", foreignKey = @ForeignKey(name = "SAN_ORG_FK"), nullable = false)
+    @JsonManagedReference
+    private Organization organization;
+
     @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "SAN_TEL_NUMBERS",
@@ -48,18 +53,24 @@ public class San extends AbstractEntity{
     @JsonManagedReference
     private SanType sanType;
 
-    @ManyToOne
-    @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_PIC_FK"))
-    @JsonManagedReference
-    private SysFile pic;
+    @ManyToMany(cascade = {CascadeType.PERSIST})
+    @JoinTable(
+            name = "SAN_PICS",
+            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_PICS_SAN_FK")),
+            inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_PICS_PIC_FK")))
+    private List<SysFile> pics;
 
     @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
     @JsonBackReference
     private List<Review> reviews;
 
+//    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
+//    @JsonBackReference
+//    private List<RoomClass> roomClasses;
+
     @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
     @JsonBackReference
-    private List<Room> rooms;
+    private List<RoomClassDic> roomClasses;
 
     @ManyToOne
     @JoinColumn(name = "CITY_ID", foreignKey = @ForeignKey(name = "SAN_CITY_FK"), nullable = false)
@@ -71,6 +82,32 @@ public class San extends AbstractEntity{
 
     @Column(name = "LATITUDE")
     private Double latitude;
+
+    public void addPic(SysFile pic){
+        if(getPics() == null){
+            this.pics = new ArrayList<>();
+        }
+        pics.add(pic);
+    }
+
+    public void addPics(List<SysFile> pics){
+        if(getPics() == null){
+            this.pics = new ArrayList<>();
+        }
+        this.pics.addAll(pics);
+    }
+
+    public void deletePic(SysFile pic){
+        if(!getPics().isEmpty()){
+            getPics().remove(pic);
+        }
+    }
+
+    public void deletePics(List<SysFile> pics){
+        if(!getPics().isEmpty()){
+            this.getPics().removeAll(pics);
+        }
+    }
 
     public void addTelNumber(TelNumber telNumber){
         if(getTelNumbers() == null){
@@ -107,7 +144,10 @@ public class San extends AbstractEntity{
     }
 
     public SysFile getMainPic(){
-        return pic;
+        if(getPics() != null && !getPics().isEmpty()){
+            return getPics().get(0);
+        }
+        return null;
     }
 
     public String getMainPicUrl(){
@@ -117,5 +157,9 @@ public class San extends AbstractEntity{
         } else{
             return null;
         }
+    }
+
+    public List<Room> getRooms(){
+        return getRoomClasses().stream().map(RoomClassDic::getRooms).collect(ArrayList::new, List::addAll, List::addAll);
     }
 }

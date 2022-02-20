@@ -1,17 +1,17 @@
 package kz.open.sankaz.repo;
 
+import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.San;
-import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.awt.print.Pageable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface SanRepo extends CommonRepo<San>{
+
+    List<San> getAllByOrganization(@Param("org")Organization organization);
 
     @Query(
             value = "SELECT * FROM SAN s " +

@@ -2,6 +2,7 @@ package kz.open.sankaz.service;
 
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.pojo.filter.OrganizationCreateFilter;
 import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
 import kz.open.sankaz.pojo.filter.OrganizationFilterFilter;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,4 +27,10 @@ public interface OrganizationService extends CommonService<Organization> {
 
     void uploadPicture(Long orgId, MultipartFile pic) throws IOException;
     void uploadPicture(Long orgId, MultipartFile[] pic) throws IOException;
+
+    Organization createOrg(OrganizationCreateFilter filter);
+
+    Organization editOrg(Long orgId, OrganizationCreateFilter filter);
+
+    boolean checkIfOwnOrg(Long orgId);
 }

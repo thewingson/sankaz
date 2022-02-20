@@ -4,10 +4,14 @@ import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.listener.event.AfterDeleteEvent;
 import kz.open.sankaz.listener.event.BeforeDeleteEvent;
 import kz.open.sankaz.mapper.SecUserMapper;
-import kz.open.sankaz.model.*;
+import kz.open.sankaz.model.City;
+import kz.open.sankaz.model.Gender;
+import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.dto.PictureDto;
 import kz.open.sankaz.pojo.dto.SecUserDto;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
+import kz.open.sankaz.pojo.filter.UserCreateFilter;
 import kz.open.sankaz.repo.UserRepo;
 import kz.open.sankaz.service.CityService;
 import kz.open.sankaz.service.GenderService;
@@ -25,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -43,6 +49,9 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
 
     @Autowired
     private CityService cityService;
+
+    @Autowired
+    private SysFileService sysFileService;
 
     @Autowired
     private SecUserMapper userMapper;
@@ -139,6 +148,141 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
             }
         }
         return user;
+    }
+
+    @Override
+    public SecUser createOne(UserCreateFilter filter) {
+        if(!filter.getPassword().equals(filter.getConfirmPassword())){
+            throw new RuntimeException("Пароли не совпадают");
+        }
+        SecUser userByNumber = new SecUser();
+        try {
+            getUserByTelNumber(filter.getTelNumber());
+            log.warn("Tel. number already has registered {}", filter.getTelNumber());
+            throw new RuntimeException("Данный номер уже зареган");
+        } catch (EntityNotFoundException e) {
+            log.info("Tel. number did not registered {}", filter.getTelNumber());
+        }
+
+        if(filter.getCityId() != null){
+            City city = cityService.getOne(filter.getCityId());
+            userByNumber.setCity(city);
+        }
+        if(filter.getGenderId() != null){
+            Gender gender = genderService.getOne(filter.getGenderId());
+            userByNumber.setGender(gender);
+        }
+        if(!filter.getEmail().isEmpty()){
+            try{
+                getUserByEmail(filter.getEmail());
+                log.warn("Email is busy");
+                throw new RuntimeException("Данный email занят. Пожалуйста, введите другой email.");
+            } catch (EntityNotFoundException e){
+                log.info("Email is free");
+                userByNumber.setEmail(filter.getEmail());
+            }
+        }
+        userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
+        userByNumber.setConfirmationStatus("FINISHED");
+        userByNumber.setUserType(filter.getUserType());
+        userByNumber.setUsername(filter.getUsername());
+        userByNumber.setEmail(filter.getEmail());
+        userByNumber.setTelNumber(filter.getTelNumber());
+        userByNumber.setFirstName(filter.getFirstName());
+        userByNumber.setLastName(filter.getLastName());
+        userByNumber.setActive(true);
+        userByNumber.setConfirmedBy("admin");
+        userByNumber.setConfirmedDate(LocalDateTime.now());
+
+        return addOne(userByNumber);
+    }
+
+    @Override
+    public SecUser editOne(Long userId, UserCreateFilter filter) {
+        SecUser userByNumber = getOne(userId);
+        if(!filter.getPassword().equals(filter.getConfirmPassword())){
+            throw new RuntimeException("Пароли не совпадают");
+        }
+        try {
+            SecUser userByTelNumber = getUserByTelNumber(filter.getTelNumber());
+            if(!userByNumber.getId().equals(userByTelNumber.getId())){
+                log.warn("Tel. number already has registered {}", filter.getTelNumber());
+                throw new RuntimeException("Данный номер уже зареган");
+            }
+        } catch (EntityNotFoundException e) {
+            log.info("Tel. number did not registered {}", filter.getTelNumber());
+        }
+
+        if(filter.getCityId() != null){
+            City city = cityService.getOne(filter.getCityId());
+            userByNumber.setCity(city);
+        }
+        if(filter.getGenderId() != null){
+            Gender gender = genderService.getOne(filter.getGenderId());
+            userByNumber.setGender(gender);
+        }
+        if(!filter.getEmail().isEmpty()){
+            try{
+                SecUser userByEmail = getUserByEmail(filter.getEmail());
+                if(!userByNumber.getId().equals(userByEmail.getId())){
+                    log.warn("Email is busy");
+                    throw new RuntimeException("Данный email занят. Пожалуйста, введите другой email.");
+                }
+            } catch (EntityNotFoundException e){
+                log.info("Email is free");
+                userByNumber.setEmail(filter.getEmail());
+            }
+        }
+        userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
+        userByNumber.setConfirmationStatus("FINISHED");
+        userByNumber.setUserType(filter.getUserType());
+        userByNumber.setUsername(filter.getUsername());
+        userByNumber.setEmail(filter.getEmail());
+        userByNumber.setTelNumber(filter.getTelNumber());
+        userByNumber.setFirstName(filter.getFirstName());
+        userByNumber.setLastName(filter.getLastName());
+
+        return addOne(userByNumber);
+    }
+
+    @Override
+    public SysFile addPic(Long userId, MultipartFile pic) throws IOException {
+        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
+        SecUser user = getOne(userId);
+
+        if (!pic.getOriginalFilename().isEmpty()) {
+            File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+
+            String uuidFile = UUID.randomUUID().toString();
+            String resultFilename = uuidFile + "." + pic.getOriginalFilename();
+            String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
+
+            pic.transferTo(new File(fileNameWithPath));
+
+            SysFile file = new SysFile();
+            file.setFileName(resultFilename);
+            file.setExtension(pic.getContentType());
+            file.setSize(pic.getSize());
+            file = sysFileService.addOne(file);
+
+            user.setPic(file);
+        }
+
+        return editOneById(user).getPic();
+    }
+
+    @Override
+    public void deletePic(Long userId) {
+        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
+        SecUser user = getOne(userId);
+        SysFile pic = user.getPic();
+        pic.setDeletedDate(LocalDate.now());
+        sysFileService.editOneById(pic);
+        user.setPic(null);
+        editOneById(user);
     }
 
     @Override

@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "ROOM_CLASS")
@@ -50,6 +51,19 @@ public class RoomClass extends AbstractEntity {
             joinColumns = @JoinColumn(name = "CLASS_ID", foreignKey = @ForeignKey(name = "ROOM_CLASS_PICS_CLASS_FK")),
             inverseJoinColumns = @JoinColumn(name = "FILE_ID", foreignKey = @ForeignKey(name = "ROOM_CLASS_PICS_PIC_FK")))
     private List<SysFile> pics;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoomClass roomClass = (RoomClass) o;
+        return id.equals(roomClass.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     public void addPic(SysFile pic){
         if(getPics() == null){

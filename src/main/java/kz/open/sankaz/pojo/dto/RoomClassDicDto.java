@@ -12,11 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomByIdDto extends BaseDto {
-    private List<String> picUrls;
-    private String name;
-    private String description;
-    private BigDecimal price;
-    private Integer roomCount;
-    private Integer bedCount;
+public class RoomClassDicDto extends AbstractDictionaryLangDto {
+    private Long id;
+    private Long sanId;
 }

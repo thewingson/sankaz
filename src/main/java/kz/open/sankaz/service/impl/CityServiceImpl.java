@@ -24,7 +24,7 @@ public class CityServiceImpl extends AbstractDictionaryLangService<City, CityRep
 
     @Override
     protected Class getCurrentClass() {
-        return Gender.class;
+        return City.class;
     }
 
     @Override

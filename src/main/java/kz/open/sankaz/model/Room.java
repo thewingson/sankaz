@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "ROOM")
+@Table(name = "ROOM",
+        uniqueConstraints = { @UniqueConstraint(columnNames = { "ROOM_NUMBER", "CLASS_ID" }) })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,26 +25,34 @@ public class Room extends AbstractEntity {
     @SequenceGenerator(sequenceName = "ROOM_ID_SEQ", name = "ROOM_ID", allocationSize = 1)
     private Long id;
 
-    @Column(name = "NAME", nullable = false)
-    private String name;
+    @Column(name = "ROOM_NUMBER", nullable = false)
+    private String roomNumber;
 
-    @Column(name = "DESCRIPTION")
-    private String description;
+    @Column(name = "ROOM_COUNT")
+    private Integer roomCount;
+
+    @Column(name = "BED_COUNT")
+    private Integer bedCount;
 
     @Column(name = "PRICE")
     private BigDecimal price;
 
     @ManyToOne
-    @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "ROOM_SAN_FK"), nullable = false)
+    @JoinColumn(name = "CLASS_ID", foreignKey = @ForeignKey(name = "ROOM_CLASS_FK"), nullable = false)
     @JsonManagedReference
-    private San san;
+    private RoomClassDic roomClassDic;
 
     @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "ROOM_PICS",
             joinColumns = @JoinColumn(name = "ROOM_ID", foreignKey = @ForeignKey(name = "ROOM_PICS_ROOM_FK")),
-            inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "ROOM_PICS_PIC_FK")))
+            inverseJoinColumns = @JoinColumn(name = "FILE_ID", foreignKey = @ForeignKey(name = "ROOM_PICS_PIC_FK")))
     private List<SysFile> pics;
+
+//    @ManyToOne
+//    @JoinColumn(name = "CLASS_ID", foreignKey = @ForeignKey(name = "ROOM_CLASS_FK"), nullable = false)
+//    @JsonManagedReference
+//    private RoomClass roomClass;
 
     public void addPic(SysFile pic){
         if(getPics() == null){

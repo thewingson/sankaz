@@ -27,6 +27,8 @@ public class SanCreateFilter extends BaseFilter {
     private Long sanTypeId;
     @NotNull
     private Long cityId;
+    @NotNull
+    private Long orgId;
     private Double longitude;
     private Double latitude;
 }

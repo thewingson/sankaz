@@ -43,4 +43,6 @@ public interface AuthService {
     ConfirmationStatusDto getOrganizationConfirmationStatus(String telNumber);
 
     Organization getOwnProfile(HttpServletRequest request);
+
+    boolean checkIfOwnProfile(Long userId);
 }

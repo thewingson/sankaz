@@ -1,4 +1,4 @@
-package kz.open.sankaz.rest.dictionary;
+package kz.open.sankaz.rest.admin;
 
 import kz.open.sankaz.pojo.dto.CompanyCategoryDto;
 import kz.open.sankaz.response.ResponseModel;
@@ -6,11 +6,13 @@ import kz.open.sankaz.service.CompanyCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
-@RequestMapping("/comp-categories")
-public class CompanyCategoryRest {
+@RequestMapping("/admin/comp-categories")
+public class AdminCompanyCategoryRest {
     @Autowired
     private CompanyCategoryService companyCategoryService;
 

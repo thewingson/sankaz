@@ -8,22 +8,21 @@ import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.math.BigDecimal;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomCreateFilter extends BaseFilter {
+public class RoomClassDicFilter extends BaseFilter {
     @NotEmpty
-    @Size(min = 1)
-    private String roomNumber;
+    @Size(min = 2)
+    protected String code;
+    @NotEmpty
+    @Size(min = 3)
+    protected String name;
+    protected String description;
+    protected String nameKz;
+    protected String descriptionKz;
     @NotNull
-    private Long roomClassDicId;
-    @NotNull
-    private Integer roomCount;
-    @NotNull
-    private Integer bedCount;
-    @NotNull
-    private BigDecimal price;
+    protected Long sanId;
 }

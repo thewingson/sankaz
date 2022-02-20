@@ -4,17 +4,14 @@ import kz.open.sankaz.mapper.FileMapper;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.model.*;
-import kz.open.sankaz.pojo.dto.FileUrlDto;
 import kz.open.sankaz.pojo.dto.SanForMainDto;
 import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
-import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import kz.open.sankaz.pojo.filter.SanCreateFilter;
 import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.repo.SanRepo;
 import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +41,10 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Autowired
     private UserService userService;
 
+    @Lazy
+    @Autowired
+    private AuthService authService;
+
     @Autowired
     private TelNumberService telNumberService;
 
@@ -51,6 +53,9 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Autowired
     private SysFileService sysFileService;
+
+    @Autowired
+    protected OrganizationService organizationService;
 
     @Lazy
     @Autowired
@@ -197,38 +202,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
-    public FileUrlDto changePic(Long id, MultipartFile pic) throws IOException {
-        log.info(getServiceClass() + ".addPics() Started");
-        log.info(getServiceClass() + ".addPics() Checking San in DB");
-        San san = getOne(id);
-
-        if (!pic.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-            String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
-
-            pic.transferTo(new File(fileNameWithPath));
-
-            SysFile file = new SysFile();
-            file.setFileName(resultFilename);
-            file.setExtension(pic.getContentType());
-            file.setSize(pic.getSize());
-            file = sysFileService.addOne(file);
-
-            san.setPic(file);
-        }
-
-        editOneById(san);
-        log.info(getServiceClass() + ".addPics() Finished");
-        return fileMapper.fileToFileUrlDto(san.getPic());
-    }
-
-    @Override
     public Review addReview(Long sanId, ReviewCreateFilter filter) {
         log.info(getServiceClass() + ".addReview() Started");
         log.info(getServiceClass() + ".addReview() Checking San in DB");
@@ -247,68 +220,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
         log.info(getServiceClass() + ".addReview() Finished");
         return review;
-    }
-
-    @Override
-    public Room addRoom(Long sanId, RoomCreateFilter filter) {
-        log.info(getServiceClass() + ".addRoom() Started");
-        log.info(getServiceClass() + ".addRoom() Checking San in DB");
-        San san = getOne(sanId);
-
-        Room room = new Room();
-        room.setSan(san);
-        room.setPrice(filter.getPrice());
-        room.setName(filter.getName());
-        room.setDescription(filter.getDescription());
-        roomService.addOne(room);
-
-        log.info(getServiceClass() + ".addRoom() Finished");
-        return room;
-    }
-
-    @Override
-    public List<FileUrlDto> addRoomPics(Long roomId, MultipartFile[] pics) throws IOException {
-        log.info(getServiceClass() + ".addRoomPics() Started");
-        log.info(getServiceClass() + ".addRoomPics() Checking San in DB");
-        Room room = roomService.getOne(roomId);
-
-        for(MultipartFile pic : pics){
-            if (!pic.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdir();
-                }
-
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
-
-                pic.transferTo(new File(fileNameWithPath));
-
-                SysFile file = new SysFile();
-                file.setFileName(resultFilename);
-                file.setExtension(pic.getContentType());
-                file.setSize(pic.getSize());
-                file = sysFileService.addOne(file);
-
-                room.addPic(file);
-            }
-        }
-
-        log.info(getServiceClass() + ".addRoomPics() Finished");
-        return fileMapper.fileToFileUrlDto(roomService.editOneById(room).getPics());
-    }
-
-    @Override
-    public void deleteRoomPics(Long roomId, Long[] pics) {
-        log.info(getServiceClass() + ".deleteRoomPics() Started");
-        log.info(getServiceClass() + ".deleteRoomPics() Checking San in DB");
-        Room room = roomService.getOne(roomId);
-
-        List<SysFile> picsToDelete = sysFileService.getAllByIdIn(Arrays.asList(pics));
-        room.deletePics(picsToDelete);
-        roomService.editOneById(room);
-        log.info(getServiceClass() + ".deleteRoomPics() Finished");
     }
 
     @Override
@@ -339,6 +250,79 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
+    public List<SysFile> addPics(Long sanId, MultipartFile[] pics) throws IOException {
+        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
+        San san = getOne(sanId);
+
+        for(MultipartFile pic : pics){
+            if (!pic.getOriginalFilename().isEmpty()) {
+                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdir();
+                }
+
+                String uuidFile = UUID.randomUUID().toString();
+                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
+                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
+
+                pic.transferTo(new File(fileNameWithPath));
+
+                SysFile file = new SysFile();
+                file.setFileName(resultFilename);
+                file.setExtension(pic.getContentType());
+                file.setSize(pic.getSize());
+                file = sysFileService.addOne(file);
+
+                san.addPic(file);
+            }
+        }
+
+        return editOneById(san).getPics();
+    }
+
+    @Override
+    public void deletePics(Long sanId, Long[] picIds) {
+        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
+        San san = getOne(sanId);
+
+        List<SysFile> picsToDelete = sysFileService.getAllByIdIn(Arrays.asList(picIds));
+        picsToDelete.stream().forEach(file -> {
+            file.setDeletedDate(LocalDate.now());
+            sysFileService.editOneById(file);
+        });
+        san.deletePics(picsToDelete);
+        editOneById(san);
+    }
+
+    @Override
+    public List<San> getAllOwn(){
+        String currentUsername = authService.getCurrentUsername();
+        Organization currentUsersOrganization = organizationService.getOrganizationByTelNumber(currentUsername);
+        return repo.getAllByOrganization(currentUsersOrganization);
+    }
+
+    @Override
+    public boolean checkIfOwnOrg(Long orgId) {
+        String currentUsername = authService.getCurrentUsername();
+        Organization currentUsersOrganization = organizationService.getOrganizationByTelNumber(currentUsername);
+        if(!orgId.equals(currentUsersOrganization.getId())){
+            throw new RuntimeException("Данная организация не является вашей!");
+        }
+        return true;
+    }
+
+    @Override
+    public boolean checkIfOwnSan(Long sanId) {
+        String currentUsername = authService.getCurrentUsername();
+        Organization currentUsersOrganization = organizationService.getOrganizationByTelNumber(currentUsername);
+        San sanById = getOne(sanId);
+        if(!sanById.getOrganization().getId().equals(currentUsersOrganization.getId())){
+            throw new RuntimeException("Данный санаторий не является вашей!");
+        }
+        return true;
+    }
+
+    @Override
     protected Class getCurrentClass() {
         return San.class;
     }
@@ -353,11 +337,15 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         log.info(getServiceClass() + ".addOneDto() Checking San Types in DB");
         SanType sanType = sanTypeService.getOne(filter.getSanTypeId());
 
+        log.info(getServiceClass() + ".addOneDto() Checking Organization in DB");
+        Organization organization = organizationService.getOne(filter.getOrgId());
+
         log.info(getServiceClass() + ".addOneDto() Creating San");
         San san = new San();
         san.setName(filter.getName());
         san.setDescription(filter.getDescription());
         san.setCity(city);
+        san.setOrganization(organization);
         san.setSanType(sanType);
 
         if(filter.getSiteLink() != null){

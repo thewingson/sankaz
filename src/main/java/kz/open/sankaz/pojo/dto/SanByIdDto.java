@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SanByIdDto extends AbstractDto {
-    private String mainPicUrl;
+    private List<FileDto> pics;
     private String name;
     private Float rating;
     private String sanType;

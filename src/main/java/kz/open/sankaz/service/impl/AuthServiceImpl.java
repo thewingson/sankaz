@@ -322,7 +322,7 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setConfirmedBy(userByNumber.getUsername());
         userByNumber.setActive(true);
         log.info("Searching for role");
-        SecRole roleUser = roleService.getByName("ROLE_ORG");
+        SecRole roleUser = roleService.getByName("ROLE_MODERATOR");
         userByNumber.addRole(roleUser);
         log.info("Updating user after confirmation number {}", confirmNumber);
         userService.editOneById(userByNumber);
@@ -515,7 +515,6 @@ public class AuthServiceImpl implements AuthService {
         organization.setManagerFullName(filter.getFullName());
         organization.setTelNumber(filter.getTelNumber());
         organization.setIin(filter.getIin());
-        organization.setManagerFullName(filter.getFullName());
         organizationService.addOne(organization);
         // TODO: send to Moderator through method or listener
         log.info("Organization creation is finished");
@@ -568,6 +567,18 @@ public class AuthServiceImpl implements AuthService {
                 .withIssuer("/users/auth/finish-reg")
                 .sign(algorithm);
         return new TokenDto(accessToken, refreshToken);
+    }
+
+
+
+    @Override
+    public boolean checkIfOwnProfile(Long userId) {
+        String currentUsername = getCurrentUsername();
+        SecUser user = userService.getUserByTelNumber(currentUsername);
+        if(!userId.equals(user.getId())){
+            throw new RuntimeException("Данный профиль не является вашим!");
+        }
+        return true;
     }
 
     private int getRandomConfirmationNumber() {

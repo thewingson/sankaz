@@ -9,6 +9,7 @@ import kz.open.sankaz.service.RoomClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,8 +17,9 @@ import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
-@RequestMapping("/admin/room-class")
+@RequestMapping("/admin/room-classes")
 public class AdminRoomClassRest {
 
     private final RoomClassService roomClassService;

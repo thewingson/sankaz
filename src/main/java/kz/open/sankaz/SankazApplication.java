@@ -1,6 +1,8 @@
 package kz.open.sankaz;
 
 import kz.open.sankaz.model.*;
+import kz.open.sankaz.pojo.dto.OrganizationRegisterDto;
+import kz.open.sankaz.repo.OrganizationRepo;
 import kz.open.sankaz.repo.RoleRepo;
 import kz.open.sankaz.repo.SanRepo;
 import kz.open.sankaz.repo.UserRepo;
@@ -25,6 +27,7 @@ public class SankazApplication {
 
 	@Bean
 	CommandLineRunner run(UserRepo userRepo,
+						  OrganizationRepo organizationRepo,
 						  SanRepo sanRepo,
 						  RoleRepo roleRepo,
 						  SanTypeRepo sanTypeRepo,
@@ -33,11 +36,12 @@ public class SankazApplication {
 						  CompanyCategoryRepo companyCategoryRepo,
 						  PasswordEncoder passwordEncoder){
 		return  args -> {
-			callScript(userRepo, sanRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
+//			callScript(userRepo, organizationRepo, sanRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
 		};
 	}
 
 	public static void callScript(UserRepo userRepo,
+								  OrganizationRepo organizationRepo,
 								  SanRepo sanRepo,
 								  RoleRepo roleRepo,
 								  SanTypeRepo sanTypeRepo,
@@ -174,11 +178,31 @@ public class SankazApplication {
 		companyCategory1.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
 		companyCategoryRepo.save(companyCategory1);
 
+		Organization organization = new Organization();
+//		organization.setSiteLink();
+//		organization.setInstagramLink();
+//		organization.setAddress();
+//		organization.setDescription();
+//		organization.setCompanyName();
+//		organization.setConfirmedBy("+77770000000");
+//		organization.setConfirmedDate(LocalDateTime.now());
+		organization.setCompanyCategory(companyCategory);
+		organization.setIin("121212121212");
+		organization.setIban("12121212121212");
+		organization.setTelNumber(moderatorUser.getTelNumber());
+		organization.setManagerFullName(moderatorUser.getFullName());
+		organization.setUser(moderatorUser);
+		organization.setName("Test ORG 1");
+		organization.setEmail("org@mail.kz");
+		organization.setConfirmationStatus("CONFIRMED");
+		organizationRepo.save(organization);
+
 		San san = new San();
 		san.setName("test 1");
 		san.setDescription("test 1 test 1 test 1");
 		san.setSanType(sanType);
 		san.setCity(city);
+		san.setOrganization(organization);
 		sanRepo.save(san);
 
 	}

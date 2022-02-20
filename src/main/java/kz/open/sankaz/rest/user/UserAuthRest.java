@@ -1,4 +1,4 @@
-package kz.open.sankaz.rest;
+package kz.open.sankaz.rest.user;
 
 import kz.open.sankaz.exception.NumberConfirmationException;
 import kz.open.sankaz.pojo.filter.FinishRegFilter;
@@ -11,6 +11,7 @@ import kz.open.sankaz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@PreAuthorize("hasRole('ROLE_USER')")
 @RestController
 @RequestMapping("/users/auth")
 public class UserAuthRest {
