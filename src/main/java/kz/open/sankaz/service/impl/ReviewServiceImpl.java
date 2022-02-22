@@ -5,7 +5,6 @@ import kz.open.sankaz.model.Review;
 import kz.open.sankaz.pojo.filter.ReviewBySanIdFilter;
 import kz.open.sankaz.repo.ReviewRepo;
 import kz.open.sankaz.service.ReviewService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,6 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-@Slf4j
 @Transactional
 public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> implements ReviewService {
 

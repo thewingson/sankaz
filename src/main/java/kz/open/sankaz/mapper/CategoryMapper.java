@@ -1,13 +1,11 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.pojo.dto.SanTypeDto;
-import kz.open.sankaz.pojo.dto.CompanyCategoryDto;
-import kz.open.sankaz.pojo.dto.RoomTypeDto;
-import kz.open.sankaz.pojo.dto.ServiceCategoryDto;
 import kz.open.sankaz.model.CompanyCategory;
-import kz.open.sankaz.model.RoomType;
 import kz.open.sankaz.model.SanType;
 import kz.open.sankaz.model.ServiceCategory;
+import kz.open.sankaz.pojo.dto.CompanyCategoryDto;
+import kz.open.sankaz.pojo.dto.SanTypeDto;
+import kz.open.sankaz.pojo.dto.ServiceCategoryDto;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
@@ -37,10 +35,5 @@ public abstract class CategoryMapper {
     abstract public ServiceCategory dtoToServiceCategory(ServiceCategoryDto dto);
     @IterableMapping(qualifiedByName = "dtoToServiceCategory")
     abstract public List<ServiceCategory> dtoToServiceCategory(List<ServiceCategoryDto> dtos);
-
-    @Named("dtoToRoomType")
-    abstract public RoomType dtoToRoomType(RoomTypeDto dto);
-    @IterableMapping(qualifiedByName = "dtoToRoomType")
-    abstract public List<RoomType> dtoToRoomType(List<RoomTypeDto> dtos);
 
 }

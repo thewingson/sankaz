@@ -1,6 +1,5 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.model.CompanyCategory;
 import kz.open.sankaz.model.RoomClassDic;
 import kz.open.sankaz.model.San;
 import kz.open.sankaz.pojo.filter.RoomClassDicFilter;
@@ -12,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @Transactional
@@ -19,7 +20,6 @@ public class RoomClassDicServiceImpl extends AbstractService<RoomClassDic, RoomC
 
     @Autowired
     private SanService sanService;
-
 
     public RoomClassDicServiceImpl(RoomClassDicRepo roomClassDicRepo) {
         super(roomClassDicRepo);
@@ -62,5 +62,11 @@ public class RoomClassDicServiceImpl extends AbstractService<RoomClassDic, RoomC
         dictionary.setNameKz(filter.getNameKz());
         dictionary.setDescriptionKz(filter.getDescriptionKz());
         return editOneById(dictionary);
+    }
+
+    @Override
+    public List<RoomClassDic> getBySan(Long sanId) {
+        San san = sanService.getOne(sanId);
+        return san.getRoomClasses();
     }
 }

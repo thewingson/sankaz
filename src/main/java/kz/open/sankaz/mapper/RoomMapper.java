@@ -59,15 +59,17 @@ public abstract class RoomMapper extends AbstractMapper {
         return null;
     }
 
-    @Named("roomClassToDto")
-    @Mapping(target = "sanId", source = "roomClass.san.id")
-    @Mapping(target = "pics", expression = "java( fileToDto(roomClass.getPics()) )")
-    abstract public RoomClassDto roomClassToDto(RoomClass roomClass);
-    @IterableMapping(qualifiedByName = "roomClassToDto")
-    abstract public List<RoomClassDto> roomClassToDto(List<RoomClass> roomClass);
+    @Named("roomToRoomInClassDicDto")
+    @Mapping(target = "name", source = "room.roomClassDic.name")
+    @Mapping(target = "mainPic", expression = "java( room.getMainPicUrl() )")
+    @Mapping(target = "price", source = "room.price")
+    abstract public RoomInClassDicDto roomToRoomInClassDicDto(Room room);
+    @IterableMapping(qualifiedByName = "roomToRoomInClassDicDto")
+    abstract public List<RoomInClassDicDto> roomToRoomInClassDicDto(List<Room> rooms);
 
     @Named("roomClassDicToDto")
     @Mapping(target = "sanId", source = "roomClassDic.san.id")
+    @Mapping(target = "rooms", expression = "java( roomToRoomInClassDicDto( roomClassDic.getRooms() ) )")
     abstract public RoomClassDicDto roomClassDicToDto(RoomClassDic roomClassDic);
     @IterableMapping(qualifiedByName = "roomClassDicToDto")
     abstract public List<RoomClassDicDto> roomClassDicToDto(List<RoomClassDic> roomClassDics);

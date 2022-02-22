@@ -6,13 +6,11 @@ import kz.open.sankaz.model.CompanyCategory;
 import kz.open.sankaz.pojo.dto.CompanyCategoryDto;
 import kz.open.sankaz.repo.dictionary.CompanyCategoryRepo;
 import kz.open.sankaz.service.CompanyCategoryService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 @Transactional
 public class CompanyCategoryServiceImpl extends AbstractDictionaryService<CompanyCategory, CompanyCategoryRepo> implements CompanyCategoryService {
 
@@ -36,10 +34,8 @@ public class CompanyCategoryServiceImpl extends AbstractDictionaryService<Compan
     public CompanyCategory addOneDto(CompanyCategoryDto dto) {
         try{
             getOneByCode(dto.getCode());
-            log.info(getServiceClass() + ".addOneDto()" + ". Code is busy");
             throw new RuntimeException("К сожалению кодовое название занято! Пожалуйста, введите другое название.");
         } catch (EntityNotFoundException e){
-            log.info(getServiceClass() + ".addOneDto()" + ". Code is free");
         }
         CompanyCategory companyCategory = categoryMapper.dtoToCompanyCategory(dto);
         return addOne(companyCategory);
@@ -50,10 +46,8 @@ public class CompanyCategoryServiceImpl extends AbstractDictionaryService<Compan
         CompanyCategory companyCategory = getOne(id);
         try{
             getOneByCode(dto.getCode());
-            log.info(getServiceClass() + ".updateOneDto()" + ". Code is busy");
             throw new RuntimeException("К сожалению кодовое название занято! Пожалуйста, введите другое название.");
         } catch (EntityNotFoundException e){
-            log.info(getServiceClass() + ".updateOneDto()" + ". Code is free");
         }
         if(dto.getCode() != null && !dto.getCode().equals(companyCategory.getCode())){
             companyCategory.setCode(dto.getCode());

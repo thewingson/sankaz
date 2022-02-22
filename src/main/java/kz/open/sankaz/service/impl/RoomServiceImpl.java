@@ -124,6 +124,11 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
     }
 
     @Override
+    public List<Room> getAllByClass(Long classId) {
+        return repo.getAllByRoomClassDicId(classId);
+    }
+
+    @Override
     protected Class getCurrentClass() {
         return Room.class;
     }

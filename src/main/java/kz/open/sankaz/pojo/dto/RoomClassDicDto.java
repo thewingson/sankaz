@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -15,4 +14,6 @@ import java.util.List;
 public class RoomClassDicDto extends AbstractDictionaryLangDto {
     private Long id;
     private Long sanId;
+    private List<RoomInClassDicDto> rooms;
+
 }

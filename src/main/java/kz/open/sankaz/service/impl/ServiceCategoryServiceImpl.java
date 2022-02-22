@@ -5,13 +5,11 @@ import kz.open.sankaz.model.ServiceCategory;
 import kz.open.sankaz.pojo.dto.ServiceCategoryDto;
 import kz.open.sankaz.repo.dictionary.ServiceCategoryRepo;
 import kz.open.sankaz.service.ServiceCategoryService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 @Transactional
 public class ServiceCategoryServiceImpl extends AbstractDictionaryService<ServiceCategory, ServiceCategoryRepo> implements ServiceCategoryService {
 

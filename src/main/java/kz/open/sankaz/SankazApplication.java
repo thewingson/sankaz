@@ -36,7 +36,7 @@ public class SankazApplication {
 						  CompanyCategoryRepo companyCategoryRepo,
 						  PasswordEncoder passwordEncoder){
 		return  args -> {
-//			callScript(userRepo, organizationRepo, sanRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
+			callScript(userRepo, organizationRepo, sanRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
 		};
 	}
 

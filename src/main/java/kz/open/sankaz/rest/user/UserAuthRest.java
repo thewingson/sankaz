@@ -26,7 +26,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 @RestController
 @RequestMapping("/users/auth")
 public class UserAuthRest {
@@ -49,6 +49,7 @@ public class UserAuthRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping(value = "/numbers/is-free")
     public ResponseEntity<?> isNumberFree(@Valid @RequestBody TelNumberFilter filter) {
         try {
@@ -58,6 +59,7 @@ public class UserAuthRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/send-conf")
     public ResponseEntity<?> sendConfirmationNumber(@Valid @RequestBody TelNumberFilter filter) {
         try {
@@ -68,6 +70,7 @@ public class UserAuthRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/check-conf")
     public ResponseEntity<?> checkConfirmationNumber(@Valid @RequestBody RegisterFilter filter) {
         try {

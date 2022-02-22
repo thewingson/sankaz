@@ -10,7 +10,6 @@ import kz.open.sankaz.pojo.filter.SanCreateFilter;
 import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.repo.SanRepo;
 import kz.open.sankaz.service.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 @Transactional
 public class SanServiceImpl extends AbstractService<San, SanRepo> implements SanService {
 
@@ -81,15 +79,11 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Override
     public San updateOneDto(Long id, SanCreateFilter filter) {
-        log.info(getServiceClass() + ".updateOneDto() Started");
-        log.info(getServiceClass() + ".updateOneDto() Checking San in DB");
         San san = getOne(id);
 
-        log.info(getServiceClass() + ".addOneDto() Checking City in DB");
         City city = cityService.getOne(filter.getCityId());
 
         List<SanType> sanTypes = new ArrayList<>();
-        log.info(getServiceClass() + ".updateOneDto() Checking San Types in DB");
         if(filter.getSanTypeId()!= null){
             SanType sanTypeByCode = sanTypeService.getOne(filter.getSanTypeId());
             san.setSanType(sanTypeByCode);
@@ -137,27 +131,20 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
             san.deleteTelNumbers(san.getTelNumbers());
         }
 
-        log.info(getServiceClass() + ".updateOneDto() Finished");
         return editOneById(san);
     }
 
     @Override
     public San changeSanType(Long id, Long sanTypeId) {
-        log.info(getServiceClass() + ".changeSanType() Started");
-        log.info(getServiceClass() + ".changeSanType() Checking San in DB");
         San san = getOne(id);
 
-        log.info(getServiceClass() + ".changeSanType() Checking San Types in DB");
         san.setSanType(sanTypeService.getOne(sanTypeId));
 
-        log.info(getServiceClass() + ".changeSanType() Finished");
         return san;
     }
 
     @Override
     public San addTelNumbers(Long id, String[] telNumbers) {
-        log.info(getServiceClass() + ".addTelNumbers() Started");
-        log.info(getServiceClass() + ".addTelNumbers() Checking San in DB");
         San san = getOne(id);
 
         if(telNumbers != null && telNumbers.length > 0){
@@ -176,14 +163,11 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
             san.addTelNumbers(toCreate);
         }
 
-        log.info(getServiceClass() + ".addTelNumbers() Finished");
         return san;
     }
 
     @Override
     public void deleteTelNumbers(Long id, String[] telNumbers) {
-        log.info(getServiceClass() + ".addTelNumbers() Started");
-        log.info(getServiceClass() + ".addTelNumbers() Checking San in DB");
         San san = getOne(id);
 
         if(telNumbers != null && telNumbers.length > 0){
@@ -198,13 +182,10 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
             san.deleteTelNumbers(toDelete);
         }
 
-        log.info(getServiceClass() + ".addTelNumbers() Finished");
     }
 
     @Override
     public Review addReview(Long sanId, ReviewCreateFilter filter) {
-        log.info(getServiceClass() + ".addReview() Started");
-        log.info(getServiceClass() + ".addReview() Checking San in DB");
         Review review = reviewMapper.reviewCreateFilterToReview(filter);
         San san = getOne(sanId);
         SecUser user = userService.getUserByUsername(filter.getUsername());
@@ -218,7 +199,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
         reviewService.addOne(review);
 
-        log.info(getServiceClass() + ".addReview() Finished");
         return review;
     }
 
@@ -251,7 +231,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Override
     public List<SysFile> addPics(Long sanId, MultipartFile[] pics) throws IOException {
-        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
         San san = getOne(sanId);
 
         for(MultipartFile pic : pics){
@@ -282,7 +261,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Override
     public void deletePics(Long sanId, Long[] picIds) {
-        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
         San san = getOne(sanId);
 
         List<SysFile> picsToDelete = sysFileService.getAllByIdIn(Arrays.asList(picIds));
@@ -329,18 +307,12 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Override
     public San createSan(SanCreateFilter filter) {
-        log.info(getServiceClass() + ".addOneDto() Started");
-
-        log.info(getServiceClass() + ".addOneDto() Checking City in DB");
         City city = cityService.getOne(filter.getCityId());
 
-        log.info(getServiceClass() + ".addOneDto() Checking San Types in DB");
         SanType sanType = sanTypeService.getOne(filter.getSanTypeId());
 
-        log.info(getServiceClass() + ".addOneDto() Checking Organization in DB");
         Organization organization = organizationService.getOne(filter.getOrgId());
 
-        log.info(getServiceClass() + ".addOneDto() Creating San");
         San san = new San();
         san.setName(filter.getName());
         san.setDescription(filter.getDescription());
@@ -368,7 +340,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
             san.addTelNumber(number);
         }
 
-        log.info(getServiceClass() + ".addOneDto() Finished");
         return addOne(san);
     }
 

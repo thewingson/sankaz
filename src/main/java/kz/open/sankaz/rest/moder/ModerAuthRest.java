@@ -112,7 +112,8 @@ public class ModerAuthRest {
             organizationService.checkIfOwnOrg(orgId);
             return ResponseModel.success(organizationMapper.organizationToDto(organizationService.editOrg(orgId, filter)));
         } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new RuntimeException(e.getMessage());
+//            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 

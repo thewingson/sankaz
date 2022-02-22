@@ -13,7 +13,6 @@ import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
 import kz.open.sankaz.pojo.filter.OrganizationFilterFilter;
 import kz.open.sankaz.repo.OrganizationRepo;
 import kz.open.sankaz.service.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -27,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-@Slf4j
 @Transactional
 public class OrganizationServiceImpl extends AbstractService<Organization, OrganizationRepo> implements OrganizationService {
 
@@ -111,38 +109,30 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
     @Override
     public void approveOrganizationData(Long orgId) {
-        log.info("OrganizationServiceImpl. Starting approve organization id: {}", orgId);
         Organization organization = getOne(orgId);
         if(organization.getConfirmationStatus().equals("CONFIRMED")){
-            log.warn("OrganizationServiceImpl. Organization {} already has been confirmed", orgId);
             throw new RuntimeException("Данная организация уже одобрена!");
         }
         organization.setConfirmationStatus("CONFIRMED");
         organization.setConfirmedDate(LocalDateTime.now());
         organization.setConfirmedBy(authService.getCurrentUsername());
-        log.info("OrganizationServiceImpl. Organization {} confirmed successfully", orgId);
     }
 
     @Override
     public void rejectOrganizationData(Long orgId) {
-        log.info("OrganizationServiceImpl. Starting reject organization id: {}", orgId);
         Organization organization = getOne(orgId);
         if(organization.getConfirmationStatus().equals("REJECTED")){
-            log.warn("OrganizationServiceImpl. Organization {} already has been rejected", orgId);
             throw new RuntimeException("Данная организация уже отклонена!");
         }
         organization.setConfirmationStatus("REJECTED");
         organization.setConfirmedDate(LocalDateTime.now());
         organization.setConfirmedBy(authService.getCurrentUsername());
-        log.info("OrganizationServiceImpl. Organization {} rejected successfully", orgId);
     }
 
     @Override
     public void finishProfile(Long orgId, OrganizationEditFilter filter) {
-        log.info("OrganizationServiceImpl. Starting update organization id: {}", orgId);
         Organization organization = getOne(orgId);
         if(!organization.getConfirmationStatus().equals("CONFIRMED")){
-            log.warn("OrganizationServiceImpl. Organization {} has not confirmed", orgId);
             throw new RuntimeException("Данная организация еще не одобрена!");
         }
         CompanyCategory category = companyCategoryService.getOne(filter.getCategoryId());
@@ -156,7 +146,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         organization.setSiteLink(filter.getSiteLink());
 
         editOneById(organization);
-        log.info("OrganizationServiceImpl. Organization {} update has completed successfully", orgId);
     }
 
     @Override
@@ -226,41 +215,31 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
         try{ // проверка email
             userService.getUserByEmail(filter.getEmail());
-            log.warn("Email is busy {}", filter.getEmail());
             throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.EMAIL_IS_BUSY_CODE);
         } catch (EntityNotFoundException e){
-            log.info("Email is free {}", filter.getTelNumber());
         }
 
         try{ // проверка iban
             getOrganizationByIban(filter.getIban());
-            log.warn("IBAN is busy {}", filter.getIban());
             throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.IBAN_IS_BUSY_CODE);
         } catch (EntityNotFoundException e){
-            log.info("IBAN is free {}", filter.getTelNumber());
         }
 
         try{ // проверка iin
             getOrganizationByIin(filter.getIin());
-            log.warn("IIN is busy {}", filter.getIban());
             throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.IIN_IS_BUSY_CODE);
         } catch (EntityNotFoundException e){
-            log.info("IIN is free {}", filter.getTelNumber());
         }
 
         try{ // проверка номера в организациях
             getOrganizationByTelNumber(filter.getTelNumber());
-            log.warn("Number is busy {}", filter.getTelNumber());
             throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.TEL_NUMBER_IS_BUSY_CODE);
         } catch (EntityNotFoundException e){
-            log.info("Number is free {}", filter.getTelNumber());
         }
         try{ // проверка организации по юзеру / один юзер - одна организация !
             getOrganizationByUser(user);
-            log.warn("User already has registered organization {}", user.getTelNumber());
             throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.ORG_ALREADY_REGISTERED_CODE);
         } catch (EntityNotFoundException e){
-            log.info("User did not registered any organization {}", user.getTelNumber());
         }
 
         Organization organization = new Organization();
@@ -295,50 +274,40 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         try{ // проверка email
             SecUser userByEmail = userService.getUserByEmail(filter.getEmail());
             if(!organization.getUser().equals(userByEmail)){
-                log.warn("Email is busy {}", filter.getEmail());
                 throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.EMAIL_IS_BUSY_CODE);
             }
         } catch (EntityNotFoundException e){
-            log.info("Email is free {}", filter.getTelNumber());
         }
 
         try{ // проверка iban
             Organization organizationByIban = getOrganizationByIban(filter.getIban());
             if(!organization.getId().equals(organizationByIban.getId())){
-                log.warn("IBAN is busy {}", filter.getIban());
                 throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.IBAN_IS_BUSY_CODE);
             }
         } catch (EntityNotFoundException e){
-            log.info("IBAN is free {}", filter.getTelNumber());
         }
 
         try{ // проверка iin
             Organization organizationByIin = getOrganizationByIin(filter.getIin());
             if(!organization.getId().equals(organizationByIin.getId())){
-                log.warn("IIN is busy {}", filter.getIban());
                 throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.IIN_IS_BUSY_CODE);
             }
         } catch (EntityNotFoundException e){
-            log.info("IIN is free {}", filter.getTelNumber());
         }
 
         try{ // проверка номера в организациях
             Organization organizationByTelNumber = getOrganizationByTelNumber(filter.getTelNumber());
             if(!organization.getId().equals(organizationByTelNumber.getId())){
-                log.warn("Number is busy {}", filter.getTelNumber());
                 throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.TEL_NUMBER_IS_BUSY_CODE);
             }
         } catch (EntityNotFoundException e){
-            log.info("Number is free {}", filter.getTelNumber());
         }
         try{ // проверка организации по юзеру / один юзер - одна организация !
             Organization organizationByUser = getOrganizationByUser(user);
             if(!organization.getId().equals(organizationByUser.getId())){
-                log.warn("User already has registered organization {}", user.getTelNumber());
                 throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.ORG_ALREADY_REGISTERED_CODE);
             }
         } catch (EntityNotFoundException e){
-            log.info("User did not registered any organization {}", user.getTelNumber());
         }
 
         organization.setUser(user);

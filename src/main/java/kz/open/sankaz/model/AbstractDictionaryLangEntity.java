@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import java.util.Locale;
 
 @Getter
 @Setter
@@ -19,4 +20,20 @@ public abstract class AbstractDictionaryLangEntity extends AbstractDictionaryEnt
 
     @Column(name = "DESCRIPTION_KZ")
     protected String descriptionKz;
+
+    public String getLocaleName(Locale locale){
+        return null;
+    }
+
+    public String getLocaleDescription(Locale locale){
+        return null;
+    }
+
+    public String getCurrentLocaleName(){
+        return null;
+    }
+
+    public String getCurrentLocaleDescription(){
+        return null;
+    }
 }

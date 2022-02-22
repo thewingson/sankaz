@@ -18,4 +18,6 @@ public interface RoomService extends CommonService<Room> {
     void deletePics(Long roomId, Long[] picIds);
 
     boolean checkIfOwnRoom(Long roomId);
+
+    List<Room> getAllByClass(Long classId);
 }

@@ -49,11 +49,6 @@ public class Room extends AbstractEntity {
             inverseJoinColumns = @JoinColumn(name = "FILE_ID", foreignKey = @ForeignKey(name = "ROOM_PICS_PIC_FK")))
     private List<SysFile> pics;
 
-//    @ManyToOne
-//    @JoinColumn(name = "CLASS_ID", foreignKey = @ForeignKey(name = "ROOM_CLASS_FK"), nullable = false)
-//    @JsonManagedReference
-//    private RoomClass roomClass;
-
     public void addPic(SysFile pic){
         if(getPics() == null){
             this.pics = new ArrayList<>();
@@ -77,6 +72,22 @@ public class Room extends AbstractEntity {
     public void deletePics(List<SysFile> pics){
         if(!getPics().isEmpty()){
             this.getPics().removeAll(pics);
+        }
+    }
+
+    public SysFile getMainPic(){
+        if(getPics() != null && !getPics().isEmpty()){
+            return getPics().get(0);
+        }
+        return null;
+    }
+
+    public String getMainPicUrl(){
+        SysFile mainPic = getMainPic();
+        if(mainPic != null){
+            return mainPic.getFileName();
+        } else{
+            return null;
         }
     }
 

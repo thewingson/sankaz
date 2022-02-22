@@ -6,14 +6,12 @@ import kz.open.sankaz.pojo.dto.ItemPicDto;
 import kz.open.sankaz.repo.ItemPicRepo;
 import kz.open.sankaz.service.ItemPicService;
 import kz.open.sankaz.service.SysFileService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
 @Service
-@Slf4j
 @Transactional
 public class ItemPicServiceImpl extends AbstractService<ItemPic, ItemPicRepo> implements ItemPicService {
 
@@ -26,7 +24,6 @@ public class ItemPicServiceImpl extends AbstractService<ItemPic, ItemPicRepo> im
 
     @Override
     public ItemPic addOneDto(ItemPicDto picDto) {
-        log.info("SERVICE -> ItemPicServiceImpl.addOneDto()");
         SysFile file = new SysFile();
         file.setFileName(picDto.getFileName());
         file.setExtension(picDto.getExtension());

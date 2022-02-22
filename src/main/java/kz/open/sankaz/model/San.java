@@ -64,10 +64,6 @@ public class San extends AbstractEntity{
     @JsonBackReference
     private List<Review> reviews;
 
-//    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
-//    @JsonBackReference
-//    private List<RoomClass> roomClasses;
-
     @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
     @JsonBackReference
     private List<RoomClassDic> roomClasses;
