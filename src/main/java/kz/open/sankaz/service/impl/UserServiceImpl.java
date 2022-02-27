@@ -8,6 +8,8 @@ import kz.open.sankaz.model.City;
 import kz.open.sankaz.model.Gender;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.SysFile;
+import kz.open.sankaz.model.enums.ConfirmationStatus;
+import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.PictureDto;
 import kz.open.sankaz.pojo.dto.SecUserDto;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
@@ -183,8 +185,8 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
             }
         }
         userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
-        userByNumber.setConfirmationStatus("FINISHED");
-        userByNumber.setUserType(filter.getUserType());
+        userByNumber.setConfirmationStatus(ConfirmationStatus.FINISHED);
+        userByNumber.setUserType(UserType.valueOf(filter.getUserType()));
         userByNumber.setUsername(filter.getUsername());
         userByNumber.setEmail(filter.getEmail());
         userByNumber.setTelNumber(filter.getTelNumber());
@@ -234,8 +236,8 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
             }
         }
         userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
-        userByNumber.setConfirmationStatus("FINISHED");
-        userByNumber.setUserType(filter.getUserType());
+        userByNumber.setConfirmationStatus(ConfirmationStatus.FINISHED);
+        userByNumber.setUserType(UserType.valueOf(filter.getUserType()));
         userByNumber.setUsername(filter.getUsername());
         userByNumber.setEmail(filter.getEmail());
         userByNumber.setTelNumber(filter.getTelNumber());

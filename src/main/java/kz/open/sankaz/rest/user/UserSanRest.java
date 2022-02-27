@@ -19,7 +19,7 @@ import javax.validation.Valid;
 
 @PreAuthorize("hasRole('ROLE_USER')")
 @RestController
-@RequestMapping("/user/sans")
+@RequestMapping("/users/sans")
 public class UserSanRest {
 
     private final SanService sanService;

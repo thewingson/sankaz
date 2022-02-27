@@ -18,7 +18,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @PreAuthorize("hasRole('ROLE_MODERATOR')")
 @RestController
-@RequestMapping("/moder/room-class-dics")
+@RequestMapping("/moders/room-class-dics")
 public class ModerRoomClassDicRest {
 
     private final RoomClassDicService roomClassDicService;

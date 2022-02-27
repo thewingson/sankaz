@@ -8,6 +8,9 @@ import kz.open.sankaz.config.SmscApi;
 import kz.open.sankaz.exception.*;
 import kz.open.sankaz.mapper.SecUserMapper;
 import kz.open.sankaz.model.*;
+import kz.open.sankaz.model.enums.ConfirmationStatus;
+import kz.open.sankaz.model.enums.ResetNumberStatus;
+import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.ConfirmationStatusDto;
 import kz.open.sankaz.pojo.dto.NumberFreeDto;
 import kz.open.sankaz.pojo.dto.TokenDto;
@@ -144,12 +147,12 @@ public class AuthServiceImpl implements AuthService {
             userByNumber = new SecUser();
         }
 
-        userByNumber.setUserType("USER");
+        userByNumber.setUserType(UserType.USER);
         userByNumber.setConfirmedBy(null);
         userByNumber.setActive(false);
         userByNumber.clearRoles();
 
-        userByNumber.setConfirmationStatus("ON_CONFIRMATION");
+        userByNumber.setConfirmationStatus(ConfirmationStatus.ON_CONFIRMATION);
         userByNumber.setConfirmedDate(null);
         userByNumber.setConfirmationNumber(getRandomConfirmationNumber());
         userByNumber.setConfirmationNumberCreatedDate(LocalDateTime.now());
@@ -187,7 +190,7 @@ public class AuthServiceImpl implements AuthService {
         try{
             log.info("Checking tel number in DB");
             userByNumber = userService.getUserByTelNumber(telNumber);
-            if(userByNumber.getConfirmationStatus().equals("CONFIRMED")){
+            if(userByNumber.getConfirmationStatus().equals(ConfirmationStatus.CONFIRMED)){
                 throw new RuntimeException("К сожалению номер занят! Пожалуйста, введите другой номер.");
             }
         } catch (EntityNotFoundException e){
@@ -196,18 +199,18 @@ public class AuthServiceImpl implements AuthService {
             userByNumber = new SecUser();
         }
 
-        userByNumber.setUserType("ORG");
+        userByNumber.setUserType(UserType.ORG);
         userByNumber.setConfirmedBy(null);
         userByNumber.setActive(false);
         userByNumber.clearRoles();
 
-        userByNumber.setConfirmationStatus("ON_CONFIRMATION");
+        userByNumber.setConfirmationStatus(ConfirmationStatus.ON_CONFIRMATION);
         userByNumber.setConfirmedDate(null);
         userByNumber.setConfirmationNumber(getRandomConfirmationNumber());
         userByNumber.setConfirmationNumberCreatedDate(LocalDateTime.now());
         userByNumber.setTelNumber(telNumber);
         userByNumber.setUsername(telNumber);
-        userByNumber.setPassword(passwordEncoder.encode(password));
+        userByNumber.setPassword(password);
         userByNumber.setFirstName("");
         userByNumber.setLastName("");
         log.info("Registering new user {}", userByNumber.getUsername());
@@ -240,7 +243,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Неправильный номер! Данный номер отсутствует базе.");
         }
 
-        userByNumber.setResetNumberStatus("ON_RESET");
+        userByNumber.setResetNumberStatus(ResetNumberStatus.ON_RESET);
         userByNumber.setResetNumber(getRandomConfirmationNumber());
         userByNumber.setResetNumberCreatedDate(LocalDateTime.now());
         log.info("Updating user {}", userByNumber.getUsername());
@@ -268,7 +271,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("Checking tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(filter.getTelNumber());
 
-        if (userByNumber.getConfirmedBy() != null) {
+        if (userByNumber.getConfirmationStatus().equals(ConfirmationStatus.CONFIRMED)) {
             log.info("Number has already confirmed! {}", filter.getConfirmationNumber());
             throw new NumberConfirmationException(NumberConfirmationExceptionMessages.NUMBER_ALREADY_CONFIRMED_CODE);
         }
@@ -280,7 +283,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("Invalid confirmation number! {}", filter.getConfirmationNumber());
             throw new NumberConfirmationException(NumberConfirmationExceptionMessages.INVALID_CONFIRMATION_NUMBER);
         }
-        userByNumber.setConfirmationStatus("CONFIRMED");
+        userByNumber.setConfirmationStatus(ConfirmationStatus.CONFIRMED);
         userByNumber.setConfirmationNumber(0);
         userByNumber.setConfirmedDate(LocalDateTime.now());
         userByNumber.setConfirmedBy(userByNumber.getUsername());
@@ -301,10 +304,13 @@ public class AuthServiceImpl implements AuthService {
         try{
             userByNumber = userService.getUserByTelNumber(telNumber);
         } catch (EntityNotFoundException e){
-            throw new RuntimeException("Неправильный номер! Данный номер отсутствует базе.");
+            throw new RuntimeException("Неправильный номер или пароль! н");
+        }
+        if(!password.equals(userByNumber.getPassword())){
+            throw new RuntimeException("Неправильный номер или пароль! п");
         }
 
-        if (userByNumber.getConfirmedBy() != null) {
+        if (userByNumber.getConfirmationStatus().equals(ConfirmationStatus.CONFIRMED)) {
             log.info("Number has already confirmed! {}", confirmNumber);
             throw new RuntimeException("Номер уже подтвержден! Пожалуйста, закончите регистрацию.");
         }
@@ -316,7 +322,8 @@ public class AuthServiceImpl implements AuthService {
             log.info("Invalid confirmation number! {}", confirmNumber);
             throw new RuntimeException("Неправильный номер подтверждения!");
         }
-        userByNumber.setConfirmationStatus("CONFIRMED");
+        userByNumber.setPassword(passwordEncoder.encode(password));
+        userByNumber.setConfirmationStatus(ConfirmationStatus.CONFIRMED);
         userByNumber.setConfirmationNumber(0);
         userByNumber.setConfirmedDate(LocalDateTime.now());
         userByNumber.setConfirmedBy(userByNumber.getUsername());
@@ -354,7 +361,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("Invalid reset number! {}", resetNumber);
             throw new RuntimeException("Неправильный номер сброса!");
         }
-        userByNumber.setResetNumberStatus("EMPTY");
+        userByNumber.setResetNumberStatus(ResetNumberStatus.EMPTY);
         userByNumber.setResetNumber(0);
         log.info("Updating user after reset number {}", resetNumber);
         userService.editOneById(userByNumber);
@@ -369,7 +376,27 @@ public class AuthServiceImpl implements AuthService {
         try{
             log.info("Checking tel number in DB");
             SecUser userByNumber = userService.getUserByTelNumber(telNumber);
-            dto.setConfirmationStatus(userByNumber.getConfirmationStatus());
+            if(userByNumber.getConfirmationStatus().equals(ConfirmationStatus.ON_CONFIRMATION)
+                    || userByNumber.getConfirmationStatus().equals(ConfirmationStatus.CONFIRMED)){
+                userByNumber.setConfirmedDate(null);
+                userByNumber.setConfirmedBy(null);
+                userByNumber.setConfirmationNumber(getRandomConfirmationNumber());
+                userByNumber.setConfirmationNumberCreatedDate(LocalDateTime.now());
+                userByNumber.setConfirmationStatus(ConfirmationStatus.ON_CONFIRMATION);
+                userService.editOneById(userByNumber);
+
+                String phones = telNumber;
+                String message = "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber();
+                int translit = 0;
+                String time = "";
+                String id = "";
+                int format = 0;
+                String sender = "SanKaz";
+                String query = "";
+                SmscApi smscApi = new SmscApi();
+                smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
+            }
+            dto.setConfirmationStatus(userByNumber.getConfirmationStatus().name());
             dto.setRoles(userByNumber.getRoles().stream().map(SecRole::getName).collect(Collectors.toList()));
         } catch (EntityNotFoundException e){
             isFree = true;
@@ -415,7 +442,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("Start of finishing registration {}", filter.getTelNumber());
         log.info("Checking tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(filter.getTelNumber());
-        if(!userByNumber.getConfirmationStatus().equals("CONFIRMED")){
+        if(!userByNumber.getConfirmationStatus().equals(ConfirmationStatus.CONFIRMED)){
             throw new RuntimeException("This number is not confirmed! Please, confirm number before signing up.");
         }
         if(filter.getCityId() != null){
@@ -436,7 +463,7 @@ public class AuthServiceImpl implements AuthService {
                 userByNumber.setEmail(filter.getEmail());
             }
         }
-        userByNumber.setConfirmationStatus("FINISHED");
+        userByNumber.setConfirmationStatus(ConfirmationStatus.FINISHED);
         userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
         userByNumber.setFirstName(filter.getFirstName());
         userByNumber.setLastName(filter.getLastName());
@@ -453,7 +480,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("Start of finishing registration {}", filter.getTelNumber());
         log.info("Checking tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(getCurrentUsername());
-        if(!userByNumber.getConfirmationStatus().equals("CONFIRMED") && !userByNumber.getConfirmationStatus().equals("FINISHED")){
+        if(!userByNumber.getConfirmationStatus().equals(ConfirmationStatus.CONFIRMED) && !userByNumber.getConfirmationStatus().equals(ConfirmationStatus.FINISHED)){
             throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.NUMBER_NOT_CONFIRMED_CODE);
         }
 
@@ -496,7 +523,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("User did not registered any organization {}", userByNumber.getTelNumber());
         }
 
-        userByNumber.setConfirmationStatus("FINISHED");
+        userByNumber.setConfirmationStatus(ConfirmationStatus.FINISHED);
         userByNumber.setFirstName(filter.getFullName());
         userByNumber.setLastName(filter.getFullName());
         if(!filter.getEmail().isEmpty()){

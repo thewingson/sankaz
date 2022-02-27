@@ -20,7 +20,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @PreAuthorize("hasRole('ROLE_USER')")
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/users/profiles")
 public class UserProfileRest {
 
     private final UserService userService;
@@ -35,7 +35,7 @@ public class UserProfileRest {
         this.authService = authService;
     }
 
-    @GetMapping("/profiles/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<?> getUser(@PathVariable("userId") Long userId) {
         try {
             authService.checkIfOwnProfile(userId);
@@ -45,7 +45,7 @@ public class UserProfileRest {
         }
     }
 
-    @PutMapping("/profiles/{userId}")
+    @PutMapping("/{userId}")
     public ResponseEntity<?> editUser(@PathVariable("userId") Long userId,
                                                     @Valid @RequestBody SecUserEditFilter filter) {
         try {
@@ -57,7 +57,7 @@ public class UserProfileRest {
         }
     }
 
-    @PutMapping("/profiles/{userId}/change-pass")
+    @PutMapping("/{userId}/change-pass")
     public ResponseEntity<?> changePassword(@PathVariable("userId") Long userId,
                                             @Valid @RequestBody ChangePasswordFilter filter) {
         try {
@@ -69,7 +69,7 @@ public class UserProfileRest {
         }
     }
 
-    @PutMapping("/profiles/{userId}/picture")
+    @PutMapping("/{userId}/picture")
     public ResponseEntity<?> changePicture(@PathVariable("userId") Long userId,
                                             @Param("file") MultipartFile file) {
         try {
@@ -80,7 +80,7 @@ public class UserProfileRest {
         }
     }
 
-    @DeleteMapping("/profiles/{userId}/picture")
+    @DeleteMapping("/{userId}/picture")
     public ResponseEntity<?> deletePic(@PathVariable(name = "userId") Long userId) {
         try{
             authService.checkIfOwnProfile(userId);

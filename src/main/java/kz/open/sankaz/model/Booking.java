@@ -6,25 +6,27 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@DynamicUpdate
 @Table(name = "BOOKING")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Booking extends AbstractEntity {
+public class Booking extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "BOOKING_SEQ", strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(sequenceName = "BOOKING_ID_SEQ", name = "BOOKING_ID", allocationSize = 1)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", foreignKey = @ForeignKey(name = "BOOKING_USER_FK"))
     @JsonManagedReference
     private SecUser user;
@@ -41,10 +43,10 @@ public class Booking extends AbstractEntity {
     @Column(name = "ADULTS_COUNT")
     private Integer adultsCount;
 
-    @Column(name = "CHILDRENS_COUNT")
-    private Integer childrens;
+    @Column(name = "CHILDREN_COUNT")
+    private Integer childrenCount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ROOM_ID", foreignKey = @ForeignKey(name = "BOOKING_ROOM_FK"), nullable = false)
     @JsonManagedReference
     private Room room;
@@ -71,5 +73,25 @@ public class Booking extends AbstractEntity {
     private LocalDateTime paidDate;
     @Column(name = "CANCELLED_DATE")
     private LocalDateTime cancelledDate;
+
+    public boolean isBookedByUser(){
+        return user != null;
+    }
+
+    public boolean isApproved(){
+        return status.equals(BookingStatus.APPROVED);
+    }
+
+    public boolean isCancelled(){
+        return status.equals(BookingStatus.CANCELLED);
+    }
+
+    public boolean isPaid(){
+        return status.equals(BookingStatus.PAID);
+    }
+
+    public boolean isWaiting(){
+        return status.equals(BookingStatus.WAITING);
+    }
 
 }

@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -121,6 +122,11 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
             throw new RuntimeException("Данная комната не прикреплен к вашему санаторию!");
         }
         return true;
+    }
+
+    @Override
+    public List<Room> getAllByDate(Long sanId, LocalDateTime startDate, LocalDateTime endDate) {
+        return repo.getAllFreeForBookingByDateRange(sanId, startDate, endDate);
     }
 
     @Override

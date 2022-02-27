@@ -26,7 +26,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-//@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RestController
 @RequestMapping("/users/auth")
 public class UserAuthRest {
@@ -40,17 +40,8 @@ public class UserAuthRest {
         this.authService = authService;
     }
 
-    @GetMapping("/numbers")
-    public ResponseEntity<?> getNumbers() {
-        try {
-            return ResponseModel.success(authService.getNumbers());
-        } catch (RuntimeException e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
     @PreAuthorize("permitAll()")
-    @GetMapping(value = "/numbers/is-free")
+    @PostMapping(value = "/numbers/is-free")
     public ResponseEntity<?> isNumberFree(@Valid @RequestBody TelNumberFilter filter) {
         try {
             return ResponseModel.success(authService.isNumberFree(filter.getTelNumber()));
@@ -83,6 +74,7 @@ public class UserAuthRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/finish-reg")
     public ResponseEntity<?> finishRegistration(@Valid @RequestBody FinishRegFilter filter) {
         try {
@@ -121,7 +113,7 @@ public class UserAuthRest {
         }
     }
 
-    @GetMapping("/refresh-token")
+    @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){

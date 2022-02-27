@@ -1,21 +1,19 @@
 package kz.open.sankaz;
 
 import kz.open.sankaz.model.*;
+import kz.open.sankaz.model.enums.ConfirmationStatus;
+import kz.open.sankaz.model.enums.ResetNumberStatus;
+import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.OrganizationRegisterDto;
-import kz.open.sankaz.repo.OrganizationRepo;
-import kz.open.sankaz.repo.RoleRepo;
-import kz.open.sankaz.repo.SanRepo;
-import kz.open.sankaz.repo.UserRepo;
-import kz.open.sankaz.repo.dictionary.CityRepo;
-import kz.open.sankaz.repo.dictionary.CompanyCategoryRepo;
-import kz.open.sankaz.repo.dictionary.GenderRepo;
-import kz.open.sankaz.repo.dictionary.SanTypeRepo;
+import kz.open.sankaz.repo.*;
+import kz.open.sankaz.repo.dictionary.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @SpringBootApplication
@@ -29,6 +27,8 @@ public class SankazApplication {
 	CommandLineRunner run(UserRepo userRepo,
 						  OrganizationRepo organizationRepo,
 						  SanRepo sanRepo,
+						  RoomClassDicRepo roomClassDicRepo,
+						  RoomRepo roomRepo,
 						  RoleRepo roleRepo,
 						  SanTypeRepo sanTypeRepo,
 						  CityRepo cityRepo,
@@ -36,13 +36,15 @@ public class SankazApplication {
 						  CompanyCategoryRepo companyCategoryRepo,
 						  PasswordEncoder passwordEncoder){
 		return  args -> {
-			callScript(userRepo, organizationRepo, sanRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
+			callScript(userRepo, organizationRepo, sanRepo, roomClassDicRepo, roomRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
 		};
 	}
 
 	public static void callScript(UserRepo userRepo,
 								  OrganizationRepo organizationRepo,
 								  SanRepo sanRepo,
+								  RoomClassDicRepo roomClassDicRepo,
+								  RoomRepo roomRepo,
 								  RoleRepo roleRepo,
 								  SanTypeRepo sanTypeRepo,
 								  CityRepo cityRepo,
@@ -59,7 +61,7 @@ public class SankazApplication {
 		roleRepo.save(user);
 
 		SecUser adminUser = new SecUser();
-		adminUser.setUserType("USER");
+		adminUser.setUserType(UserType.USER);
 		adminUser.setFirstName("Admin");
 		adminUser.setLastName("Admin");
 		adminUser.setTelNumber("+77770000000");
@@ -67,8 +69,8 @@ public class SankazApplication {
 		adminUser.setUsername("+77770000000");
 		adminUser.setPassword(passwordEncoder.encode("123"));
 		adminUser.addRole(admin);
-		adminUser.setConfirmationStatus("FINISHED");
-		adminUser.setResetNumberStatus("EMPTY");
+		adminUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
+		adminUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
 		adminUser.setConfirmationNumber(0);
 		adminUser.setConfirmedBy("admin");
 		adminUser.setConfirmedDate(LocalDateTime.now());
@@ -77,7 +79,7 @@ public class SankazApplication {
 		userRepo.save(adminUser);
 
 		SecUser moderatorUser = new SecUser();
-		moderatorUser.setUserType("USER");
+		moderatorUser.setUserType(UserType.USER);
 		moderatorUser.setFirstName("Moderator");
 		moderatorUser.setLastName("Moderator");
 		moderatorUser.setTelNumber("+77770000001");
@@ -85,8 +87,8 @@ public class SankazApplication {
 		moderatorUser.setUsername("+77770000001");
 		moderatorUser.setPassword(passwordEncoder.encode("123"));
 		moderatorUser.addRole(moderator);
-		moderatorUser.setConfirmationStatus("FINISHED");
-		moderatorUser.setResetNumberStatus("EMPTY");
+		moderatorUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
+		moderatorUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
 		moderatorUser.setConfirmationNumber(0);
 		moderatorUser.setConfirmedBy("admin");
 		moderatorUser.setConfirmedDate(LocalDateTime.now());
@@ -95,7 +97,7 @@ public class SankazApplication {
 		userRepo.save(moderatorUser);
 
 		SecUser testUser = new SecUser();
-		testUser.setUserType("USER");
+		testUser.setUserType(UserType.USER);
 		testUser.setFirstName("Test_user");
 		testUser.setLastName("Test_user");
 		testUser.setTelNumber("+77770000002");
@@ -103,8 +105,8 @@ public class SankazApplication {
 		testUser.setUsername("+77770000002");
 		testUser.setPassword(passwordEncoder.encode("123"));
 		testUser.addRole(user);
-		testUser.setConfirmationStatus("FINISHED");
-		testUser.setResetNumberStatus("EMPTY");
+		testUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
+		testUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
 		testUser.setConfirmationNumber(0);
 		testUser.setConfirmedBy("admin");
 		testUser.setConfirmedDate(LocalDateTime.now());
@@ -113,7 +115,7 @@ public class SankazApplication {
 		userRepo.save(testUser);
 
 		SecUser orgUser = new SecUser();
-		orgUser.setUserType("ORG");
+		orgUser.setUserType(UserType.ORG);
 		orgUser.setFirstName("Org");
 		orgUser.setLastName("Org");
 		orgUser.setTelNumber("+77770000003");
@@ -121,8 +123,8 @@ public class SankazApplication {
 		orgUser.setUsername("+77770000003");
 		orgUser.setPassword(passwordEncoder.encode("123"));
 		orgUser.addRole(manager);
-		orgUser.setConfirmationStatus("FINISHED");
-		orgUser.setResetNumberStatus("EMPTY");
+		orgUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
+		orgUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
 		orgUser.setConfirmationNumber(0);
 		orgUser.setConfirmedBy("admin");
 		orgUser.setConfirmedDate(LocalDateTime.now());
@@ -205,6 +207,19 @@ public class SankazApplication {
 		san.setOrganization(organization);
 		sanRepo.save(san);
 
+		RoomClassDic roomClassDic = new RoomClassDic();
+		roomClassDic.setSan(san);
+		roomClassDic.setCode("LUX");
+		roomClassDic.setName("lux");
+		roomClassDicRepo.save(roomClassDic);
+
+		Room room = new Room();
+		room.setRoomClassDic(roomClassDic);
+		room.setPrice(BigDecimal.valueOf(14500));
+		room.setRoomCount(2);
+		room.setBedCount(1);
+		room.setRoomNumber("101E");
+		roomRepo.save(room);
 	}
 
 }

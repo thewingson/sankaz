@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Locale;
 
 @Entity
 @Table(name = "ROOM_CLASS_DIC",
@@ -39,7 +40,7 @@ public class RoomClassDic extends AbstractEntity {
     @Column(name = "DESCRIPTION_KZ")
     private String descriptionKz;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "ROOM_SAN_FK"), nullable = false)
     @JsonManagedReference
     private San san;
@@ -47,5 +48,21 @@ public class RoomClassDic extends AbstractEntity {
     @OneToMany(mappedBy = "roomClassDic", cascade = CascadeType.REMOVE)
     @JsonBackReference
     private List<Room> rooms;
+
+    public String getLocaleName(Locale locale){
+        return getName();
+    }
+
+    public String getLocaleDescription(Locale locale){
+        return getDescription();
+    }
+
+    public String getCurrentLocaleName(){
+        return getName();
+    }
+
+    public String getCurrentLocaleDescription(){
+        return getDescription();
+    }
 
 }

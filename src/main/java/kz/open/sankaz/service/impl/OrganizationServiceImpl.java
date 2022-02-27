@@ -8,6 +8,7 @@ import kz.open.sankaz.model.CompanyCategory;
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.SysFile;
+import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.filter.OrganizationCreateFilter;
 import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
 import kz.open.sankaz.pojo.filter.OrganizationFilterFilter;
@@ -207,7 +208,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     @Override
     public Organization createOrg(OrganizationCreateFilter filter) {
         SecUser user = userService.getOne(filter.getUserId());
-        if(!user.getUserType().equals("ORG")){
+        if(!user.getUserType().equals(UserType.ORG)){
             throw new RuntimeException("Пользователь не является организацией!");
         }
 
@@ -265,7 +266,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     public Organization editOrg(Long orgId, OrganizationCreateFilter filter) {
         Organization organization = getOne(orgId);
         SecUser user = userService.getOne(filter.getUserId());
-        if(!user.getUserType().equals("ORG")){
+        if(!user.getUserType().equals(UserType.ORG)){
             throw new RuntimeException("Пользователь не является организацией!");
         }
 

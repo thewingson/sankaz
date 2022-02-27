@@ -19,7 +19,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @PreAuthorize("hasRole('ROLE_MODERATOR')")
 @RestController
-@RequestMapping("/moder/auth")
+@RequestMapping("/moders/auth")
 public class ModerAuthRest {
 
     private final AuthService authService;
@@ -36,19 +36,10 @@ public class ModerAuthRest {
     }
 
     @PreAuthorize("permitAll()")
-    @GetMapping("/numbers/is-free")
+    @PostMapping("/numbers/is-free")
     public ResponseEntity<?> isNumberFree(@Valid @RequestBody TelNumberFilter filter) {
         try {
             return ResponseModel.success(authService.isNumberFree(filter.getTelNumber()));
-        } catch (RuntimeException e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @GetMapping("/profile")
-    public ResponseEntity<?> getOwnProfile(HttpServletRequest request) {
-        try {
-            return ResponseModel.success(organizationMapper.toOrganizationRegisterDto(authService.getOwnProfile(request)));
         } catch (RuntimeException e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -84,7 +75,7 @@ public class ModerAuthRest {
         }
     }
 
-    @GetMapping("/check-status")
+    @PostMapping("/check-status")
     public ResponseEntity<?> getOrganizationConfirmationStatus(@Valid @RequestBody TelNumberFilter filter) {
         try {
             return ResponseModel.success(authService.getOrganizationConfirmationStatus(filter.getTelNumber()));
@@ -93,7 +84,7 @@ public class ModerAuthRest {
         }
     }
 
-    @PutMapping("/profile-finish/{orgId}")
+    @PostMapping("/profile-finish/{orgId}")
     public ResponseEntity<?> profileFinish(@PathVariable Long orgId,
                                            @Valid @RequestBody OrganizationEditFilter filter) {
         try {
@@ -105,7 +96,16 @@ public class ModerAuthRest {
         }
     }
 
-    @PutMapping("/profile/{orgId}")
+    @GetMapping("/profile")
+    public ResponseEntity<?> getOwnProfile(HttpServletRequest request) {
+        try {
+            return ResponseModel.success(organizationMapper.toOrganizationRegisterDto(authService.getOwnProfile(request)));
+        } catch (RuntimeException e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/profile/{orgId}")
     public ResponseEntity<?> editOrg(@PathVariable(name = "orgId") Long orgId,
                                          @Valid @RequestBody OrganizationCreateFilter filter) {
         try{
@@ -117,7 +117,7 @@ public class ModerAuthRest {
         }
     }
 
-    @PutMapping("/upload-pic/{orgId}/list")
+    @PostMapping("/upload-pic/{orgId}/list")
     public ResponseEntity<?> uploadPictures(@PathVariable Long orgId,
                                             @RequestParam("pics") MultipartFile[] pics) {
         try {

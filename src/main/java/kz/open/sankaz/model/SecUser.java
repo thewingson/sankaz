@@ -1,6 +1,9 @@
 package kz.open.sankaz.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import kz.open.sankaz.model.enums.ConfirmationStatus;
+import kz.open.sankaz.model.enums.ResetNumberStatus;
+import kz.open.sankaz.model.enums.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,8 +34,9 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @SequenceGenerator(sequenceName = "SEC_USER_ID_SEQ", name = "SEC_USER_ID", allocationSize = 1)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "USER_TYPE", nullable = false)
-    private String userType; // USER ORG
+    private UserType userType;
 
     @Column(name = "USERNAME", unique = true)
     private String username;
@@ -77,8 +81,9 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "CONFIRMATION_NUMBER")
     private int confirmationNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "CONFIRMATION_STATUS")
-    private String confirmationStatus = "NEW"; // NEW ON_CONFIRMATION CONFIRMED FINISHED
+    private ConfirmationStatus confirmationStatus = ConfirmationStatus.NEW;
 
     @Column(name = "CONFIRMATION_NUMBER_CREATED_DATE")
     private LocalDateTime confirmationNumberCreatedDate;
@@ -89,8 +94,9 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "RESET_NUMBER_CREATED_DATE")
     private LocalDateTime resetNumberCreatedDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "RESET_NUMBER_STATUS")
-    private String resetNumberStatus = "EMPTY"; // EMPTY ON_RESET
+    private ResetNumberStatus resetNumberStatus = ResetNumberStatus.EMPTY;
 
     @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(

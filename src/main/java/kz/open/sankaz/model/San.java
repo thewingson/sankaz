@@ -36,7 +36,7 @@ public class San extends AbstractEntity{
     @Column(name = "SITE_LINK")
     private String siteLink;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ORG_ID", foreignKey = @ForeignKey(name = "SAN_ORG_FK"), nullable = false)
     @JsonManagedReference
     private Organization organization;
@@ -48,7 +48,7 @@ public class San extends AbstractEntity{
             inverseJoinColumns = @JoinColumn(name = "TEL_NUMBER_ID", foreignKey = @ForeignKey(name = "SAN_TEL_NUMBERS_NUMBER_FK")))
     private List<TelNumber> telNumbers;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SAN_TYPE_ID", foreignKey = @ForeignKey(name = "SAN_TYPE_FK"), nullable = false)
     @JsonManagedReference
     private SanType sanType;
@@ -68,7 +68,7 @@ public class San extends AbstractEntity{
     @JsonBackReference
     private List<RoomClassDic> roomClasses;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CITY_ID", foreignKey = @ForeignKey(name = "SAN_CITY_FK"), nullable = false)
     @JsonManagedReference
     private City city;

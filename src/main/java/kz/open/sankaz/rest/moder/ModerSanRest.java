@@ -6,6 +6,7 @@ import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.pojo.filter.*;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.ReviewService;
+import kz.open.sankaz.service.RoomClassDicService;
 import kz.open.sankaz.service.RoomService;
 import kz.open.sankaz.service.SanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @PreAuthorize("hasRole('ROLE_MODERATOR')")
 @RestController
-@RequestMapping("/moder/sans")
+@RequestMapping("/moders/sans")
 public class ModerSanRest {
 
     private final SanService sanService;
@@ -31,6 +32,9 @@ public class ModerSanRest {
 
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private RoomClassDicService roomClassDicService;
 
     @Autowired
     private SanMapper sanMapper;
@@ -184,6 +188,16 @@ public class ModerSanRest {
             return ResponseModel.success(reviewMapper.reviewToReviewBySanIdDto(reviewService.getAllByFilter(sanId, filter)));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/{sanId}/rooms/date-filter")
+    public ResponseEntity<?> getAllByDate(@PathVariable(name = "sanId") Long sanId,
+                                          @Valid @RequestBody DateRangeFilter filter) {
+        try {
+            return ResponseModel.success(roomMapper.roomToRoomForBookCreateDto(roomService.getAllByDate(sanId, filter.getStartDate(), filter.getEndDate())));
+        } catch (RuntimeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
     }
 

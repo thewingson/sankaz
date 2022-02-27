@@ -11,6 +11,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -24,6 +25,15 @@ public abstract class RoomMapper extends AbstractMapper {
     abstract public RoomCreateDto roomToRoomCreateDto(Room room);
     @IterableMapping(qualifiedByName = "roomToRoomCreateDto")
     abstract public List<RoomCreateDto> roomToRoomCreateDto(List<Room> rooms);
+
+    private Long roomClassDicId;
+    private Long roomClassName;
+    @Named("roomToRoomForBookCreateDto")
+    @Mapping(target = "roomClassDicId", source = "room.roomClassDic.id")
+    @Mapping(target = "roomClassName", source = "room.roomClassDic.currentLocaleName")
+    abstract public RoomForBookCreateDto roomToRoomForBookCreateDto(Room room);
+    @IterableMapping(qualifiedByName = "roomToRoomForBookCreateDto")
+    abstract public List<RoomForBookCreateDto> roomToRoomForBookCreateDto(List<Room> rooms);
 
 //    @Named("roomToRoomInSanByIdDto")
 //    @Mapping(target = "mainPicUrl", expression = "java( getFirstPicUrlFromSysFiles(roomClass.getPics()) )")

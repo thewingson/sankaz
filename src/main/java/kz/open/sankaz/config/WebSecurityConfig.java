@@ -56,22 +56,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeHttpRequests()
                 .antMatchers(
-                        "/orgs/auth/**",
-                        "/users/auth/**",
-                        "/moder/auth/numbers/is-free",
-                        "/moder/auth/send-conf",
-                        "/moder/auth/check-conf")
+                        "/users/auth/numbers/is-free",
+                        "/users/auth/send-conf",
+                        "/users/auth/check-conf",
+                        "/users/auth/finish-reg",
+                        "/moders/auth/numbers/is-free",
+                        "/moders/auth/send-conf",
+                        "/moders/auth/check-conf")
                 .permitAll();
-
-        http
-                .authorizeHttpRequests()
-                .antMatchers("/orgs/auth/register-org")
-                .authenticated();
-
-        http
-                .authorizeHttpRequests()
-                .antMatchers("/orgs/auth/register-org")
-                .authenticated();
 
         http
                 .authorizeHttpRequests()

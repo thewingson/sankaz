@@ -2,6 +2,7 @@ package kz.open.sankaz.rest.moder;
 
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.model.Room;
+import kz.open.sankaz.pojo.filter.DateRangeFilter;
 import kz.open.sankaz.pojo.filter.DeletePicsFilter;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import kz.open.sankaz.response.ResponseModel;
@@ -22,7 +23,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @PreAuthorize("hasRole('ROLE_MODERATOR')")
 @RestController
-@RequestMapping("/moder/rooms")
+@RequestMapping("/moders/rooms")
 public class ModerRoomRest {
 
     private final RoomService roomService;
