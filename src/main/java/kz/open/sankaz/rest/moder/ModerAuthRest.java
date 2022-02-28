@@ -39,7 +39,7 @@ public class ModerAuthRest {
     @PostMapping("/numbers/is-free")
     public ResponseEntity<?> isNumberFree(@Valid @RequestBody TelNumberFilter filter) {
         try {
-            return ResponseModel.success(authService.isNumberFree(filter.getTelNumber()));
+            return ResponseModel.success(authService.isNumberFreeOrganization(filter.getTelNumber()));
         } catch (RuntimeException e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

@@ -9,10 +9,10 @@ import java.lang.Math;
 
 public class SmscApi {
 
-//	String SMSC_LOGIN    = "rkalmat";     // логин клиента
-//	String SMSC_PASSWORD = "3cc3621995712fbe6bdb6954d82ac8704e0c571b";  // пароль
-	String SMSC_LOGIN    = "ybnabbas";     // логин клиента
-	String SMSC_PASSWORD = "Arujan2013@";  // пароль
+	String SMSC_LOGIN    = "rkalmat";     // логин клиента
+	String SMSC_PASSWORD = "3cc3621995712fbe6bdb6954d82ac8704e0c571b";  // пароль
+//	String SMSC_LOGIN    = "ybnabbas";     // логин клиента
+//	String SMSC_PASSWORD = "Arujan2013@";  // пароль
 	boolean SMSC_HTTPS   = false;         // использовать HTTPS протокол
 	String SMSC_CHARSET  = "utf-8";       // кодировка сообщения: koi8-r, windows-1251 или utf-8 (по умолчанию)
 	boolean SMSC_DEBUG   = false;         // флаг отладки

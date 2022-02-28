@@ -408,6 +408,25 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public NumberFreeDto isNumberFreeOrganization(String telNumber) {
+        log.info("Start of checking number {}", telNumber);
+        NumberFreeDto dto = new NumberFreeDto();
+        boolean isFree = false;
+        try{
+            log.info("Checking tel number in DB");
+            SecUser userByNumber = userService.getUserByTelNumber(telNumber);
+            dto.setConfirmationStatus(userByNumber.getConfirmationStatus().name());
+            dto.setRoles(userByNumber.getRoles().stream().map(SecRole::getName).collect(Collectors.toList()));
+        } catch (EntityNotFoundException e){
+            isFree = true;
+            dto.setConfirmationStatus(ConfirmationStatus.NEW.name());
+        }
+        log.info("End of checking number {}", telNumber);
+        dto.setFree(isFree);
+        return dto;
+    }
+
+    @Override
     public ConfirmationStatusDto getOrganizationConfirmationStatus(String telNumber){
         log.info("Start of checking organization confirmation status by number {}", telNumber);
         try{

@@ -40,6 +40,8 @@ public interface AuthService {
 
     NumberFreeDto isNumberFree(String telNumber);
 
+    NumberFreeDto isNumberFreeOrganization(String telNumber);
+
     ConfirmationStatusDto getOrganizationConfirmationStatus(String telNumber);
 
     Organization getOwnProfile(HttpServletRequest request);

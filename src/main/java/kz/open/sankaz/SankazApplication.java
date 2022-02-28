@@ -200,26 +200,72 @@ public class SankazApplication {
 		organizationRepo.save(organization);
 
 		San san = new San();
-		san.setName("test 1");
-		san.setDescription("test 1 test 1 test 1");
+		san.setName("test");
+		san.setDescription("test test test");
 		san.setSanType(sanType);
 		san.setCity(city);
 		san.setOrganization(organization);
 		sanRepo.save(san);
 
+		San san1 = new San();
+		san1.setName("test 1");
+		san1.setDescription("test 1 test 1 test 1");
+		san1.setSanType(sanType);
+		san1.setCity(city2);
+		san1.setOrganization(organization);
+		sanRepo.save(san1);
+
+		San san2 = new San();
+		san2.setName("test 2");
+		san2.setDescription("test 2 test 2 test 2");
+		san2.setSanType(sanType2);
+		san2.setCity(city2);
+		san2.setOrganization(organization);
+		sanRepo.save(san2);
+
+		San san3 = new San();
+		san3.setName("test 3");
+		san3.setDescription("test 3 test 3 test 3");
+		san3.setSanType(sanType);
+		san3.setCity(city);
+		san3.setOrganization(organization);
+		sanRepo.save(san3);
+
+		San san4 = new San();
+		san4.setName("test 4");
+		san4.setDescription("test 4 test 4 test 4");
+		san4.setSanType(sanType2);
+		san4.setCity(city);
+		san4.setOrganization(organization);
+		sanRepo.save(san4);
+
 		RoomClassDic roomClassDic = new RoomClassDic();
-		roomClassDic.setSan(san);
+		roomClassDic.setSan(san4);
 		roomClassDic.setCode("LUX");
 		roomClassDic.setName("lux");
 		roomClassDicRepo.save(roomClassDic);
 
+		RoomClassDic roomClassDic2 = new RoomClassDic();
+		roomClassDic2.setSan(san4);
+		roomClassDic2.setCode("COM");
+		roomClassDic2.setName("Comfort");
+		roomClassDicRepo.save(roomClassDic2);
+
 		Room room = new Room();
-		room.setRoomClassDic(roomClassDic);
+		room.setRoomClassDic(roomClassDic2);
 		room.setPrice(BigDecimal.valueOf(14500));
 		room.setRoomCount(2);
 		room.setBedCount(1);
 		room.setRoomNumber("101E");
 		roomRepo.save(room);
+
+		Room room2 = new Room();
+		room2.setRoomClassDic(roomClassDic);
+		room2.setPrice(BigDecimal.valueOf(34500));
+		room2.setRoomCount(3);
+		room2.setBedCount(2);
+		room2.setRoomNumber("101");
+		roomRepo.save(room2);
 	}
 
 }
