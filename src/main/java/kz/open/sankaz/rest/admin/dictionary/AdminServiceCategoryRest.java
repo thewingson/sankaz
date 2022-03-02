@@ -1,29 +1,27 @@
-package kz.open.sankaz.rest.admin;
+package kz.open.sankaz.rest.admin.dictionary;
 
-import kz.open.sankaz.mapper.CategoryMapper;
-import kz.open.sankaz.pojo.dto.SanTypeDto;
+import kz.open.sankaz.pojo.filter.DictionaryLangFilter;
 import kz.open.sankaz.response.ResponseModel;
-import kz.open.sankaz.service.SanTypeService;
+import kz.open.sankaz.service.ServiceCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
-@RequestMapping("/admin/san-types")
-public class AdminSanTypeRest {
+@RequestMapping("/admin/dict/ser-cat")
+public class AdminServiceCategoryRest {
     @Autowired
-    private SanTypeService sanTypeService;
-
-    @Autowired
-    private CategoryMapper categoryMapper;
+    private ServiceCategoryService serviceCategoryService;
 
     @GetMapping
     public ResponseEntity<?> getAll() {
         try{
-            return ResponseModel.success(categoryMapper.sanTypeToDto(sanTypeService.getAll()));
+            return ResponseModel.success(serviceCategoryService.getAll());
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -32,16 +30,16 @@ public class AdminSanTypeRest {
     @GetMapping("/{id}")
     public ResponseEntity<?> getOneById(@PathVariable(name = "id") Long id) {
         try{
-            return ResponseModel.success(categoryMapper.sanTypeToDto(sanTypeService.getOne(id)));
+            return ResponseModel.success(serviceCategoryService.getOne(id));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> addOne(@RequestBody SanTypeDto sanTypeDto) {
+    public ResponseEntity<?> addOne(@Valid @RequestBody DictionaryLangFilter filter) {
         try{
-            return ResponseModel.success(sanTypeService.addOneDto(sanTypeDto));
+            return ResponseModel.success(serviceCategoryService.addOne(filter));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -50,19 +48,18 @@ public class AdminSanTypeRest {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOneById(@PathVariable(name = "id") Long id) {
         try{
-            sanTypeService.deleteOneByIdSoft(id);
+            serviceCategoryService.deleteOneById(id);
             return ResponseModel.successPure();
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<?> editOneById(@PathVariable(name = "id") Long id,
-                                         @RequestBody SanTypeDto sanTypeDto) {
+                                         @Valid @RequestBody DictionaryLangFilter filter) {
         try{
-            sanTypeService.updateOneDto(id, sanTypeDto);
-            return ResponseModel.successPure();
+            return ResponseModel.success(serviceCategoryService.updateOne(id, filter));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

@@ -1,6 +1,6 @@
-package kz.open.sankaz.rest.admin;
+package kz.open.sankaz.rest.admin.dictionary;
 
-import kz.open.sankaz.pojo.dto.CompanyCategoryDto;
+import kz.open.sankaz.pojo.filter.DictionaryLangFilter;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.CompanyCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
-@RequestMapping("/admin/comp-categories")
+@RequestMapping("/admin/dict/comp-categories")
 public class AdminCompanyCategoryRest {
     @Autowired
     private CompanyCategoryService companyCategoryService;
@@ -35,9 +37,9 @@ public class AdminCompanyCategoryRest {
     }
 
     @PostMapping
-    public ResponseEntity<?> addOne(@RequestBody CompanyCategoryDto categoryDto) {
+    public ResponseEntity<?> addOne(@Valid @RequestBody DictionaryLangFilter filter) {
         try{
-            return ResponseModel.success(companyCategoryService.addOneDto(categoryDto));
+            return ResponseModel.success(companyCategoryService.addOne(filter));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -46,18 +48,18 @@ public class AdminCompanyCategoryRest {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOneById(@PathVariable(name = "id") Long id) {
         try{
-            companyCategoryService.deleteOneByIdSoft(id);
+            companyCategoryService.deleteOneById(id);
             return ResponseModel.successPure();
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<?> editOneById(@PathVariable(name = "id") Long id,
-                                         @RequestBody CompanyCategoryDto categoryDto) {
+                                         @Valid @RequestBody DictionaryLangFilter filter) {
         try{
-            companyCategoryService.updateOneDto(id, categoryDto);
+            companyCategoryService.updateOne(id, filter);
             return ResponseModel.successPure();
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());

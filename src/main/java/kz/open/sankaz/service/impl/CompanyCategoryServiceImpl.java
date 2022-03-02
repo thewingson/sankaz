@@ -1,12 +1,9 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.exception.EntityNotFoundException;
-import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.CompanyCategory;
-import kz.open.sankaz.pojo.dto.CompanyCategoryDto;
+import kz.open.sankaz.pojo.filter.DictionaryLangFilter;
 import kz.open.sankaz.repo.dictionary.CompanyCategoryRepo;
 import kz.open.sankaz.service.CompanyCategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class CompanyCategoryServiceImpl extends AbstractDictionaryService<CompanyCategory, CompanyCategoryRepo> implements CompanyCategoryService {
 
     private final CompanyCategoryRepo companyCategoryRepo;
-
-    @Autowired
-    private CategoryMapper categoryMapper;
-
 
     public CompanyCategoryServiceImpl(CompanyCategoryRepo companyCategoryRepo) {
         super(companyCategoryRepo);
@@ -31,40 +24,25 @@ public class CompanyCategoryServiceImpl extends AbstractDictionaryService<Compan
     }
 
     @Override
-    public CompanyCategory addOneDto(CompanyCategoryDto dto) {
-        try{
-            getOneByCode(dto.getCode());
-            throw new RuntimeException("К сожалению кодовое название занято! Пожалуйста, введите другое название.");
-        } catch (EntityNotFoundException e){
-        }
-        CompanyCategory companyCategory = categoryMapper.dtoToCompanyCategory(dto);
+    public CompanyCategory updateOne(Long id, DictionaryLangFilter filter) {
+        CompanyCategory companyCategory = getOne(id);
+        companyCategory.setCode(filter.getCode());
+        companyCategory.setName(filter.getName());
+        companyCategory.setDescription(filter.getDescription());
+        companyCategory.setNameKz(filter.getNameKz());
+        companyCategory.setDescriptionKz(filter.getDescriptionKz());
         return addOne(companyCategory);
     }
 
     @Override
-    public CompanyCategory updateOneDto(Long id, CompanyCategoryDto dto) {
-        CompanyCategory companyCategory = getOne(id);
-        try{
-            getOneByCode(dto.getCode());
-            throw new RuntimeException("К сожалению кодовое название занято! Пожалуйста, введите другое название.");
-        } catch (EntityNotFoundException e){
-        }
-        if(dto.getCode() != null && !dto.getCode().equals(companyCategory.getCode())){
-            companyCategory.setCode(dto.getCode());
-        }
-        if(dto.getName() != null && !dto.getName().equals(companyCategory.getName())){
-            companyCategory.setName(dto.getName());
-        }
-        if(dto.getDescription() != null && !dto.getDescription().equals(companyCategory.getDescription())){
-            companyCategory.setDescription(dto.getDescription());
-        }
-        if(dto.getNameKz() != null && !dto.getNameKz().equals(companyCategory.getNameKz())){
-            companyCategory.setNameKz(dto.getNameKz());
-        }
-        if(dto.getDescriptionKz() != null && !dto.getDescriptionKz().equals(companyCategory.getDescriptionKz())){
-            companyCategory.setDescriptionKz(dto.getDescriptionKz());
-        }
-        return editOneById(companyCategory);
+    public CompanyCategory addOne(DictionaryLangFilter filter) {
+        CompanyCategory companyCategory = new CompanyCategory();
+        companyCategory.setCode(filter.getCode());
+        companyCategory.setName(filter.getName());
+        companyCategory.setDescription(filter.getDescription());
+        companyCategory.setNameKz(filter.getNameKz());
+        companyCategory.setDescriptionKz(filter.getDescriptionKz());
+        return addOne(companyCategory);
     }
 
     @Override

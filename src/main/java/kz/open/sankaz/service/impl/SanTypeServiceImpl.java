@@ -1,9 +1,8 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.CategoryMapper;
 import kz.open.sankaz.model.SanType;
-import kz.open.sankaz.pojo.dto.SanTypeDto;
+import kz.open.sankaz.pojo.filter.DictionaryLangFilter;
 import kz.open.sankaz.repo.dictionary.SanTypeRepo;
 import kz.open.sankaz.service.SanTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,48 +32,6 @@ public class SanTypeServiceImpl extends AbstractDictionaryService<SanType, SanTy
     }
 
     @Override
-    public SanType addOneDto(SanTypeDto sanTypeDto) {
-
-        if(sanTypeDto.getCode() == null || sanTypeDto.getCode().isEmpty()){
-            throw new RuntimeException("Кодовое название не может быть пустым! Пожалуйста, задайте его.");
-        }
-        if(sanTypeDto.getName() == null || sanTypeDto.getName().isEmpty()){
-            throw new RuntimeException("Название не может быть пустым! Пожалуйста, задайте его.");
-        }
-        try{
-            getOneByCode(sanTypeDto.getCode());
-            throw new RuntimeException("К сожалению кодовое название занято! Пожалуйста, введите другое название.");
-        } catch (EntityNotFoundException e){
-        }
-        SanType sanType = new SanType();
-        sanType.setName(sanTypeDto.getName());
-        sanType.setDescription(sanTypeDto.getDescription());
-        sanType.setCode(sanTypeDto.getCode());
-
-        return addOne(sanType);
-    }
-
-    @Override
-    public SanType updateOneDto(Long id, SanTypeDto sanTypeDto) {
-        try{
-            getOneByCode(sanTypeDto.getCode());
-            throw new RuntimeException("К сожалению кодовое название занято! Пожалуйста, введите другое название.");
-        } catch (EntityNotFoundException e){
-        }
-        SanType sanType = getOne(id);
-        if(sanTypeDto.getCode() != null && !sanTypeDto.getCode().equals(sanType.getCode())){
-            sanType.setCode(sanTypeDto.getCode());
-        }
-        if(sanTypeDto.getName() != null && !sanTypeDto.getName().equals(sanType.getName())){
-            sanType.setName(sanTypeDto.getName());
-        }
-        if(sanTypeDto.getDescription() != null && !sanTypeDto.getDescription().equals(sanType.getDescription())){
-            sanType.setDescription(sanTypeDto.getDescription());
-        }
-        return editOneById(sanType);
-    }
-
-    @Override
     protected Class getCurrentClass() {
         return SanType.class;
     }
@@ -82,5 +39,27 @@ public class SanTypeServiceImpl extends AbstractDictionaryService<SanType, SanTy
     @Override
     protected Class getServiceClass(){
         return this.getClass();
+    }
+
+    @Override
+    public SanType addOne(DictionaryLangFilter filter) {
+        SanType sanType = new SanType();
+        sanType.setCode(filter.getCode());
+        sanType.setName(filter.getName());
+        sanType.setDescription(filter.getDescription());
+        sanType.setNameKz(filter.getNameKz());
+        sanType.setDescriptionKz(filter.getDescriptionKz());
+        return addOne(sanType);
+    }
+
+    @Override
+    public SanType updateOne(Long id, DictionaryLangFilter filter) {
+        SanType sanType = getOne(id);
+        sanType.setCode(filter.getCode());
+        sanType.setName(filter.getName());
+        sanType.setDescription(filter.getDescription());
+        sanType.setNameKz(filter.getNameKz());
+        sanType.setDescriptionKz(filter.getDescriptionKz());
+        return addOne(sanType);
     }
 }

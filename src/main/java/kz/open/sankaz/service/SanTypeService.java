@@ -1,9 +1,9 @@
 package kz.open.sankaz.service;
 
 import kz.open.sankaz.model.SanType;
-import kz.open.sankaz.pojo.dto.SanTypeDto;
+import kz.open.sankaz.pojo.filter.DictionaryLangFilter;
 
 public interface SanTypeService extends CommonDictionaryService<SanType> {
-    SanType addOneDto(SanTypeDto sanTypeDto);
-    SanType updateOneDto(Long id, SanTypeDto sanTypeDto);
+    SanType addOne(DictionaryLangFilter filter);
+    SanType updateOne(Long id, DictionaryLangFilter filter);
 }

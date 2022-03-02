@@ -81,70 +81,26 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
 
     @Override
     public E addOne(E entity) {
-        ApplicationEvent beforeCreateEvent = getBeforeCreateEvent(entity);
-        if(beforeCreateEvent != null){
-            applicationEventPublisher.publishEvent(beforeCreateEvent);
-        }
-
         entity = repo.save(entity);
-
-        AfterCreateEvent afterCreateEvent = getAfterCreateEvent(entity);
-        if(afterCreateEvent != null){
-            applicationEventPublisher.publishEvent(afterCreateEvent);
-        }
-
         return entity;
     }
 
     @Override
     public E editOneById(E entity) {
-        BeforeUpdateEvent beforeUpdateEvent = getBeforeUpdateEvent(entity);
-        if(beforeUpdateEvent != null){
-            applicationEventPublisher.publishEvent(beforeUpdateEvent);
-        }
-
         entity = repo.save(entity);
-
-        AfterUpdateEvent afterUpdateEvent = getAfterUpdateEvent(entity);
-        if(beforeUpdateEvent != null){
-            applicationEventPublisher.publishEvent(beforeUpdateEvent);
-        }
-
         return entity;
     }
 
     @Override
     public void deleteOneById(Long id) {
         E one = getOne(id);
-
-        BeforeDeleteEvent beforeDeleteEvent = getBeforeDeleteEvent(one);
-        if(beforeDeleteEvent != null){
-            applicationEventPublisher.publishEvent(beforeDeleteEvent);
-        }
-
         repo.delete(one);
-
-        AfterDeleteEvent afterDeleteEvent = getAfterDeleteEvent(one);
-        if(afterDeleteEvent != null){
-            applicationEventPublisher.publishEvent(afterDeleteEvent);
-        }
     }
 
     @Override
     public void deleteOneByIdSoft(Long id) {
         E one = getOne(id);
-
-        BeforeDeleteEvent beforeDeleteEvent = getBeforeDeleteEvent(one);
-        if(beforeDeleteEvent != null){
-            applicationEventPublisher.publishEvent(beforeDeleteEvent);
-        }
-
         repo.save(one);
-
-        AfterDeleteEvent afterDeleteEvent = getAfterDeleteEvent(one);
-        if(afterDeleteEvent != null){
-            applicationEventPublisher.publishEvent(afterDeleteEvent);
-        }
     }
 
     protected abstract Class getCurrentClass();

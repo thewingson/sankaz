@@ -11,8 +11,20 @@ public abstract class AbstractDictionaryLangService<E extends AbstractDictionary
         extends AbstractDictionaryService<E, R>
         implements CommonDictionaryLangService<E> {
 
+//    protected final Class<E> clazz;
+
     protected <T extends CommonDictionaryRepo<E>> AbstractDictionaryLangService(T repo) {
         super(repo);
+//        this.clazz = clazz;
     }
+
+//    public E updateOne(Long id, DictionaryLangFilter filter) {
+//         E entity = clazz.newInstance();
+//         getCurrentClass().newInstance();
+//    }
+//
+//    public E addOne(DictionaryLangFilter filter) {
+//        return null;
+//    }
 
 }
