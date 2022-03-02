@@ -3,7 +3,9 @@ package kz.open.sankaz.rest.user;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
-import kz.open.sankaz.pojo.filter.*;
+import kz.open.sankaz.pojo.filter.ReviewBySanIdFilter;
+import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
+import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.ReviewService;
 import kz.open.sankaz.service.RoomService;
@@ -13,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -44,7 +45,7 @@ public class UserSanRest {
         this.sanService = sanService;
     }
 
-    @GetMapping
+    @PostMapping
     public ResponseEntity<?> getAll(@Valid @RequestBody SanForMainFilter filter) {
         try{
             return ResponseModel.success(sanService.getAllForMain(filter));

@@ -1,4 +1,4 @@
-package kz.open.sankaz.rest.moder;
+package kz.open.sankaz.rest.dictionary;
 
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.CompanyCategoryService;
@@ -12,15 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-@PreAuthorize("hasRole('ROLE_MODERATOR')")
 @RestController
-@RequestMapping("/moders/comp-cat")
-public class ModerCompanyCategoryRest {
+@RequestMapping("/dict/comp-cat")
+public class CompanyCategoryRest {
 
     private final CompanyCategoryService companyCategoryService;
 
     @Autowired
-    public ModerCompanyCategoryRest(CompanyCategoryService companyCategoryService) {
+    public CompanyCategoryRest(CompanyCategoryService companyCategoryService) {
         this.companyCategoryService = companyCategoryService;
     }
 

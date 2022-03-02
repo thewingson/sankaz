@@ -56,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeHttpRequests()
                 .antMatchers(
+                        "/dict/**",
                         "/users/auth/numbers/is-free",
                         "/users/auth/send-conf",
                         "/users/auth/check-conf",

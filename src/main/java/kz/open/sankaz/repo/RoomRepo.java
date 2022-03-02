@@ -1,7 +1,7 @@
 package kz.open.sankaz.repo;
 
 import kz.open.sankaz.model.Room;
-import kz.open.sankaz.model.RoomClassDic;
+import kz.open.sankaz.pojo.dto.DatesDto;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,4 +23,9 @@ public interface RoomRepo extends CommonRepo<Room> {
     List<Room> getAllFreeForBookingByDateRange(@Param("sanId") Long sanId,
                                                        @Param("startDate") LocalDateTime startDate,
                                                        @Param("endDate") LocalDateTime endDate);
+
+    @Query(nativeQuery = true)
+    List<DatesDto> getRoomAvailabilityForDateRange(@Param("roomId") Long roomId,
+                                                   @Param("startDate") LocalDateTime startDate,
+                                                   @Param("endDate") LocalDateTime endDate);
 }

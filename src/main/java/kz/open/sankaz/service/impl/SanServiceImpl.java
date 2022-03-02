@@ -204,8 +204,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Override
     public List<SanForMainDto> getAllForMain(SanForMainFilter filter) {
-//        List<San> result = sanRepo.getAllBySanForMainFilter(filter.getCityId(), filter.getStartDate(), filter.getEndDate());
-        List<San> result = sanRepo.getAllBySanForMainFilter(filter.getCityId()); // TODO: add other filters after Bokking creation
+        List<San> result = sanRepo.getAllBySanForMainFilter(filter.getCityId(), filter.getStartDate(), filter.getEndDate());
 
         return result.stream().map(san -> {
             SanForMainDto dto = new SanForMainDto();

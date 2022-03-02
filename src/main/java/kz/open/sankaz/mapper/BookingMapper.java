@@ -1,9 +1,7 @@
 package kz.open.sankaz.mapper;
 
 import kz.open.sankaz.model.Booking;
-import kz.open.sankaz.pojo.dto.BookingAdminDto;
-import kz.open.sankaz.pojo.dto.BookingModerAllDto;
-import kz.open.sankaz.pojo.dto.BookingModerByIdDto;
+import kz.open.sankaz.pojo.dto.*;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -60,4 +58,24 @@ public abstract class BookingMapper {
     abstract public BookingModerByIdDto bookingToBookingModerByIdDto(Booking booking);
     @IterableMapping(qualifiedByName = "bookingToBookingModerByIdDto")
     abstract public List<BookingModerByIdDto> bookingToBookingModerByIdDto(List<Booking> bookings);
+
+    @Named("bookingToBookingUserDto")
+    @Mapping(target = "userId", source = "booking.user.id")
+    @Mapping(target = "sanName", source = "booking.room.roomClassDic.san.name")
+    @Mapping(target = "status", expression = "java( booking.getStatus().name() )")
+    abstract public BookingUserDto bookingToBookingUserDto(Booking booking);
+    @IterableMapping(qualifiedByName = "bookingToBookingUserDto")
+    abstract public List<BookingUserDto> bookingToBookingUserDto(List<Booking> bookings);
+
+    @Named("bookingToBookingByIdUserDto")
+    @Mapping(target = "userId", source = "booking.user.id")
+    @Mapping(target = "orgName", source = "booking.room.roomClassDic.san.organization.name")
+    @Mapping(target = "sanName", source = "booking.room.roomClassDic.san.name")
+    @Mapping(target = "sanType", source = "booking.room.roomClassDic.san.sanType.name")
+    @Mapping(target = "status", expression = "java( booking.getStatus().name() )")
+    @Mapping(target = "roomCount", source = "booking.room.roomCount")
+    @Mapping(target = "bedCount", source = "booking.room.bedCount")
+    abstract public BookingByIdUserDto bookingToBookingByIdUserDto(Booking booking);
+    @IterableMapping(qualifiedByName = "bookingToBookingByIdUserDto")
+    abstract public List<BookingByIdUserDto> bookingToBookingByIdUserDto(List<Booking> bookings);
 }

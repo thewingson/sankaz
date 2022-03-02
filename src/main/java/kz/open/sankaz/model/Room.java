@@ -1,6 +1,7 @@
 package kz.open.sankaz.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import kz.open.sankaz.pojo.dto.DatesDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,9 +9,34 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@SqlResultSetMapping(
+        name="getRoomAvailabilityForDateRangeMapping",
+        classes={
+                @ConstructorResult(
+                        targetClass=DatesDto.class,
+                        columns={
+                                @ColumnResult(name="checkdate", type = LocalDate.class),
+                                @ColumnResult(name="isfree", type = boolean.class)
+                        }
+                )
+        }
+)
+@NamedNativeQuery(name="Room.getRoomAvailabilityForDateRange",
+        query="SELECT " +
+                "cast(dat as DATE) as checkdate, " +
+                "case when b.id is null " +
+                "then true " +
+                "    else false " +
+                "    end as isfree " +
+                "FROM " +
+                "    generate_series(cast(:startDate as DATE), cast(:endDate as DATE), cast('1 day' as interval)) dat " +
+                "left join booking b on b.room_id = :roomId and dat between b.start_date and b.end_date and b.status <> 'CANCELLED' and b.status <> 'WAITING';",
+        resultSetMapping="getRoomAvailabilityForDateRangeMapping")
 @Entity
 @Table(name = "ROOM",
         uniqueConstraints = { @UniqueConstraint(columnNames = { "ROOM_NUMBER", "CLASS_ID" }) })

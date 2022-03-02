@@ -70,6 +70,17 @@ public class ResponseModel<T> implements Serializable {
         );
     }
 
+    public static ResponseEntity<?> error(HttpStatus errorCode, String errorType, Map<String, ?> content, String errorText) {
+        return ResponseEntity.status(errorCode).body(
+                ResponseModel.builder()
+                        .type("error")
+                        .errorType(errorType)
+                        .data(content)
+                        .text(errorText)
+                        .build()
+        );
+    }
+
     public static ResponseEntity<?> success(Object content) {
         return ResponseEntity.ok(
                 ResponseModel.builder()

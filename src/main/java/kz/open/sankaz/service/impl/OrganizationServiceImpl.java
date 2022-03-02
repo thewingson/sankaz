@@ -117,10 +117,11 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         organization.setConfirmationStatus("CONFIRMED");
         organization.setConfirmedDate(LocalDateTime.now());
         organization.setConfirmedBy(authService.getCurrentUsername());
+        editOneById(organization);
     }
 
     @Override
-    public void rejectOrganizationData(Long orgId) {
+    public void rejectOrganizationData(Long orgId, String rejectMessage) {
         Organization organization = getOne(orgId);
         if(organization.getConfirmationStatus().equals("REJECTED")){
             throw new RuntimeException("Данная организация уже отклонена!");
@@ -128,6 +129,8 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         organization.setConfirmationStatus("REJECTED");
         organization.setConfirmedDate(LocalDateTime.now());
         organization.setConfirmedBy(authService.getCurrentUsername());
+        organization.setRejectMessage(rejectMessage);
+        editOneById(organization);
     }
 
     @Override

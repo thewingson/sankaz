@@ -3,6 +3,7 @@ package kz.open.sankaz.service;
 import kz.open.sankaz.model.Booking;
 import kz.open.sankaz.pojo.filter.BookingAdminCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingModerCreateFilter;
+import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface BookingService extends CommonService<Booking> {
     Booking approve(Long bookId);
 
     Booking pay(Long bookId);
+
+    Booking bookRoomFromUser(Long userId, BookingUserCreateFilter filter);
 }

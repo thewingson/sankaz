@@ -1,14 +1,14 @@
 package kz.open.sankaz.validator;
 
-import kz.open.sankaz.pojo.filter.BookingCreateFilter;
+import kz.open.sankaz.pojo.filter.BookingCreateUserInfoFilter;
 import kz.open.sankaz.validator.anootation.ValidBookingUser;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class BookingUserValidator implements ConstraintValidator<ValidBookingUser, BookingCreateFilter> {
+public class BookingUserValidator implements ConstraintValidator<ValidBookingUser, BookingCreateUserInfoFilter> {
     @Override
-    public boolean isValid(BookingCreateFilter value, ConstraintValidatorContext context) {
+    public boolean isValid(BookingCreateUserInfoFilter value, ConstraintValidatorContext context) {
         if (value.getUserId() != null){
             return true;
         }

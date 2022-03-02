@@ -433,7 +433,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("Checking tel number {} in DB", telNumber);
             Organization organization = organizationService.getOrganizationByTelNumber(telNumber);
             log.info("End of checking number {}", telNumber);
-            return new ConfirmationStatusDto(organization.getConfirmationStatus());
+            return new ConfirmationStatusDto(organization.getId(), organization.getConfirmationStatus());
         } catch (EntityNotFoundException e){
             throw new RuntimeException("Указан неправильный номер для поиска!");
         }
@@ -496,48 +496,55 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Organization registerOrganization(OrganizationRegisterFinishFilter filter) {
-        log.info("Start of finishing registration {}", filter.getTelNumber());
-        log.info("Checking tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(getCurrentUsername());
         if(!userByNumber.getConfirmationStatus().equals(ConfirmationStatus.CONFIRMED) && !userByNumber.getConfirmationStatus().equals(ConfirmationStatus.FINISHED)){
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.NUMBER_NOT_CONFIRMED_CODE);
+            throw new MessageCodeException(OrganizationCodes.NUMBER_IS_NOT_CONFIRMED);
         }
+        if(userByNumber.getTelNumber().equals(filter.getTelNumber())){
+            try{ // проверка org
+                Organization organization = organizationService.getOrganizationByTelNumber(filter.getTelNumber());
+                if(organization.getConfirmationStatus().equals("REJECTED")){
+                    return registerOldOrganization(userByNumber, organization, filter);
+                }
+            } catch (EntityNotFoundException e){
+                return registerNewOrganization(userByNumber, filter);
+            }
+        }
+        return null;
+    }
 
+    private Organization registerNewOrganization(SecUser userByNumber, OrganizationRegisterFinishFilter filter) {
+        System.out.println();
         try{ // проверка email
             userService.getUserByEmail(filter.getEmail());
-            log.warn("Email is busy {}", filter.getEmail());
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.EMAIL_IS_BUSY_CODE);
+            throw new MessageCodeException(OrganizationCodes.EMAIL_IS_ALREADY_TAKEN);
         } catch (EntityNotFoundException e){
             log.info("Email is free {}", filter.getTelNumber());
         }
 
         try{ // проверка iban
             organizationService.getOrganizationByIban(filter.getIban());
-            log.warn("IBAN is busy {}", filter.getIban());
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.IBAN_IS_BUSY_CODE);
+            throw new MessageCodeException(OrganizationCodes.IBAN_IS_ALREADY_TAKEN);
         } catch (EntityNotFoundException e){
             log.info("IBAN is free {}", filter.getTelNumber());
         }
 
         try{ // проверка iin
             organizationService.getOrganizationByIin(filter.getIin());
-            log.warn("IIN is busy {}", filter.getIban());
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.IIN_IS_BUSY_CODE);
+            throw new MessageCodeException(OrganizationCodes.IIN_IS_ALREADY_TAKEN);
         } catch (EntityNotFoundException e){
             log.info("IIN is free {}", filter.getTelNumber());
         }
 
         try{ // проверка номера в организациях
             organizationService.getOrganizationByTelNumber(filter.getTelNumber());
-            log.warn("Number is busy {}", filter.getTelNumber());
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.TEL_NUMBER_IS_BUSY_CODE);
+            throw new MessageCodeException(OrganizationCodes.TEL_NUMBER_IS_ALREADY_TAKEN);
         } catch (EntityNotFoundException e){
             log.info("Number is free {}", filter.getTelNumber());
         }
         try{ // проверка организации по юзеру / один юзер - одна организация !
             organizationService.getOrganizationByUser(userByNumber);
-            log.warn("User already has registered organization {}", userByNumber.getTelNumber());
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.ORG_ALREADY_REGISTERED_CODE);
+            throw new MessageCodeException(OrganizationCodes.ONE_USER_CAN_NOT_REGISTER_MULTIPLE_ORGANIZATIONS);
         } catch (EntityNotFoundException e){
             log.info("User did not registered any organization {}", userByNumber.getTelNumber());
         }
@@ -548,10 +555,8 @@ public class AuthServiceImpl implements AuthService {
         if(!filter.getEmail().isEmpty()){
             userByNumber.setEmail(filter.getEmail());
         }
-        log.info("Updating user {}", filter.getTelNumber());
         userService.editOneById(userByNumber);
 
-        log.info("Creating organization");
         Organization organization = new Organization();
         organization.setConfirmationStatus("ON_CONFIRMATION");
         organization.setUser(userByNumber);
@@ -563,8 +568,57 @@ public class AuthServiceImpl implements AuthService {
         organization.setIin(filter.getIin());
         organizationService.addOne(organization);
         // TODO: send to Moderator through method or listener
-        log.info("Organization creation is finished");
-        log.info("End of finishing registration {}", filter.getTelNumber());
+        return organization;
+    }
+
+    private Organization registerOldOrganization(SecUser userByNumber, Organization organization, OrganizationRegisterFinishFilter filter) {
+        if (!organization.getEmail().equals(filter.getEmail())) {
+            try { // проверка email
+                userService.getUserByEmail(filter.getEmail());
+                throw new MessageCodeException(OrganizationCodes.EMAIL_IS_ALREADY_TAKEN);
+            } catch (EntityNotFoundException e) {
+                organization.setEmail(filter.getEmail());
+                userByNumber.setEmail(filter.getEmail());
+            }
+        }
+
+
+        if(!organization.getIban().equals(filter.getIban())){
+            try{ // проверка iban
+                organizationService.getOrganizationByIban(filter.getIban());
+                throw new MessageCodeException(OrganizationCodes.IBAN_IS_ALREADY_TAKEN);
+            } catch (EntityNotFoundException e){
+                organization.setIban(filter.getIban());
+            }
+        }
+
+        if(!organization.getIin().equals(filter.getIin())){
+            try{ // проверка iin
+                organizationService.getOrganizationByIin(filter.getIin());
+                throw new MessageCodeException(OrganizationCodes.IIN_IS_ALREADY_TAKEN);
+            } catch (EntityNotFoundException e){
+                organization.setIin(filter.getIin());
+            }
+        }
+
+        if(!organization.getTelNumber().equals(filter.getTelNumber())){
+            try{ // проверка номера в организациях
+                organizationService.getOrganizationByTelNumber(filter.getTelNumber());
+                throw new MessageCodeException(OrganizationCodes.TEL_NUMBER_IS_ALREADY_TAKEN);
+            } catch (EntityNotFoundException e){
+                organization.setTelNumber(filter.getTelNumber());
+            }
+        }
+
+        userByNumber.setFirstName(filter.getFullName());
+        userByNumber.setLastName(filter.getFullName());
+        userService.editOneById(userByNumber);
+
+        organization.setName(filter.getOrgName());
+        organization.setConfirmationStatus("ON_CONFIRMATION");
+        organization.setManagerFullName(filter.getFullName());
+        organizationService.addOne(organization);
+        // TODO: send to Moderator through method or listener
         return organization;
     }
 

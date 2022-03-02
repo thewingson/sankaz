@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingAdminCreateFilter extends BookingCreateFilter {
+public class BookingAdminCreateFilter extends BookingCreateUserInfoFilter {
     @NotNull
     private Integer adults;
     @NotNull

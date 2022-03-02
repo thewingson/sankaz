@@ -22,4 +22,22 @@ public interface BookingRepo extends CommonRepo<Booking> {
     List<Booking> getAllByRoomIdAndDateRanges(@Param("roomId") Long roomId,
                                       @Param("startDate") LocalDateTime startDate,
                                       @Param("endDate") LocalDateTime endDate);
+
+    @Query(value = "select b.* from booking b where b.user_id = :userId and b.status = :status", nativeQuery = true)
+    List<Booking> getAllByUserIdAndStatus(@Param("userId") Long userId,
+                                          @Param("status") String status);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.user.id = :userId " +
+            "and b.status <> kz.open.sankaz.model.enums.BookingStatus.CANCELLED " +
+            "and b.status <> kz.open.sankaz.model.enums.BookingStatus.PAID ")
+    List<Booking> getAllActiveByUserId(Long userId);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.user.id = :userId " +
+            "and (b.status = kz.open.sankaz.model.enums.BookingStatus.CANCELLED " +
+            "     or b.status = kz.open.sankaz.model.enums.BookingStatus.PAID) ")
+    List<Booking> getAllHistoryByUserId(Long userId);
 }

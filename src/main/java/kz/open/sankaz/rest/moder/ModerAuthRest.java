@@ -1,5 +1,6 @@
 package kz.open.sankaz.rest.moder;
 
+import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.mapper.OrganizationMapper;
 import kz.open.sankaz.pojo.filter.*;
 import kz.open.sankaz.response.ResponseModel;
@@ -51,6 +52,8 @@ public class ModerAuthRest {
         try {
             authService.sendConfirmationNumberOrganization(filter.getTelNumber(), filter.getPassword(), filter.getConfirmPassword());
             return ResponseModel.successPure();
+        } catch (MessageCodeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
@@ -61,6 +64,8 @@ public class ModerAuthRest {
     public ResponseEntity<?> checkConfirmationNumber(@Valid @RequestBody OrganizationRegisterFilter filter) {
         try {
             return ResponseModel.success(authService.checkConfirmationNumberOrganization(filter.getTelNumber(), filter.getPassword(), filter.getConfirmationNumber()));
+        } catch (MessageCodeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
@@ -70,6 +75,8 @@ public class ModerAuthRest {
     public ResponseEntity<?> registerOrganization(@RequestBody OrganizationRegisterFinishFilter filter) {
         try {
             return ResponseModel.success(organizationMapper.toOrganizationRegisterDto(authService.registerOrganization(filter)));
+        } catch (MessageCodeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
@@ -91,6 +98,8 @@ public class ModerAuthRest {
             organizationService.checkIfOwnOrg(orgId);
             organizationService.finishProfile(orgId, filter);
             return ResponseModel.successPure();
+        } catch (MessageCodeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

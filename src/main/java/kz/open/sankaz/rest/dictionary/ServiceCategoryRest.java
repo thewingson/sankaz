@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ser-categories")
+@RequestMapping("/dict/ser-cat")
 public class ServiceCategoryRest {
     @Autowired
     private ServiceCategoryService serviceCategoryService;

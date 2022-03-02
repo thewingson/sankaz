@@ -7,8 +7,10 @@ import kz.open.sankaz.model.Room;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.enums.BookingStatus;
 import kz.open.sankaz.model.enums.UserType;
+import kz.open.sankaz.pojo.dto.DatesDto;
 import kz.open.sankaz.pojo.filter.BookingAdminCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingModerCreateFilter;
+import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
 import kz.open.sankaz.repo.BookingRepo;
 import kz.open.sankaz.repo.RoomRepo;
 import kz.open.sankaz.service.BookingService;
@@ -18,8 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -227,5 +233,38 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setStatus(BookingStatus.PAID);
         booking.setPaidDate(LocalDateTime.now());
         return editOneById(booking);
+    }
+
+    @Override
+    public Booking bookRoomFromUser(Long userId, BookingUserCreateFilter filter) {
+        SecUser user = userService.getOne(userId);
+
+        List<LocalDate> busyDates = new ArrayList<>();
+        List<DatesDto> availabilityForDateRange = roomRepo.getRoomAvailabilityForDateRange(filter.getRoomId(), filter.getStartDate(), filter.getEndDate());
+        availabilityForDateRange.forEach(datesDto -> {
+            if(!datesDto.isFree()){
+                busyDates.add(datesDto.getCheckDate());
+            }
+        });
+        if(!busyDates.isEmpty()){
+            Map<String, List<LocalDate>> data = new HashMap<>();
+            data.put("busyDates", busyDates);
+            throw new MessageCodeException(BookingCodes.ROOM_IS_BUSY_IN_CHOSEN_DATE_RANGE, data);
+        }
+
+        Booking booking = new Booking();
+        booking.setUser(userService.getOne(userId));
+        booking.setFirstName(user.getFirstName());
+        booking.setLastName(user.getLastName());
+        booking.setTelNumber(user.getTelNumber());
+        booking.setRoom(roomService.getOne(filter.getRoomId()));
+        booking.setStartDate(filter.getStartDate());
+        booking.setEndDate(filter.getEndDate());
+        booking.setStatus(BookingStatus.WAITING);
+        booking.setChildrenCount(filter.getChildren());
+        booking.setAdultsCount(filter.getAdults());
+        booking.setSumPrice(filter.getPrice());
+
+        return addOne(booking);
     }
 }

@@ -21,7 +21,7 @@ public interface OrganizationService extends CommonService<Organization> {
     List<Organization> getAllByConfirmationStatuses(OrganizationFilterFilter filter);
 
     void approveOrganizationData(Long orgId);
-    void rejectOrganizationData(Long orgId);
+    void rejectOrganizationData(Long orgId, String rejectMessage);
 
     void finishProfile(Long orgId, OrganizationEditFilter filter);
 

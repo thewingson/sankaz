@@ -84,6 +84,9 @@ public class Organization extends AbstractEntity {
             inverseJoinColumns = @JoinColumn(name = "FILE_ID", foreignKey = @ForeignKey(name = "ORGANIZATION_PICS_FILE_FK")))
     private List<SysFile> pics;
 
+    @Column(name = "REJECT_MESSAGE")
+    private String rejectMessage;
+
     public void addPic(SysFile pic){
         getPics().add(pic);
     }

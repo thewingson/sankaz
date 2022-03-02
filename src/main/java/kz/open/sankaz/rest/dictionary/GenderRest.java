@@ -1,7 +1,7 @@
-package kz.open.sankaz.rest.moder;
+package kz.open.sankaz.rest.dictionary;
 
 import kz.open.sankaz.response.ResponseModel;
-import kz.open.sankaz.service.CityService;
+import kz.open.sankaz.service.GenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,31 +12,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-@PreAuthorize("hasRole('ROLE_MODERATOR')")
 @RestController
-@RequestMapping("/moders/cities")
-public class ModerCityRest {
+@RequestMapping("/dict/genders")
+public class GenderRest {
 
-    private final CityService cityService;
+    private final GenderService genderService;
 
     @Autowired
-    public ModerCityRest(CityService cityService) {
-        this.cityService = cityService;
+    public GenderRest(GenderService genderService) {
+        this.genderService = genderService;
     }
 
     @GetMapping
     public ResponseEntity<?> getAll() {
         try {
-            return ResponseModel.success(cityService.getAll());
+            return ResponseModel.success(genderService.getAll());
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
     }
 
-    @GetMapping("/{cityId}")
-    public ResponseEntity<?> getOne(@PathVariable("cityId") Long cityId) {
+    @GetMapping("/{genderId}")
+    public ResponseEntity<?> getOne(@PathVariable("genderId") Long genderId) {
         try {
-            return ResponseModel.success(cityService.getOne(cityId));
+            return ResponseModel.success(genderService.getOne(genderId));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
