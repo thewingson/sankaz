@@ -8,6 +8,7 @@ import kz.open.sankaz.model.CompanyCategory;
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.SysFile;
+import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
 import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.filter.OrganizationCreateFilter;
 import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
@@ -111,10 +112,10 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     @Override
     public void approveOrganizationData(Long orgId) {
         Organization organization = getOne(orgId);
-        if(organization.getConfirmationStatus().equals("CONFIRMED")){
+        if(organization.getConfirmationStatus().equals(OrganizationConfirmationStatus.CONFIRMED)){
             throw new RuntimeException("Данная организация уже одобрена!");
         }
-        organization.setConfirmationStatus("CONFIRMED");
+        organization.setConfirmationStatus(OrganizationConfirmationStatus.CONFIRMED);
         organization.setConfirmedDate(LocalDateTime.now());
         organization.setConfirmedBy(authService.getCurrentUsername());
         editOneById(organization);
@@ -123,10 +124,10 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     @Override
     public void rejectOrganizationData(Long orgId, String rejectMessage) {
         Organization organization = getOne(orgId);
-        if(organization.getConfirmationStatus().equals("REJECTED")){
+        if(organization.getConfirmationStatus().equals(OrganizationConfirmationStatus.REJECTED)){
             throw new RuntimeException("Данная организация уже отклонена!");
         }
-        organization.setConfirmationStatus("REJECTED");
+        organization.setConfirmationStatus(OrganizationConfirmationStatus.REJECTED);
         organization.setConfirmedDate(LocalDateTime.now());
         organization.setConfirmedBy(authService.getCurrentUsername());
         organization.setRejectMessage(rejectMessage);
@@ -136,11 +137,12 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     @Override
     public void finishProfile(Long orgId, OrganizationEditFilter filter) {
         Organization organization = getOne(orgId);
-        if(!organization.getConfirmationStatus().equals("CONFIRMED")){
+        if(!organization.getConfirmationStatus().equals(OrganizationConfirmationStatus.CONFIRMED)){
             throw new RuntimeException("Данная организация еще не одобрена!");
         }
         CompanyCategory category = companyCategoryService.getOne(filter.getCategoryId());
 
+        organization.setConfirmationStatus(OrganizationConfirmationStatus.PROFILE_FINISHED);
         organization.setCompanyCategory(category);
         organization.setCompanyCategory(category);
         organization.setCompanyName(filter.getCompanyName());
@@ -248,7 +250,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
         Organization organization = new Organization();
         organization.setUser(user);
-        organization.setConfirmationStatus("CONFIRMED");
+        organization.setConfirmationStatus(OrganizationConfirmationStatus.CONFIRMED);
         organization.setEmail(filter.getEmail());
         organization.setIban(filter.getIban());
         organization.setName(filter.getName());

@@ -2,6 +2,7 @@ package kz.open.sankaz;
 
 import kz.open.sankaz.model.*;
 import kz.open.sankaz.model.enums.ConfirmationStatus;
+import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
 import kz.open.sankaz.model.enums.ResetNumberStatus;
 import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.OrganizationRegisterDto;
@@ -36,7 +37,7 @@ public class SankazApplication {
 						  CompanyCategoryRepo companyCategoryRepo,
 						  PasswordEncoder passwordEncoder){
 		return  args -> {
-//			callScript(userRepo, organizationRepo, sanRepo, roomClassDicRepo, roomRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
+			callScript(userRepo, organizationRepo, sanRepo, roomClassDicRepo, roomRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
 		};
 	}
 
@@ -196,7 +197,7 @@ public class SankazApplication {
 		organization.setUser(moderatorUser);
 		organization.setName("Test ORG 1");
 		organization.setEmail("org@mail.kz");
-		organization.setConfirmationStatus("CONFIRMED");
+		organization.setConfirmationStatus(OrganizationConfirmationStatus.CONFIRMED);
 		organizationRepo.save(organization);
 
 		San san = new San();

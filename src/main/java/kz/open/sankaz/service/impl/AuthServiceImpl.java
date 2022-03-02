@@ -9,6 +9,7 @@ import kz.open.sankaz.exception.*;
 import kz.open.sankaz.mapper.SecUserMapper;
 import kz.open.sankaz.model.*;
 import kz.open.sankaz.model.enums.ConfirmationStatus;
+import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
 import kz.open.sankaz.model.enums.ResetNumberStatus;
 import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.ConfirmationStatusDto;
@@ -433,7 +434,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("Checking tel number {} in DB", telNumber);
             Organization organization = organizationService.getOrganizationByTelNumber(telNumber);
             log.info("End of checking number {}", telNumber);
-            return new ConfirmationStatusDto(organization.getId(), organization.getConfirmationStatus());
+            return new ConfirmationStatusDto(organization.getId(), organization.getConfirmationStatus().name());
         } catch (EntityNotFoundException e){
             throw new RuntimeException("Указан неправильный номер для поиска!");
         }
@@ -503,7 +504,7 @@ public class AuthServiceImpl implements AuthService {
         if(userByNumber.getTelNumber().equals(filter.getTelNumber())){
             try{ // проверка org
                 Organization organization = organizationService.getOrganizationByTelNumber(filter.getTelNumber());
-                if(organization.getConfirmationStatus().equals("REJECTED")){
+                if(organization.getConfirmationStatus().equals(OrganizationConfirmationStatus.REJECTED)){
                     return registerOldOrganization(userByNumber, organization, filter);
                 }
             } catch (EntityNotFoundException e){
@@ -558,7 +559,7 @@ public class AuthServiceImpl implements AuthService {
         userService.editOneById(userByNumber);
 
         Organization organization = new Organization();
-        organization.setConfirmationStatus("ON_CONFIRMATION");
+        organization.setConfirmationStatus(OrganizationConfirmationStatus.ON_CONFIRMATION);
         organization.setUser(userByNumber);
         organization.setEmail(filter.getEmail());
         organization.setIban(filter.getIban());
@@ -615,7 +616,7 @@ public class AuthServiceImpl implements AuthService {
         userService.editOneById(userByNumber);
 
         organization.setName(filter.getOrgName());
-        organization.setConfirmationStatus("ON_CONFIRMATION");
+        organization.setConfirmationStatus(OrganizationConfirmationStatus.ON_CONFIRMATION);
         organization.setManagerFullName(filter.getFullName());
         organizationService.addOne(organization);
         // TODO: send to Moderator through method or listener

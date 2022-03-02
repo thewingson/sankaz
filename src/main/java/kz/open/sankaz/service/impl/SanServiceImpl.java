@@ -4,6 +4,7 @@ import kz.open.sankaz.mapper.FileMapper;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.model.*;
+import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
 import kz.open.sankaz.pojo.dto.SanForMainDto;
 import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import kz.open.sankaz.pojo.filter.SanCreateFilter;
@@ -311,6 +312,8 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         SanType sanType = sanTypeService.getOne(filter.getSanTypeId());
 
         Organization organization = organizationService.getOne(filter.getOrgId());
+        organization.setConfirmationStatus(OrganizationConfirmationStatus.SERVICE_CREATED);
+        organizationService.editOneById(organization);
 
         San san = new San();
         san.setName(filter.getName());

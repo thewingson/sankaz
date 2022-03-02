@@ -1,6 +1,8 @@
 package kz.open.sankaz.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import kz.open.sankaz.model.enums.ConfirmationStatus;
+import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,8 +45,9 @@ public class Organization extends AbstractEntity {
     @Column(name = "TEL_NUMBER", nullable = false, unique = true)
     private String telNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "CONFIRMATION_STATUS")
-    private String confirmationStatus = "NEW"; // NEW ON_CONFIRMATION CONFIRMED REJECTED
+    private OrganizationConfirmationStatus confirmationStatus = OrganizationConfirmationStatus.NEW;
 
     @Column(name = "CONFIRMED_DATE")
     private LocalDateTime confirmedDate;
