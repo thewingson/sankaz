@@ -77,9 +77,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
         response.setContentType(APPLICATION_JSON_VALUE);
-        Map<String, String> tokens = new HashMap<>();
+        Map<String, Object> tokens = new HashMap<>();
         tokens.put("accessToken", accessToken);
         tokens.put("refreshToken", refreshToken);
+        tokens.put("userId", user.getId());
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }
 }

@@ -56,8 +56,6 @@ public class SankazApplication {
 		roleRepo.save(admin);
 		SecRole moderator = new SecRole(null, "ROLE_MODERATOR");
 		roleRepo.save(moderator);
-		SecRole manager = new SecRole(null, "ROLE_ORG");
-		roleRepo.save(manager);
 		SecRole user = new SecRole(null, "ROLE_USER");
 		roleRepo.save(user);
 
@@ -78,24 +76,6 @@ public class SankazApplication {
 		adminUser.setActive(true);
 		adminUser.setLoggedOut(false);
 		userRepo.save(adminUser);
-
-		SecUser moderatorUser = new SecUser();
-		moderatorUser.setUserType(UserType.USER);
-		moderatorUser.setFirstName("Moderator");
-		moderatorUser.setLastName("Moderator");
-		moderatorUser.setTelNumber("+77770000001");
-		moderatorUser.setEmail("moderator@mail.kz");
-		moderatorUser.setUsername("+77770000001");
-		moderatorUser.setPassword(passwordEncoder.encode("123"));
-		moderatorUser.addRole(moderator);
-		moderatorUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
-		moderatorUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
-		moderatorUser.setConfirmationNumber(0);
-		moderatorUser.setConfirmedBy("admin");
-		moderatorUser.setConfirmedDate(LocalDateTime.now());
-		moderatorUser.setActive(true);
-		moderatorUser.setLoggedOut(false);
-		userRepo.save(moderatorUser);
 
 		SecUser testUser = new SecUser();
 		testUser.setUserType(UserType.USER);
@@ -123,7 +103,7 @@ public class SankazApplication {
 		orgUser.setEmail("org@mail.kz");
 		orgUser.setUsername("+77770000003");
 		orgUser.setPassword(passwordEncoder.encode("123"));
-		orgUser.addRole(manager);
+		orgUser.addRole(moderator);
 		orgUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
 		orgUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
 		orgUser.setConfirmationNumber(0);
@@ -192,9 +172,9 @@ public class SankazApplication {
 		organization.setCompanyCategory(companyCategory);
 		organization.setIin("121212121212");
 		organization.setIban("12121212121212");
-		organization.setTelNumber(moderatorUser.getTelNumber());
-		organization.setManagerFullName(moderatorUser.getFullName());
-		organization.setUser(moderatorUser);
+		organization.setTelNumber(orgUser.getTelNumber());
+		organization.setManagerFullName(orgUser.getFullName());
+		organization.setUser(orgUser);
 		organization.setName("Test ORG 1");
 		organization.setEmail("org@mail.kz");
 		organization.setConfirmationStatus(OrganizationConfirmationStatus.CONFIRMED);

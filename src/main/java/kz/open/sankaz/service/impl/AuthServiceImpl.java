@@ -667,7 +667,7 @@ public class AuthServiceImpl implements AuthService {
                 .withExpiresAt(new Date(System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000))
                 .withIssuer("/users/auth/finish-reg")
                 .sign(algorithm);
-        return new TokenDto(accessToken, refreshToken);
+        return new TokenDto(accessToken, refreshToken, user.getId());
     }
 
 

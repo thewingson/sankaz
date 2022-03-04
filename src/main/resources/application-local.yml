@@ -84,3 +84,6 @@ application:
     download:
       path:
         image: D:/var/www/content/sankaz/images/
+
+fcm:
+  service-account-file: sankaz-push-firebase-adminsdk.json
