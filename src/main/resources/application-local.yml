@@ -22,6 +22,9 @@ spring:
     url: jdbc:postgresql://localhost/sk_local
     username: postgres
     password: root
+#    url: jdbc:postgresql://185.146.1.64:5432/sankaz_dev
+#    username: sankaz
+#    password: sankaz
   mail:
     host: smtp.gmail.com
     username: sanofkaz@gmail.com
@@ -84,6 +87,5 @@ application:
     download:
       path:
         image: D:/var/www/content/sankaz/images/
-
 fcm:
   service-account-file: sankaz-push-firebase-adminsdk.json

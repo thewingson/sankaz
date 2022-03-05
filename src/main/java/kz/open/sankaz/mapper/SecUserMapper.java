@@ -13,14 +13,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public abstract class SecUserMapper extends AbstractMapper {
     @Named("userToDto")
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "city", ignore = true)
-    @Mapping(target = "gender", ignore = true)
-    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "confirmationStatus", source = "secUser.confirmationStatus")
+    @Mapping(target = "userType", source = "secUser.userType")
+    @Mapping(target = "city", expression = "java( dictionaryToDto(secUser.getCity()) )")
+    @Mapping(target = "gender", expression = "java( dictionaryToDto(secUser.getGender()) )")
     abstract public SecUserDto userToDto(SecUser secUser);
     @IterableMapping(qualifiedByName = "userToDto")
     abstract public List<SecUserDto> userToDto(List<SecUser> secUsers);
-
 
     @Named("userToOwnProfileDto")
     @Mapping(target = "picUrl", expression = "java(getPicUrlFromSysFile(secUser.getPic()))")

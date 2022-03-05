@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 public interface AuthService {
     String getCurrentUsername();
 
@@ -47,4 +49,10 @@ public interface AuthService {
     Organization getOwnProfile(HttpServletRequest request);
 
     boolean checkIfOwnProfile(Long userId);
+
+    String getTokenFromAuthorization(String authorization);
+
+    Long getUserIdFromToken(String token);
+
+    Long getUserId(HttpServletRequest request);
 }

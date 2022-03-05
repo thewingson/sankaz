@@ -8,6 +8,7 @@ import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.enums.BookingStatus;
 import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.DatesDto;
+import kz.open.sankaz.pojo.dto.RoomClassModerCalendarDto;
 import kz.open.sankaz.pojo.filter.BookingAdminCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingModerCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
@@ -124,6 +125,12 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
     @Override
     public List<Booking> getAllBySan(Long sanId) {
         return repo.getAllBySanId(sanId);
+    }
+
+    @Override
+    public List<RoomClassModerCalendarDto> getAllBySan2(Long sanId) {
+
+        return null;
     }
 
     @Override

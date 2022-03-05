@@ -1,5 +1,6 @@
 package kz.open.sankaz.rest.admin;
 
+import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.mapper.SecUserMapper;
 import kz.open.sankaz.pojo.filter.ResetPasswordFilter;
 import kz.open.sankaz.pojo.filter.UserCreateFilter;
@@ -56,6 +57,8 @@ public class AdminUserRest {
     public ResponseEntity<?> addOne(@Valid @RequestBody UserCreateFilter filter) {
         try{
             return ResponseModel.success(userMapper.userToDto(userService.createOne(filter)));
+        } catch (MessageCodeException e){
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
         } catch (Exception e){
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

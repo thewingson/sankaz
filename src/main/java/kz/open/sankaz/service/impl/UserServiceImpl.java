@@ -1,6 +1,8 @@
 package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.exception.EntityNotFoundException;
+import kz.open.sankaz.exception.MessageCodeException;
+import kz.open.sankaz.exception.UserCodes;
 import kz.open.sankaz.listener.event.AfterDeleteEvent;
 import kz.open.sankaz.listener.event.BeforeDeleteEvent;
 import kz.open.sankaz.mapper.SecUserMapper;
@@ -155,13 +157,12 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     @Override
     public SecUser createOne(UserCreateFilter filter) {
         if(!filter.getPassword().equals(filter.getConfirmPassword())){
-            throw new RuntimeException("Пароли не совпадают");
+            throw new MessageCodeException(UserCodes.PASSWORD_NOT_MATCH);
         }
         SecUser userByNumber = new SecUser();
         try {
             getUserByTelNumber(filter.getTelNumber());
-            log.warn("Tel. number already has registered {}", filter.getTelNumber());
-            throw new RuntimeException("Данный номер уже зареган");
+            throw new MessageCodeException(UserCodes.TEL_NUMBER_IS_ALREADY_REGISTERED);
         } catch (EntityNotFoundException e) {
             log.info("Tel. number did not registered {}", filter.getTelNumber());
         }
@@ -177,15 +178,13 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
         if(!filter.getEmail().isEmpty()){
             try{
                 getUserByEmail(filter.getEmail());
-                log.warn("Email is busy");
-                throw new RuntimeException("Данный email занят. Пожалуйста, введите другой email.");
+                throw new MessageCodeException(UserCodes.EMAIL_IS_ALREADY_REGISTERED);
             } catch (EntityNotFoundException e){
-                log.info("Email is free");
                 userByNumber.setEmail(filter.getEmail());
             }
         }
         userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
-        userByNumber.setConfirmationStatus(ConfirmationStatus.FINISHED);
+        userByNumber.setConfirmationStatus(ConfirmationStatus.valueOf(filter.getConfirmationStatus()));
         userByNumber.setUserType(UserType.valueOf(filter.getUserType()));
         userByNumber.setUsername(filter.getUsername());
         userByNumber.setEmail(filter.getEmail());
@@ -203,18 +202,27 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     public SecUser editOne(Long userId, UserCreateFilter filter) {
         SecUser userByNumber = getOne(userId);
         if(!filter.getPassword().equals(filter.getConfirmPassword())){
-            throw new RuntimeException("Пароли не совпадают");
+            throw new MessageCodeException(UserCodes.PASSWORD_NOT_MATCH);
         }
         try {
             SecUser userByTelNumber = getUserByTelNumber(filter.getTelNumber());
             if(!userByNumber.getId().equals(userByTelNumber.getId())){
-                log.warn("Tel. number already has registered {}", filter.getTelNumber());
-                throw new RuntimeException("Данный номер уже зареган");
+                throw new MessageCodeException(UserCodes.TEL_NUMBER_IS_ALREADY_REGISTERED);
             }
         } catch (EntityNotFoundException e) {
-            log.info("Tel. number did not registered {}", filter.getTelNumber());
+            userByNumber.setUsername(filter.getUsername());
+            userByNumber.setTelNumber(filter.getTelNumber());
         }
-
+        if(!filter.getEmail().isEmpty()){
+            try{
+                SecUser userByEmail = getUserByEmail(filter.getEmail());
+                if(!userByNumber.getId().equals(userByEmail.getId())){
+                    throw new MessageCodeException(UserCodes.EMAIL_IS_ALREADY_REGISTERED);
+                }
+            } catch (EntityNotFoundException e){
+                userByNumber.setEmail(filter.getEmail());
+            }
+        }
         if(filter.getCityId() != null){
             City city = cityService.getOne(filter.getCityId());
             userByNumber.setCity(city);
@@ -223,28 +231,13 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
             Gender gender = genderService.getOne(filter.getGenderId());
             userByNumber.setGender(gender);
         }
-        if(!filter.getEmail().isEmpty()){
-            try{
-                SecUser userByEmail = getUserByEmail(filter.getEmail());
-                if(!userByNumber.getId().equals(userByEmail.getId())){
-                    log.warn("Email is busy");
-                    throw new RuntimeException("Данный email занят. Пожалуйста, введите другой email.");
-                }
-            } catch (EntityNotFoundException e){
-                log.info("Email is free");
-                userByNumber.setEmail(filter.getEmail());
-            }
-        }
-        userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
-        userByNumber.setConfirmationStatus(ConfirmationStatus.FINISHED);
+        userByNumber.setConfirmationStatus(ConfirmationStatus.valueOf(filter.getConfirmationStatus()));
         userByNumber.setUserType(UserType.valueOf(filter.getUserType()));
-        userByNumber.setUsername(filter.getUsername());
-        userByNumber.setEmail(filter.getEmail());
-        userByNumber.setTelNumber(filter.getTelNumber());
+        userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
         userByNumber.setFirstName(filter.getFirstName());
         userByNumber.setLastName(filter.getLastName());
 
-        return addOne(userByNumber);
+        return editOneById(userByNumber);
     }
 
     @Override

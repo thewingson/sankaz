@@ -25,6 +25,7 @@ configurations {
 
 repositories {
     mavenCentral()
+//    google()
 }
 
 dependencies {
@@ -39,6 +40,12 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.4.2.Final'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
     implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.3'
+    implementation 'com.google.firebase:firebase-admin:6.8.1'
+//    implementation 'com.google.firebase:firebase-messaging:23.0.0'
+    implementation 'org.json:json:20211205'
+
+
+
 
 
 //    implementation 'org.liquibase:liquibase-core'

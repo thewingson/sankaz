@@ -1,5 +1,6 @@
 package kz.open.sankaz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kz.open.sankaz.model.enums.ConfirmationStatus;
 import kz.open.sankaz.model.enums.ResetNumberStatus;
@@ -109,6 +110,10 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SEC_USER_PIC_FK"))
     @JsonManagedReference
     private SysFile pic;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @JsonBackReference
+    private List<UserDeviceToken> deviceTokens;
 
     public SecUser(Long id,
                    String username,

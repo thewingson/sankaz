@@ -10,7 +10,7 @@ import org.mapstruct.Named;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public abstract class BookingMapper {
+public abstract class BookingMapper extends AbstractMapper {
 
     @Named("bookingToBookingAdminDto")
     @Mapping(target = "userId", source = "booking.user.id")
@@ -42,6 +42,18 @@ public abstract class BookingMapper {
     @IterableMapping(qualifiedByName = "bookingToBookingAllForModerDto")
     abstract public List<BookingModerAllDto> bookingToBookingAllForModerDto(List<Booking> bookings);
 
+    @Named("bookingToBookingAllForModerDto2")
+    @Mapping(target = "firstName", source = "firstName")
+    @Mapping(target = "lastName", source = "lastName")
+    @Mapping(target = "roomId", source = "booking.room.id")
+    @Mapping(target = "classId", source = "booking.room.roomClassDic.id")
+    @Mapping(target = "startDate", source = "startDate")
+    @Mapping(target = "endDate", source = "endDate")
+    @Mapping(target = "status", expression = "java( booking.getStatus().name() )")
+    abstract public BookingModerAllDto bookingToBookingAllForModerDto2(Booking booking);
+    @IterableMapping(qualifiedByName = "bookingToBookingAllForModerDto2")
+    abstract public List<BookingModerAllDto> bookingToBookingAllForModerDto2(List<Booking> bookings);
+
     @Named("bookingToBookingModerByIdDto")
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
@@ -66,6 +78,23 @@ public abstract class BookingMapper {
     abstract public BookingUserDto bookingToBookingUserDto(Booking booking);
     @IterableMapping(qualifiedByName = "bookingToBookingUserDto")
     abstract public List<BookingUserDto> bookingToBookingUserDto(List<Booking> bookings);
+
+    @Named("bookingToBookingUserHistoryDto")
+    @Mapping(target = "sanId", source = "booking.room.roomClassDic.san.id")
+    @Mapping(target = "sanName", source = "booking.room.roomClassDic.san.name")
+    @Mapping(target = "sanTypeName", source = "booking.room.roomClassDic.san.sanType.name")
+    @Mapping(target = "sanAddress", source = "booking.room.roomClassDic.san.organization.address")
+    @Mapping(target = "sanTelNumber", expression = "java( getTelNumberValuesFromEntity(booking.getRoom().getRoomClassDic().getSan().getTelNumbers()) )")
+    @Mapping(target = "sanPicUrl", expression = "java( getPicUrlFromSysFile(booking.getRoom().getRoomClassDic().getSan().getMainPic()) )")
+    @Mapping(target = "adults", source = "adultsCount")
+    @Mapping(target = "children", source = "childrenCount")
+    @Mapping(target = "roomCount", source = "booking.room.roomCount")
+    @Mapping(target = "bedCount", source = "booking.room.bedCount")
+    @Mapping(target = "userId", source = "booking.user.id")
+    @Mapping(target = "status", expression = "java( booking.getStatus().name() )")
+    abstract public BookingUserHistoryDto bookingToBookingUserHistoryDto(Booking booking);
+    @IterableMapping(qualifiedByName = "bookingToBookingUserHistoryDto")
+    abstract public List<BookingUserHistoryDto> bookingToBookingUserHistoryDto(List<Booking> bookings);
 
     @Named("bookingToBookingByIdUserDto")
     @Mapping(target = "userId", source = "booking.user.id")

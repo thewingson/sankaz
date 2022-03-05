@@ -1,7 +1,10 @@
 package kz.open.sankaz.mapper;
 
+import kz.open.sankaz.model.AbstractDictionaryEntity;
+import kz.open.sankaz.model.AbstractDictionaryLangEntity;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.model.TelNumber;
+import kz.open.sankaz.pojo.dto.DictionaryLangDto;
 import kz.open.sankaz.pojo.dto.FileDto;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -25,6 +28,12 @@ public abstract class AbstractMapper extends BaseMapper {
     abstract public FileDto fileToDto(SysFile file);
     @IterableMapping(qualifiedByName = "fileToDto")
     abstract public List<FileDto> fileToDto(List<SysFile> files);
+
+    @Named("dictionaryToDto")
+    @Mapping(target = "id", expression = "java( entity.getId() )")
+    abstract public DictionaryLangDto dictionaryToDto(AbstractDictionaryLangEntity entity);
+    @IterableMapping(qualifiedByName = "dictionaryToDto")
+    abstract public List<DictionaryLangDto> dictionaryToDto(List<AbstractDictionaryLangEntity> entities);
 
     protected String getPicUrlFromSysFile(SysFile file){
         if(file != null){

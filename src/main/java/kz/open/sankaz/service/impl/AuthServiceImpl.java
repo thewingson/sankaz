@@ -682,6 +682,27 @@ public class AuthServiceImpl implements AuthService {
         return true;
     }
 
+    @Override
+    public String getTokenFromAuthorization(String authorization) {
+        return authorization.substring("Bearer ".length());
+    }
+
+    @Override
+    public Long getUserIdFromToken(String token) {
+        Algorithm algorithm = Algorithm.HMAC256(securityProperties.getSecurityTokenSecret().getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(token);
+//        String username = decodedJWT.getSubject();
+
+        return decodedJWT.getClaim("userId").asLong();
+    }
+
+    @Override
+    public Long getUserId(HttpServletRequest request){
+        String tokenFromAuthorization = getTokenFromAuthorization(request.getHeader(AUTHORIZATION));
+        return getUserIdFromToken(tokenFromAuthorization);
+    }
+
     private int getRandomConfirmationNumber() {
         return (int)(Math.random()*9000)+1000;
     }

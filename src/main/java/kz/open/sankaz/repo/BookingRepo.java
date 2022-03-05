@@ -40,4 +40,6 @@ public interface BookingRepo extends CommonRepo<Booking> {
             "and (b.status = kz.open.sankaz.model.enums.BookingStatus.CANCELLED " +
             "     or b.status = kz.open.sankaz.model.enums.BookingStatus.PAID) ")
     List<Booking> getAllHistoryByUserId(Long userId);
+
+    List<Booking> getAllByUserId(@Param("userId") Long userId);
 }

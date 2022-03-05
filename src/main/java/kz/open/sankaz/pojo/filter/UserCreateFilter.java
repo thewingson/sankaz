@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -29,12 +28,6 @@ public class UserCreateFilter extends BaseFilter {
     private String email;
     private Long genderId;
     private Long cityId;
-    private List<Long> roles;
-//    private SysFile pic;
-
-
-
-
-
-
+    @NotEmpty
+    private String confirmationStatus = "FINISHED";
 }

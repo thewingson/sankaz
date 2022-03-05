@@ -16,7 +16,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: public
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
   datasource:
     url: jdbc:postgresql://localhost/sankaz_dev
@@ -80,7 +80,9 @@ application:
   file:
     upload:
       path:
-        image: /var/www/content/sankaz/images/
+        image: http://185.146.1.64/sankaz/images
     download:
       path:
-        image: /sankaz/images/
+        image: http://185.146.1.64/sankaz/images
+fcm:
+  service-account-file: sankaz-push-firebase-adminsdk.json

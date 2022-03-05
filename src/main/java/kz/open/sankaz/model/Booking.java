@@ -94,4 +94,12 @@ public class Booking extends BaseEntity {
         return status.equals(BookingStatus.WAITING);
     }
 
+    public boolean isActive(){
+        return !isCancelled() && !isPaid();
+    }
+
+    public String getFullName(){
+        return firstName + " " + lastName;
+    }
+
 }

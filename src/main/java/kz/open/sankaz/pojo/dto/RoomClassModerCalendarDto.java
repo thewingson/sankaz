@@ -11,11 +11,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomClassDicDto extends AbstractDictionaryLangDto {
-    private Long id;
-    private String name;
+public class RoomClassModerCalendarDto extends AbstractDto {
     private String code;
-    private Long sanId;
-    private List<RoomInClassDicDto> rooms;
-
+    private String className;
+    private List<RoomModerCalendarDto> rooms;
 }
