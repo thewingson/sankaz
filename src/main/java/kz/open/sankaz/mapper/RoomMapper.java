@@ -70,7 +70,7 @@ public abstract class RoomMapper extends AbstractMapper {
     }
 
     @Named("roomToRoomInClassDicDto")
-    @Mapping(target = "name", source = "room.roomClassDic.name")
+    @Mapping(target = "roomNumber", source = "room.roomNumber")
     @Mapping(target = "mainPic", expression = "java( room.getMainPicUrl() )")
     @Mapping(target = "price", source = "room.price")
     abstract public RoomInClassDicDto roomToRoomInClassDicDto(Room room);

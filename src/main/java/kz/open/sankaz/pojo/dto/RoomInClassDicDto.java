@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomInClassDicDto extends BaseDto {
-    private String name;
+    private String roomNumber;
     private String mainPic;
     private BigDecimal price;
     private Integer roomCount;
