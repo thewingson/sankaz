@@ -1,10 +1,7 @@
 package kz.open.sankaz.mapper;
 
 import kz.open.sankaz.model.San;
-import kz.open.sankaz.pojo.dto.SanAdminDto;
-import kz.open.sankaz.pojo.dto.SanByIdDto;
-import kz.open.sankaz.pojo.dto.SanDto;
-import kz.open.sankaz.pojo.dto.SanForMainDto;
+import kz.open.sankaz.pojo.dto.*;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -45,9 +42,12 @@ public abstract class SanMapper extends AbstractMapper {
     abstract public List<SanDto> sanToDto(List<San> sans);
 
     @Named("sanToSanForMainDto")
-    @Mapping(target = "picUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
+    @Mapping(target = "mainPicUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
     @Mapping(target = "rating", source = "san.rating")
+    @Mapping(target = "sanType", expression = "java( dictionaryToDto(san.getSanType()) )")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
+    @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
+    @Mapping(target = "picUrls", expression = "java( fileToDto(san.getPics()) )")
     abstract public SanForMainDto sanToSanForMainDto(San san);
     @IterableMapping(qualifiedByName = "sanToSanForMainDto")
     abstract public List<SanForMainDto> sanToSanForMainDto(List<San> sans);

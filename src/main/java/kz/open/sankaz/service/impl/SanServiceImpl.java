@@ -20,10 +20,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -205,20 +202,14 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Override
     public List<SanForMainDto> getAllForMain(SanForMainFilter filter) {
-        List<San> result = sanRepo.getAllBySanForMainFilter(filter.getCityId(), filter.getStartDate(), filter.getEndDate());
+        int personCount = Optional.ofNullable(filter.getAdults()).orElse(0) + Optional.ofNullable(filter.getChildren()).orElse(0);
+        List<San> result = sanRepo.getAllBySanForMainFilter(
+                filter.getCityId(),
+                filter.getStartDate(),
+                filter.getEndDate(),
+                personCount);
 
-        return result.stream().map(san -> {
-            SanForMainDto dto = new SanForMainDto();
-            dto.setId(san.getId());
-            dto.setName(san.getName());
-            dto.setDescription(san.getDescription());
-            if(san.getMainPicUrl() != null) dto.setPicUrl(APPLICATION_DOWNLOAD_PATH_IMAGE + san.getMainPicUrl());
-            dto.setRating(san.getRating());
-            dto.setReviewCount(san.getReviewCount());
-            dto.setLongitude(san.getLongitude());
-            dto.setLatitude(san.getLatitude());
-            return dto;
-        }).collect(Collectors.toList());
+        return sanMapper.sanToSanForMainDto(result);
     }
 
     @Override
