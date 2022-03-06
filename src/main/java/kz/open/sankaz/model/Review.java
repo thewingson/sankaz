@@ -34,14 +34,14 @@ import javax.persistence.*;
                 @ConstructorResult(
                         targetClass= ReviewAvgCountDto.class,
                         columns={
-                                @ColumnResult(name="aver", type = float.class),
-                                @ColumnResult(name="cnt", type = int.class)
+                                @ColumnResult(name="aver", type = Float.class),
+                                @ColumnResult(name="cnt", type = Integer.class)
                         }
                 )
         }
 )
 @NamedNativeQuery(name="Review.getReviewInfo",
-        query="select cast(avg(r.rating) as float) as aver , count(r.id) as cnt " +
+        query="select coalesce(cast(avg(r.rating) as float), 0) as aver , count(r.id) as cnt " +
                 "from  review r " +
                 "where r.san_id = :sanId and r.rating between :ratingStart and :ratingEnd",
         resultSetMapping="getReviewInfoMapping")

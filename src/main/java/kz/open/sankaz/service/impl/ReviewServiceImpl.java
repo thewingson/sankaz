@@ -49,12 +49,20 @@ public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> imple
         info.setReviewCount(reviewInfo.getCount());
         info.setAvgRating((double)reviewInfo.getAvg());
 //        info.setAvgRating(reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0));
-        Map<Integer, Integer> ratings = new HashMap<>();
+        Map<Integer, Integer> ratings = new HashMap<Integer, Integer>() {{
+            put(1, 0);
+            put(2, 0);
+            put(3, 0);
+            put(4, 0);
+            put(5, 0);
+        }};
 //        reviews.forEach(review -> {
 //            int count = ratings.getOrDefault(review.getRating().intValue(), 0);
 //            ratings.put(review.getRating().intValue(), ++count);
 //        });
-        ratingInfo.forEach(rat -> ratings.put((int) rat.getRating(), rat.getCount()));
+        ratingInfo.forEach(rat -> {
+            ratings.put((int) rat.getRating(), rat.getCount());
+        });
         info.setRatings(ratings);
         return info;
     }
