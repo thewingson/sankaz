@@ -19,22 +19,22 @@ public interface SanRepo extends CommonRepo<San>{
                     "from san s " +
                     "join room_class_dic dic on dic.san_id = s.id " +
                     "join room r on " +
-                    "            case when (cast(:personCount as numeric) is null) then r.class_id = dic.id  " +
-                    "            else r.class_id = dic.id and r.bed_count >= cast(:personCount as numeric) " +
+                    "            case when (cast(cast(:personCount as text) as numeric) is null) then r.class_id = dic.id  " +
+                    "            else r.class_id = dic.id and r.bed_count >= cast(cast(:personCount as text) as numeric) " +
                     "            end " +
                     "left join booking b on" +
-                    "                    case when (cast(:startDate as date) is null) then false " +
+                    "                    case when (cast(cast(:startDate as text) as date) is null) then false " +
                     "                    else b.room_id = r.id and b.status <> 'CANCELLED' and b.status <> 'WAITING' " +
-                    "                    and ((cast(b.start_date as date) between cast(:startDate as date) and cast(:endDate as date)) " +
-                    "                    or (cast(b.end_date as date) between cast(:startDate as date) and cast(:endDate as date))) " +
+                    "                    and ((cast(b.start_date as date) between cast(cast(:startDate as text) as date) and cast(cast(:endDate as text) as date)) " +
+                    "                    or (cast(b.end_date as date) between cast(cast(:startDate as text) as date) and cast(cast(:endDate as text) as date))) " +
                     "                    end " +
                     "where 1=1 " +
-                    "and case when (cast(:startDate as date) is not null) " +
+                    "and case when (cast(cast(:startDate as text) as date) is not null) " +
                     "    then b.id is null " +
                     "    else 1=1 end " +
                     "and case " +
-                    "    when (cast(:cityId as numeric) is not null) " +
-                    "    then s.city_id = cast(:cityId as numeric) " +
+                    "    when (cast(cast(:cityId as text) as numeric) is not null) " +
+                    "    then s.city_id = cast(cast(:cityId as text) as numeric) " +
                     "    else 1=1 end" +
                     "    group by s.id;",
             nativeQuery = true)
