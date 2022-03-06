@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -35,9 +36,10 @@ public class UserProfileRest {
         this.authService = authService;
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> getUser(@PathVariable("userId") Long userId) {
+    @GetMapping
+    public ResponseEntity<?> getUser(HttpServletRequest request) {
         try {
+            Long userId = authService.getUserId(request);
             authService.checkIfOwnProfile(userId);
             return ResponseModel.success(userMapper.userToOwnProfileDto(userService.getOne(userId)));
         } catch (RuntimeException e) {

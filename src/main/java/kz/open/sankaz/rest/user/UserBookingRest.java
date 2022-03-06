@@ -126,7 +126,8 @@ public class UserBookingRest {
     @PostMapping("/books/{bookId}/cancel")
     public ResponseEntity<?> cancelBook(@PathVariable(name = "bookId") Long bookId) {
         try{
-            return ResponseModel.success(bookingMapper.bookingToBookingModerByIdDto(bookingService.cancel(bookId)));
+            bookingService.cancel(bookId);
+            return ResponseModel.success("Заявка на отмену брони принято");
         } catch (MessageCodeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
         } catch (Exception e){

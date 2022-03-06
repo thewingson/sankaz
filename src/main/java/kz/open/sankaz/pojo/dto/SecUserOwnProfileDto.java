@@ -14,10 +14,10 @@ public class SecUserOwnProfileDto extends AbstractDto {
     private String username;
     private String password;
     private String email;
-    private String genderId;
+    private Long genderId;
     private String genderName;
     private String picUrl;
     private String userType;
-    private String cityId;
+    private Long cityId;
     private String cityName;
 }
