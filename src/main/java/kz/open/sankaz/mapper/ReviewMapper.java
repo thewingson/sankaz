@@ -55,7 +55,10 @@ public abstract class ReviewMapper {
     }
 
     @Named("reviewToReviewBySanIdDto")
+    @Mapping(target = "id", source = "review.user.id")
+    @Mapping(target = "userId", source = "review.user.id")
     @Mapping(target = "username", source = "review.user.username")
+    @Mapping(target = "reviewDate", source = "review.messageDate")
     @Mapping(target = "parentReviewId", source = "review.parentReview.id")
     abstract public ReviewBySanIdDto reviewToReviewBySanIdDto(Review review);
     @IterableMapping(qualifiedByName = "reviewToReviewBySanIdDto")

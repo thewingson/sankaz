@@ -172,10 +172,11 @@ public class ModerSanRest {
     }
 
     @GetMapping("/{sanId}/reviews")
-    public ResponseEntity<?> getReviews(@PathVariable(name = "sanId") Long sanId) {
+    public ResponseEntity<?> getReviews(@PathVariable(name = "sanId") Long sanId,
+                                        @RequestParam(value = "rating") int rating) {
         try{
             sanService.checkIfOwnSan(sanId);
-            return ResponseModel.success(reviewMapper.reviewToReviewBySanIdDto(reviewService.getAllBySanId(sanId)));
+            return ResponseModel.success(reviewService.getReviewInfoBySanId(sanId, rating));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

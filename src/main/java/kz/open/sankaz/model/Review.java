@@ -1,14 +1,50 @@
 package kz.open.sankaz.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import kz.open.sankaz.pojo.dto.ReviewAvgCountDto;
+import kz.open.sankaz.pojo.dto.ReviewRatingDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
+@SqlResultSetMapping(
+        name="getRatingInfoMapping",
+        classes={
+                @ConstructorResult(
+                        targetClass= ReviewRatingDto.class,
+                        columns={
+                                @ColumnResult(name="rat", type = float.class),
+                                @ColumnResult(name="cnt", type = int.class)
+                        }
+                )
+        }
+)
+@NamedNativeQuery(name="Review.getRatingInfo",
+        query="select r.rating as rat, count(r.id) as cnt " +
+                "from review r " +
+                "where r.san_id = :sanId and r.rating between :ratingStart and :ratingEnd " +
+                "group by r.rating;",
+        resultSetMapping="getRatingInfoMapping")
+@SqlResultSetMapping(
+        name="getReviewInfoMapping",
+        classes={
+                @ConstructorResult(
+                        targetClass= ReviewAvgCountDto.class,
+                        columns={
+                                @ColumnResult(name="aver", type = float.class),
+                                @ColumnResult(name="cnt", type = int.class)
+                        }
+                )
+        }
+)
+@NamedNativeQuery(name="Review.getReviewInfo",
+        query="select cast(avg(r.rating) as float) as aver , count(r.id) as cnt " +
+                "from  review r " +
+                "where r.san_id = :sanId and r.rating between :ratingStart and :ratingEnd",
+        resultSetMapping="getReviewInfoMapping")
 @Entity
 @Table(name = "REVIEW")
 @Getter
