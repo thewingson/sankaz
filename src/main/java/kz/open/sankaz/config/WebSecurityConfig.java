@@ -9,6 +9,7 @@ import kz.open.sankaz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -60,20 +61,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http
-                .authorizeHttpRequests()
-                .antMatchers(
-                        "/push/**",
-                        "/patient/**",
-                        "/dict/**",
-                        "/users/auth/numbers/is-free",
-                        "/users/auth/send-conf",
-                        "/users/auth/check-conf",
-                        "/users/auth/finish-reg",
-                        "/moders/auth/numbers/is-free",
-                        "/moders/auth/send-conf",
-                        "/moders/auth/check-conf")
+        http.authorizeHttpRequests().antMatchers(
+                "/push/**",
+                "/patient/**",
+                "/dict/**",
+                "/users/auth/numbers/is-free",
+                "/users/auth/send-conf",
+                "/users/auth/check-conf",
+                "/users/auth/finish-reg",
+                "/moders/auth/numbers/is-free",
+                "/moders/auth/send-conf",
+                "/moders/auth/check-conf")
                 .permitAll();
+
+        http.authorizeHttpRequests().antMatchers(HttpMethod.GET, "/users/sans/**").permitAll();
+        http.authorizeHttpRequests().antMatchers(HttpMethod.POST, "/users/sans").permitAll();
 
         http
                 .authorizeHttpRequests()

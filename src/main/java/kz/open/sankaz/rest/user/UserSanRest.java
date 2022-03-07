@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
-import kz.open.sankaz.pojo.filter.ReviewBySanIdFilter;
 import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.response.ResponseModel;
@@ -72,18 +71,8 @@ public class UserSanRest {
     }
 
     @PreAuthorize("permitAll()")
-    @GetMapping("/{sanId}")
-    public ResponseEntity<?> getOneById(@PathVariable(name = "sanId") Long sanId) {
-        try{
-            return ResponseModel.success(sanMapper.sanToSanByIdDto(sanService.getOne(sanId)));
-        } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @PreAuthorize("permitAll()")
     @GetMapping("/{sanId}/classes")
-    public ResponseEntity<?> getAllBySan(@PathVariable(name = "sanId") Long sanId) {
+    public ResponseEntity<?> getAllClassesBySan(@PathVariable(name = "sanId") Long sanId) {
         try {
             return ResponseModel.success(roomMapper.roomClassDicToDto(roomClassDicService.getBySan(sanId)));
         } catch (RuntimeException e) {
@@ -102,20 +91,11 @@ public class UserSanRest {
     }
 
     @PreAuthorize("permitAll()")
-    @GetMapping("/{sanId}/reviews")
-    public ResponseEntity<?> getReviews(@PathVariable(name = "sanId") Long sanId) {
-        try{
-            return ResponseModel.success(reviewMapper.reviewToReviewBySanIdDto(reviewService.getAllBySanId(sanId)));
-        } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @PreAuthorize("permitAll()")
     @GetMapping("/{sanId}/reviews/filter")
-    public ResponseEntity<?> getReviewsByFilter(@PathVariable(name = "sanId") Long sanId, @Valid @RequestBody ReviewBySanIdFilter filter) {
+    public ResponseEntity<?> getReviewsByFilter(@PathVariable(name = "sanId") Long sanId,
+                                                @RequestParam(defaultValue = "0") int rating) {
         try{
-            return ResponseModel.success(reviewMapper.reviewToReviewBySanIdDto(reviewService.getAllByFilter(sanId, filter)));
+            return ResponseModel.success(reviewService.getReviewInfoBySanId(sanId, rating));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

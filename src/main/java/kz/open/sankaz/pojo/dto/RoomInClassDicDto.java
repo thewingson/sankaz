@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,4 +18,5 @@ public class RoomInClassDicDto extends BaseDto {
     private BigDecimal price;
     private Integer roomCount;
     private Integer bedCount;
+    private List<FileDto> pics;
 }

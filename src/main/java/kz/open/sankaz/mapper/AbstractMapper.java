@@ -1,6 +1,5 @@
 package kz.open.sankaz.mapper;
 
-import kz.open.sankaz.model.AbstractDictionaryEntity;
 import kz.open.sankaz.model.AbstractDictionaryLangEntity;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.model.TelNumber;

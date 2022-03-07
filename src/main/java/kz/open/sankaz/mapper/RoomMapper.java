@@ -73,6 +73,7 @@ public abstract class RoomMapper extends AbstractMapper {
     @Named("roomToRoomInClassDicDto")
     @Mapping(target = "roomNumber", source = "room.roomNumber")
     @Mapping(target = "mainPic", expression = "java( room.getMainPicUrl() )")
+    @Mapping(target = "pics", expression = "java( fileToDto(room.getPics()) )")
     @Mapping(target = "price", source = "room.price")
     abstract public RoomInClassDicDto roomToRoomInClassDicDto(Room room);
     @IterableMapping(qualifiedByName = "roomToRoomInClassDicDto")
