@@ -4,6 +4,7 @@ import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.mapper.SecUserMapper;
 import kz.open.sankaz.pojo.filter.ResetPasswordFilter;
 import kz.open.sankaz.pojo.filter.UserCreateFilter;
+import kz.open.sankaz.pojo.filter.UserEditFilter;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.AuthService;
 import kz.open.sankaz.service.UserService;
@@ -36,9 +37,10 @@ public class AdminUserRest {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "0") int page,
+                                    @RequestParam(value = "size", defaultValue = "10") int size) {
         try{
-            return ResponseModel.success(userMapper.userToDto(userService.getAll()));
+            return ResponseModel.success(userService.getAllPage(page, size));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -66,9 +68,8 @@ public class AdminUserRest {
 
     @PutMapping("/{userId}")
     public ResponseEntity<?> editOneById(@PathVariable(name = "userId") Long userId,
-                                         @Valid @RequestBody UserCreateFilter filter) {
+                                         @Valid @RequestBody UserEditFilter filter) {
         try{
-            ;
             return ResponseModel.success(userMapper.userToDto(userService.editOne(userId, filter)));
         } catch (Exception e){
             return ResponseModel.error(BAD_REQUEST, e.getMessage());

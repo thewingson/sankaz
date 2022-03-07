@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserCreateFilter extends BaseFilter {
+public class UserEditFilter extends BaseFilter {
     @NotEmpty
     private String userType;
     @NotEmpty

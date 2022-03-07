@@ -56,7 +56,7 @@ public class Organization extends AbstractEntity {
     private String confirmedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID", foreignKey = @ForeignKey(name = "ORGANIZATION_USER_FK"), nullable = false)
+    @JoinColumn(name = "USER_ID", foreignKey = @ForeignKey(name = "ORGANIZATION_USER_FK"))
     @JsonManagedReference
     private SecUser user;
 

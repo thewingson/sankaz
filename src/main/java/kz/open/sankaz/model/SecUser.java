@@ -115,6 +115,10 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @JsonBackReference
     private List<UserDeviceToken> deviceTokens;
 
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<Organization> organizations;
+
     public SecUser(Long id,
                    String username,
                    String password,

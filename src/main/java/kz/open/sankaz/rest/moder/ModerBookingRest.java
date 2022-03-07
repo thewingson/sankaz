@@ -88,7 +88,7 @@ public class ModerBookingRest {
         try{
             return ResponseModel.success(bookingMapper.bookingToBookingModerByIdDto(bookingService.approve(bookId)));
         } catch (MessageCodeException e) {
-            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getData(), e.getMessage());
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

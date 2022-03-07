@@ -3,42 +3,38 @@ package kz.open.sankaz.service.impl;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.exception.UserCodes;
-import kz.open.sankaz.listener.event.AfterDeleteEvent;
-import kz.open.sankaz.listener.event.BeforeDeleteEvent;
 import kz.open.sankaz.mapper.SecUserMapper;
-import kz.open.sankaz.model.City;
-import kz.open.sankaz.model.Gender;
-import kz.open.sankaz.model.SecUser;
-import kz.open.sankaz.model.SysFile;
+import kz.open.sankaz.model.*;
 import kz.open.sankaz.model.enums.ConfirmationStatus;
+import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
 import kz.open.sankaz.model.enums.UserType;
+import kz.open.sankaz.pojo.dto.PageDto;
 import kz.open.sankaz.pojo.dto.PictureDto;
 import kz.open.sankaz.pojo.dto.SecUserDto;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.pojo.filter.UserCreateFilter;
+import kz.open.sankaz.pojo.filter.UserEditFilter;
 import kz.open.sankaz.repo.UserRepo;
-import kz.open.sankaz.service.CityService;
-import kz.open.sankaz.service.GenderService;
-import kz.open.sankaz.service.SysFileService;
-import kz.open.sankaz.service.UserService;
+import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -68,6 +64,14 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Lazy
+    @Autowired
+    private OrganizationService organizationService;
+
+    @Lazy
+    @Autowired
+    private BookingService bookingService;
 
     @Autowired
     public UserServiceImpl(UserRepo userRepo) {
@@ -106,20 +110,14 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     }
 
     @Override
+    public List<SecUser> getAll() {
+        return repo.getAllByActive(true);
+    }
+
+    @Override
     public void deleteOneByUsernameSoft(String username) {
         SecUser user = (SecUser)loadUserByUsername(username);
-
-        BeforeDeleteEvent beforeDeleteEvent = getBeforeDeleteEvent(user);
-        if(beforeDeleteEvent != null){
-            applicationEventPublisher.publishEvent(beforeDeleteEvent);
-        }
-
         repo.save(user);
-
-        AfterDeleteEvent afterDeleteEvent = getAfterDeleteEvent(user);
-        if(afterDeleteEvent != null){
-            applicationEventPublisher.publishEvent(afterDeleteEvent);
-        }
     }
 
     @Override
@@ -156,9 +154,6 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
 
     @Override
     public SecUser createOne(UserCreateFilter filter) {
-        if(!filter.getPassword().equals(filter.getConfirmPassword())){
-            throw new MessageCodeException(UserCodes.PASSWORD_NOT_MATCH);
-        }
         SecUser userByNumber = new SecUser();
         try {
             getUserByTelNumber(filter.getTelNumber());
@@ -183,7 +178,7 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
                 userByNumber.setEmail(filter.getEmail());
             }
         }
-        userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
+        userByNumber.setPassword(passwordEncoder.encode("Welcome123"));
         userByNumber.setConfirmationStatus(ConfirmationStatus.valueOf(filter.getConfirmationStatus()));
         userByNumber.setUserType(UserType.valueOf(filter.getUserType()));
         userByNumber.setUsername(filter.getUsername());
@@ -199,18 +194,15 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     }
 
     @Override
-    public SecUser editOne(Long userId, UserCreateFilter filter) {
+    public SecUser editOne(Long userId, UserEditFilter filter) {
         SecUser userByNumber = getOne(userId);
-        if(!filter.getPassword().equals(filter.getConfirmPassword())){
-            throw new MessageCodeException(UserCodes.PASSWORD_NOT_MATCH);
-        }
         try {
             SecUser userByTelNumber = getUserByTelNumber(filter.getTelNumber());
             if(!userByNumber.getId().equals(userByTelNumber.getId())){
                 throw new MessageCodeException(UserCodes.TEL_NUMBER_IS_ALREADY_REGISTERED);
             }
         } catch (EntityNotFoundException e) {
-            userByNumber.setUsername(filter.getUsername());
+            userByNumber.setUsername(filter.getTelNumber());
             userByNumber.setTelNumber(filter.getTelNumber());
         }
         if(!filter.getEmail().isEmpty()){
@@ -233,7 +225,6 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
         }
         userByNumber.setConfirmationStatus(ConfirmationStatus.valueOf(filter.getConfirmationStatus()));
         userByNumber.setUserType(UserType.valueOf(filter.getUserType()));
-        userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
         userByNumber.setFirstName(filter.getFirstName());
         userByNumber.setLastName(filter.getLastName());
 
@@ -351,6 +342,47 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
             throw new EntityNotFoundException(getCurrentClass(), params);
         }
         return secUser.get();
+    }
+
+    @Transactional(propagation = Propagation.NESTED, rollbackFor = SQLException.class)
+    @Override
+    public void deleteOneById(Long id) {
+        SecUser user = getOne(id);
+        List<Organization> organizationList = new ArrayList<>();
+        user.getOrganizations().forEach(organization -> {
+            organizationList.add(organization);
+            organization.setUser(null);
+            organization.setConfirmationStatus(OrganizationConfirmationStatus.REJECTED);
+            organization.setRejectMessage("User is deleted");
+            organization.setEmail("deleted_" + organization.getEmail());
+            organization.setIban("deleted_" + organization.getIban());
+            organization.setIin("deleted_" + organization.getIin());
+            organization.setTelNumber("deleted_" + organization.getTelNumber());
+        });
+        organizationService.saveAll(organizationList);
+
+        List<Booking> bookings = new ArrayList<>();
+        bookingService.getAllByUser(user).forEach(booking -> {
+            bookings.add(booking);
+            booking.setUser(null);
+        });
+        bookingService.saveAll(bookings);
+
+        user.setUsername("deleted_" + user.getUsername());
+        user.setTelNumber("deleted_" + user.getTelNumber());
+        user.setEmail("deleted_" + user.getEmail());
+        user.setActive(false);
+        repo.save(user);
+    }
+
+    @Override
+    public PageDto getAllPage(int page, int size) {
+        Page<SecUser> pages = getAll(page, size);
+        PageDto dto = new PageDto();
+        dto.setTotal(pages.getTotalElements());
+        dto.setContent(userMapper.userToDto(pages.getContent()));
+        dto.setPageable(pages.getPageable());
+        return dto;
     }
 
     @Override

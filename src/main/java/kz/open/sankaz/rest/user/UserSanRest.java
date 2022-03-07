@@ -8,6 +8,7 @@ import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.ReviewService;
+import kz.open.sankaz.service.RoomClassDicService;
 import kz.open.sankaz.service.RoomService;
 import kz.open.sankaz.service.SanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @PreAuthorize("hasRole('ROLE_USER')")
 @RestController
@@ -30,6 +33,9 @@ public class UserSanRest {
 
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private RoomClassDicService roomClassDicService;
 
     @Autowired
     private SanMapper sanMapper;
@@ -60,6 +66,16 @@ public class UserSanRest {
             return ResponseModel.success(sanMapper.sanToSanByIdDto(sanService.getOne(sanId)));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/{sanId}/classes")
+    public ResponseEntity<?> getAllBySan(@PathVariable(name = "sanId") Long sanId) {
+        try {
+            sanService.checkIfOwnSan(sanId);
+            return ResponseModel.success(roomMapper.roomClassDicToDto(roomClassDicService.getBySan(sanId)));
+        } catch (RuntimeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
     }
 

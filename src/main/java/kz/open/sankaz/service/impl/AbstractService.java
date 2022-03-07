@@ -3,14 +3,17 @@ package kz.open.sankaz.service.impl;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.listener.event.*;
 import kz.open.sankaz.model.BaseEntity;
+import kz.open.sankaz.pojo.dto.PageDto;
 import kz.open.sankaz.repo.CommonRepo;
 import kz.open.sankaz.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +74,11 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
     }
 
     @Override
+    public Page<E> getAll(int page, int size) {
+        return repo.findAll(PageRequest.of(page, size));
+    }
+
+    @Override
     public List<E> getAll(Map<String, Object> params) {
         if (params.containsKey("deleted") && (Boolean) params.get("deleted")) {
             return repo.findAll();
@@ -92,7 +100,7 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
     }
 
     @Override
-    public void deleteOneById(Long id) {
+    public void deleteOneById(Long id) throws SQLException {
         E one = getOne(id);
         repo.delete(one);
     }
@@ -101,6 +109,21 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
     public void deleteOneByIdSoft(Long id) {
         E one = getOne(id);
         repo.save(one);
+    }
+
+    @Override
+    public List<E> saveAll(List<E> entities) {
+        return repo.saveAll(entities);
+    }
+
+    @Override
+    public PageDto getAllPage(int page, int size) {
+        Page<E> pages = getAll(page, size);
+        PageDto dto = new PageDto();
+        dto.setTotal(pages.getTotalElements());
+        dto.setContent(pages.getContent());
+        dto.setPageable(pages.getPageable());
+        return dto;
     }
 
     protected abstract Class getCurrentClass();

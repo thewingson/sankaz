@@ -6,6 +6,7 @@ import kz.open.sankaz.pojo.dto.PictureDto;
 import kz.open.sankaz.pojo.dto.SecUserDto;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.pojo.filter.UserCreateFilter;
+import kz.open.sankaz.pojo.filter.UserEditFilter;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +29,7 @@ public interface UserService extends UserDetailsManager, CommonService<SecUser> 
 
     SecUser createOne(UserCreateFilter filter);
 
-    SecUser editOne(Long userId, UserCreateFilter filter);
+    SecUser editOne(Long userId, UserEditFilter filter);
 
     SysFile addPic(Long userId, MultipartFile pic) throws IOException;
 

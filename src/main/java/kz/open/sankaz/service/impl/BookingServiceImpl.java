@@ -219,9 +219,17 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         if(!booking.isWaiting()){
             throw new MessageCodeException(BookingCodes.YOU_CAN_APPROVE_ONLY_WITH_WAITING_STATUS);
         }
-        List<Booking> activeBookingsInDateRange = repo.getAllByRoomIdAndDateRanges(booking.getRoom().getId(), booking.getStartDate(), booking.getEndDate());
-        if(!activeBookingsInDateRange.isEmpty()){
-            throw new MessageCodeException(BookingCodes.ROOM_IS_NOT_AVAILABLE);
+        List<LocalDate> busyDates = new ArrayList<>();
+        List<DatesDto> availabilityForDateRange = roomRepo.getRoomAvailabilityForDateRange(booking.getRoom().getId(), booking.getStartDate(), booking.getEndDate());
+        availabilityForDateRange.forEach(datesDto -> {
+            if(!datesDto.isFree()){
+                busyDates.add(datesDto.getCheckDate());
+            }
+        });
+        if(!busyDates.isEmpty()){
+            Map<String, List<LocalDate>> data = new HashMap<>();
+            data.put("busyDates", busyDates);
+            throw new MessageCodeException(BookingCodes.ROOM_IS_BUSY_IN_CHOSEN_DATE_RANGE, data);
         }
         booking.setStatus(BookingStatus.APPROVED);
         booking.setCancelledDate(LocalDateTime.now());
@@ -273,5 +281,10 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setSumPrice(filter.getPrice());
 
         return addOne(booking);
+    }
+
+    @Override
+    public List<Booking> getAllByUser(SecUser user) {
+        return repo.getAllByUserId(user.getId());
     }
 }
