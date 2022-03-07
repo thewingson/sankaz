@@ -46,7 +46,6 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
 
     @Override
     public Room addOne(RoomCreateFilter filter) {
-        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
         Room room = new Room();
         room.setRoomClassDic(roomClassDicService.getOne(filter.getRoomClassDicId()));
         room.setRoomNumber(filter.getRoomNumber());
@@ -57,8 +56,18 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
     }
 
     @Override
+    public Room addOne(RoomCreateFilter filter, MultipartFile[] pics) throws IOException {
+        Room room = new Room();
+        room.setRoomClassDic(roomClassDicService.getOne(filter.getRoomClassDicId()));
+        room.setRoomNumber(filter.getRoomNumber());
+        room.setBedCount(filter.getBedCount());
+        room.setRoomCount(filter.getRoomCount());
+        room.setPrice(filter.getPrice());
+        return addPics(addOne(room), pics);
+    }
+
+    @Override
     public Room editOneById(Long roomId, RoomCreateFilter filter) {
-        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
         Room room = getOne(roomId);
         room.setRoomClassDic(roomClassDicService.getOne(filter.getRoomClassDicId()));
         room.setRoomNumber(filter.getRoomNumber());
@@ -66,6 +75,34 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
         room.setRoomCount(filter.getRoomCount());
         room.setPrice(filter.getPrice());
         return editOneById(room);
+    }
+
+    private Room addPics(Room room, MultipartFile[] pics) throws IOException {
+
+        for(MultipartFile pic : pics){
+            if (!pic.getOriginalFilename().isEmpty()) {
+                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdir();
+                }
+
+                String uuidFile = UUID.randomUUID().toString();
+                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
+                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
+
+                pic.transferTo(new File(fileNameWithPath));
+
+                SysFile file = new SysFile();
+                file.setFileName(resultFilename);
+                file.setExtension(pic.getContentType());
+                file.setSize(pic.getSize());
+                file = sysFileService.addOne(file);
+
+                room.addPic(file);
+            }
+        }
+
+        return room;
     }
 
     @Override

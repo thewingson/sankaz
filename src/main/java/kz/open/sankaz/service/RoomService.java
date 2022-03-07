@@ -12,6 +12,8 @@ import java.util.List;
 public interface RoomService extends CommonService<Room> {
     Room addOne(RoomCreateFilter filter);
 
+    Room addOne(RoomCreateFilter filter, MultipartFile[] pics) throws IOException;
+
     Room editOneById(Long roomId, RoomCreateFilter filter);
 
     List<SysFile> addPics(Long roomId, MultipartFile[] pics) throws IOException;

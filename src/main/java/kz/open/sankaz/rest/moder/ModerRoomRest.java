@@ -1,12 +1,9 @@
 package kz.open.sankaz.rest.moder;
 
 import kz.open.sankaz.mapper.RoomMapper;
-import kz.open.sankaz.model.Room;
-import kz.open.sankaz.pojo.filter.DateRangeFilter;
 import kz.open.sankaz.pojo.filter.DeletePicsFilter;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import kz.open.sankaz.response.ResponseModel;
-import kz.open.sankaz.service.RoomClassDicService;
 import kz.open.sankaz.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-
-import java.util.List;
+import java.math.BigDecimal;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -55,10 +51,16 @@ public class ModerRoomRest {
     }
 
     @PostMapping
-    public ResponseEntity<?> addOne(@Valid @RequestBody RoomCreateFilter filter) {
+    public ResponseEntity<?> addOne(@RequestParam String roomNumber,
+                                    @RequestParam Long roomClassDicId,
+                                    @RequestParam Integer roomCount,
+                                    @RequestParam Integer bedCount,
+                                    @RequestParam BigDecimal price,
+                                    @RequestParam(value = "pics", required = false) MultipartFile[] pics) {
         try {
-            return ResponseModel.success(roomMapper.roomToRoomCreateDto(roomService.addOne(filter)));
-        } catch (RuntimeException e) {
+            RoomCreateFilter filter = new RoomCreateFilter(roomNumber, roomClassDicId, roomCount, bedCount, price);
+            return ResponseModel.success(roomMapper.roomToRoomCreateDto(roomService.addOne(filter, pics)));
+        } catch (Exception e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
     }

@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,4 +18,5 @@ public class RoomCreateDto extends AbstractDto {
     private Integer bedCount;
     private BigDecimal price;
     private Long roomClassDicId;
+    private List<FileDto> pics;
 }
