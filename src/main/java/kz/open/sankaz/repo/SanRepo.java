@@ -36,10 +36,13 @@ public interface SanRepo extends CommonRepo<San>{
                     "    when (cast(cast(:cityId as text) as numeric) is not null) " +
                     "    then s.city_id = cast(cast(:cityId as text) as numeric) " +
                     "    else 1=1 end" +
-                    "    group by s.id;",
+                    "    group by s.id " +
+                    " limit cast(cast(:size as text) as numeric) offset cast(cast(:page as text) as numeric);",
             nativeQuery = true)
     List<San> getAllBySanForMainFilter(@Param("cityId") Long cityId,
                                        @Param("startDate") LocalDateTime startDate,
                                        @Param("endDate") LocalDateTime endDate,
-                                       @Param("personCount") Integer personCount);
+                                       @Param("personCount") Integer personCount,
+                                       @Param("page") Integer page,
+                                       @Param("size") Integer size);
 }

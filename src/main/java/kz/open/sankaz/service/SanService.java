@@ -25,7 +25,7 @@ public interface SanService extends CommonService<San> {
 
     Review addReview(Long sanId, ReviewCreateFilter filter);
 
-    List<SanForMainDto> getAllForMain(SanForMainFilter filter);
+    List<SanForMainDto> getAllForMain(SanForMainFilter filter, int page, int size);
 
     void addGeo(Long sanId, Double longitude, Double latitude);
 

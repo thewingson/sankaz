@@ -1,5 +1,6 @@
 package kz.open.sankaz.rest.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
@@ -18,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -51,15 +53,25 @@ public class UserSanRest {
         this.sanService = sanService;
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping
-    public ResponseEntity<?> getAll(@Valid @RequestBody SanForMainFilter filter) {
+    public ResponseEntity<?> getAll(
+            @RequestParam(required = false) Long cityId,
+            @RequestParam(required = false) @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDate,
+            @RequestParam(required = false) @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDate,
+            @RequestParam(required = false) Integer adults,
+            @RequestParam(required = false) Integer children,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
         try{
-            return ResponseModel.success(sanService.getAllForMain(filter));
+            SanForMainFilter filter = new SanForMainFilter(cityId, startDate, endDate, adults, children);
+            return ResponseModel.success(sanService.getAllForMain(filter, page, size));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{sanId}")
     public ResponseEntity<?> getOneById(@PathVariable(name = "sanId") Long sanId) {
         try{
@@ -69,10 +81,10 @@ public class UserSanRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{sanId}/classes")
     public ResponseEntity<?> getAllBySan(@PathVariable(name = "sanId") Long sanId) {
         try {
-            sanService.checkIfOwnSan(sanId);
             return ResponseModel.success(roomMapper.roomClassDicToDto(roomClassDicService.getBySan(sanId)));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
@@ -89,6 +101,7 @@ public class UserSanRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{sanId}/reviews")
     public ResponseEntity<?> getReviews(@PathVariable(name = "sanId") Long sanId) {
         try{
@@ -98,6 +111,7 @@ public class UserSanRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{sanId}/reviews/filter")
     public ResponseEntity<?> getReviewsByFilter(@PathVariable(name = "sanId") Long sanId, @Valid @RequestBody ReviewBySanIdFilter filter) {
         try{
@@ -107,6 +121,7 @@ public class UserSanRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{sanId}/rooms/{roomId}")
     public ResponseEntity<?> getRoom(@PathVariable(name = "sanId") Long sanId,
                                      @PathVariable(name = "roomId") Long roomId) {
