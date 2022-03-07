@@ -1,5 +1,6 @@
 package kz.open.sankaz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kz.open.sankaz.pojo.dto.ReviewAvgCountDto;
 import kz.open.sankaz.pojo.dto.ReviewRatingDto;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @SqlResultSetMapping(
         name="getRatingInfoMapping",
@@ -70,5 +72,9 @@ public class Review extends Message {
     @JoinColumn(name = "PARENT_ID", foreignKey = @ForeignKey(name = "REVIEW_PARENT_FK"))
     @JsonManagedReference
     private Review parentReview;
+
+    @OneToMany(mappedBy = "parentReview", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Review> childReviews;
 
 }

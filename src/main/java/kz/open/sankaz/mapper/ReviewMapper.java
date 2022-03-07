@@ -60,6 +60,7 @@ public abstract class ReviewMapper {
     @Mapping(target = "username", source = "review.user.username")
     @Mapping(target = "reviewDate", source = "review.messageDate")
     @Mapping(target = "parentReviewId", source = "review.parentReview.id")
+    @Mapping(target = "childReviews", expression = "java( reviewToReviewBySanIdDto(review.getChildReviews()) )")
     abstract public ReviewBySanIdDto reviewToReviewBySanIdDto(Review review);
     @IterableMapping(qualifiedByName = "reviewToReviewBySanIdDto")
     abstract public List<ReviewBySanIdDto> reviewToReviewBySanIdDto(List<Review> reviews);

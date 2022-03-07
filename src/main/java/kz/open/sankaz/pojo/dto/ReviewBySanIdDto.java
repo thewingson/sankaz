@@ -6,16 +6,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewBySanIdDto extends BaseDto {
-    protected Long userId;
-    protected String username;
+    private Long userId;
+    private String username;
     private Float rating;
     private LocalDateTime reviewDate;
-    protected String text;
+    private String text;
     private Long parentReviewId;
+    private List<ReviewBySanIdDto> childReviews;
 }

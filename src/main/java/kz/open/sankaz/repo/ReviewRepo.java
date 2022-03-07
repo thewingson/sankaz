@@ -17,7 +17,7 @@ public interface ReviewRepo extends CommonRepo<Review> {
 
     List<Review> getAllBySanId(@Param("san") Long sanId);
 
-    List<Review> getAllBySanIdAndRatingBetween(@Param("san") Long sanId,
+    List<Review> getAllBySanIdAndRatingBetweenAndParentReviewIsNull(@Param("san") Long sanId,
                                                 @Param("ratingStart") Float ratingStart,
                                                 @Param("ratingEnd") Float ratingEnd);
 

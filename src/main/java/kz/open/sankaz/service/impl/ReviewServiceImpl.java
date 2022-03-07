@@ -43,7 +43,7 @@ public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> imple
         }
         ReviewAvgCountDto reviewInfo = repo.getReviewInfo(sanId, 0.9f, 5.1f);
         List<ReviewRatingDto> ratingInfo = repo.getRatingInfo(sanId, 0.9f, 5.1f);
-        List<Review> reviews = repo.getAllBySanIdAndRatingBetween(sanId, ratingStart, ratingEnd);
+        List<Review> reviews = repo.getAllBySanIdAndRatingBetweenAndParentReviewIsNull(sanId, ratingStart, ratingEnd);
         ReviewInfoBySanIdDto info = new ReviewInfoBySanIdDto();
         info.setReviews(reviewMapper.reviewToReviewBySanIdDto(reviews));
         info.setReviewCount(reviewInfo.getCount());
