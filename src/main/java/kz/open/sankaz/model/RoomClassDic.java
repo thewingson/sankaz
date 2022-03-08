@@ -45,7 +45,7 @@ public class RoomClassDic extends AbstractEntity {
     @JsonManagedReference
     private San san;
 
-    @OneToMany(mappedBy = "roomClassDic", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "roomClassDic", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Room> rooms;
 

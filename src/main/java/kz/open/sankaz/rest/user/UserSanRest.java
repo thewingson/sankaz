@@ -1,6 +1,5 @@
 package kz.open.sankaz.rest.user;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -56,14 +56,17 @@ public class UserSanRest {
     @PostMapping
     public ResponseEntity<?> getAll(
             @RequestParam(required = false) Long cityId,
-            @RequestParam(required = false) @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDate,
-            @RequestParam(required = false) @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDate,
+            @RequestParam(value="startDate", required = false) String startDate,
+            @RequestParam(value="endDate", required = false) String endDate,
             @RequestParam(required = false) Integer adults,
             @RequestParam(required = false) Integer children,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
         try{
-            SanForMainFilter filter = new SanForMainFilter(cityId, startDate, endDate, adults, children);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            SanForMainFilter filter = new SanForMainFilter(cityId,
+                    startDate.isEmpty() ? null : LocalDateTime.parse(startDate, formatter),
+                    endDate.isEmpty() ? null : LocalDateTime.parse(endDate, formatter), adults, children);
             return ResponseModel.success(sanService.getAllForMain(filter, page, size));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());

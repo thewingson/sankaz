@@ -12,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -34,6 +36,20 @@ public class ModerBookingRest {
     public ResponseEntity<?> getAllBySan(@PathVariable("sanId") Long sanId) {
         try {
             return ResponseModel.success(bookingMapper.bookingToBookingAllForModerDto(bookingService.getAllBySan(sanId)));
+        } catch (RuntimeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/sans/{sanId}/calendar")
+    public ResponseEntity<?> getBookingCalendar(@PathVariable("sanId") Long sanId,
+                                                @RequestParam(value="startDate") String startDate,
+                                                @RequestParam(value="endDate") String endDate) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return ResponseModel.success(bookingService.getBookingCalendar(sanId,
+                    LocalDateTime.parse(startDate.substring(1, startDate.length()-1), formatter),
+                    LocalDateTime.parse(endDate.substring(1, endDate.length()-1), formatter)));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

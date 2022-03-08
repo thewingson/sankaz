@@ -7,6 +7,7 @@ import kz.open.sankaz.pojo.filter.BookingAdminCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingModerCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingService extends CommonService<Booking> {
@@ -15,7 +16,7 @@ public interface BookingService extends CommonService<Booking> {
 
     List<Booking> getAllBySan(Long sanId);
 
-    List<RoomClassModerCalendarDto> getAllBySan2(Long sanId);
+    List<RoomClassModerCalendarDto> getBookingCalendar(Long sanId, LocalDateTime startDate, LocalDateTime endDate);
 
     Booking addOne(BookingModerCreateFilter filter);
     Booking editOneById(Long bookId, BookingModerCreateFilter filter);

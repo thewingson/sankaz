@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,4 +43,16 @@ public interface BookingRepo extends CommonRepo<Booking> {
     List<Booking> getAllHistoryByUserId(Long userId);
 
     List<Booking> getAllByUserId(@Param("userId") Long userId);
+
+    @Query(value = "select b.* " +
+            "from booking b " +
+            "where " +
+            "b.room_id in :roomIds " +
+            "and b.status <> 'CANCELLED' and b.status <> 'WAITING' " +
+            "and ((cast(b.start_date as date) between :startDate and :endDate) " +
+            "  or (cast(b.end_date as date) between :startDate and :endDate))",
+            nativeQuery = true)
+    List<Booking> getBookingCalendar(@Param("roomIds") List<Long> roomIds,
+                                     @Param("startDate") LocalDate startDate,
+                                     @Param("endDate") LocalDate endDate);
 }

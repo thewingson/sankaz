@@ -1,5 +1,6 @@
 package kz.open.sankaz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kz.open.sankaz.pojo.dto.DatesDto;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +74,10 @@ public class Room extends AbstractEntity {
             joinColumns = @JoinColumn(name = "ROOM_ID", foreignKey = @ForeignKey(name = "ROOM_PICS_ROOM_FK")),
             inverseJoinColumns = @JoinColumn(name = "FILE_ID", foreignKey = @ForeignKey(name = "ROOM_PICS_PIC_FK")))
     private List<SysFile> pics;
+
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Booking> books;
 
     public void addPic(SysFile pic){
         if(getPics() == null){

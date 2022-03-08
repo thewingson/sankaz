@@ -11,7 +11,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -85,4 +84,17 @@ public abstract class RoomMapper extends AbstractMapper {
     abstract public RoomClassDicDto roomClassDicToDto(RoomClassDic roomClassDic);
     @IterableMapping(qualifiedByName = "roomClassDicToDto")
     abstract public List<RoomClassDicDto> roomClassDicToDto(List<RoomClassDic> roomClassDics);
+
+    @Named("roomToRoomModerCalendarDto")
+    @Mapping(target = "bookings", ignore = true)
+    abstract public RoomModerCalendarDto roomToRoomModerCalendarDto(Room room);
+    @IterableMapping(qualifiedByName = "roomToRoomModerCalendarDto")
+    abstract public List<RoomModerCalendarDto> roomToRoomModerCalendarDto(List<Room> rooms);
+
+    @Named("roomClassToRoomClassModerCalendarDto")
+    @Mapping(target = "className", source = "roomClassDic.name")
+    @Mapping(target = "rooms", expression = "java( roomToRoomModerCalendarDto(roomClassDic.getRooms()) )")
+    abstract public RoomClassModerCalendarDto roomClassToRoomClassModerCalendarDto(RoomClassDic roomClassDic);
+    @IterableMapping(qualifiedByName = "roomClassToRoomClassModerCalendarDto")
+    abstract public List<RoomClassModerCalendarDto> roomClassToRoomClassModerCalendarDto(List<RoomClassDic> roomClassDics);
 }

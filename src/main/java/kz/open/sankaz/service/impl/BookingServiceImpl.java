@@ -2,18 +2,24 @@ package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.exception.BookingCodes;
 import kz.open.sankaz.exception.MessageCodeException;
+import kz.open.sankaz.mapper.BookingMapper;
+import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.model.Booking;
 import kz.open.sankaz.model.Room;
+import kz.open.sankaz.model.RoomClassDic;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.enums.BookingStatus;
 import kz.open.sankaz.model.enums.UserType;
+import kz.open.sankaz.pojo.dto.BookingModerCalendarDto;
 import kz.open.sankaz.pojo.dto.DatesDto;
 import kz.open.sankaz.pojo.dto.RoomClassModerCalendarDto;
+import kz.open.sankaz.pojo.dto.RoomModerCalendarDto;
 import kz.open.sankaz.pojo.filter.BookingAdminCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingModerCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
 import kz.open.sankaz.repo.BookingRepo;
 import kz.open.sankaz.repo.RoomRepo;
+import kz.open.sankaz.repo.dictionary.RoomClassDicRepo;
 import kz.open.sankaz.service.BookingService;
 import kz.open.sankaz.service.RoomService;
 import kz.open.sankaz.service.UserService;
@@ -40,6 +46,15 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
 
     @Autowired
     private RoomRepo roomRepo;
+
+    @Autowired
+    private RoomClassDicRepo roomClassDicRepo;
+
+    @Autowired
+    private RoomMapper roomMapper;
+
+    @Autowired
+    private BookingMapper bookingMapper;
 
     public BookingServiceImpl(BookingRepo bookingRepo) {
         super(bookingRepo);
@@ -128,9 +143,27 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
     }
 
     @Override
-    public List<RoomClassModerCalendarDto> getAllBySan2(Long sanId) {
+    public List<RoomClassModerCalendarDto> getBookingCalendar(Long sanId, LocalDateTime startDate, LocalDateTime endDate) {
+        List<RoomClassDic> classes = roomClassDicRepo.getRoomClassDicBySanId(sanId);
+        List<Long> roomIds = new ArrayList<>();
+        classes.forEach(roomClassDic -> {
+            roomClassDic.getRooms().forEach(room -> roomIds.add(room.getId()));
+        });
+        List<Booking> bookings = repo.getBookingCalendar(roomIds, startDate.toLocalDate(), endDate.toLocalDate());
+        List<RoomClassModerCalendarDto> classDtos = roomMapper.roomClassToRoomClassModerCalendarDto(classes);
+        List<BookingModerCalendarDto> bookingDtos = bookingMapper.bookingToBookingModerCalendarDto(bookings);
 
-        return null;
+        bookingDtos.forEach(bookingDto -> {
+            for (RoomClassModerCalendarDto classDto : classDtos) {
+                for (RoomModerCalendarDto roomDto : classDto.getRooms()) {
+                    if(roomDto.getId().equals(bookingDto.getRoomId())){
+                        roomDto.getBookings().add(bookingDto);
+                        break;
+                    }
+                }
+            }
+        });
+        return classDtos;
     }
 
     @Override

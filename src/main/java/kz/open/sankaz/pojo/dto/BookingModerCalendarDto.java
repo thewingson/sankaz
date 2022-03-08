@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingModerCalendarDto extends AbstractDto {
+    private Long roomId;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime bookingDate;

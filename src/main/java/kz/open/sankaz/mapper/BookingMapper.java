@@ -107,4 +107,14 @@ public abstract class BookingMapper extends AbstractMapper {
     abstract public BookingByIdUserDto bookingToBookingByIdUserDto(Booking booking);
     @IterableMapping(qualifiedByName = "bookingToBookingByIdUserDto")
     abstract public List<BookingByIdUserDto> bookingToBookingByIdUserDto(List<Booking> bookings);
+
+    @Named("bookingToBookingModerCalendarDto")
+    @Mapping(target = "roomId", source = "booking.room.id")
+    @Mapping(target = "userId", source = "booking.user.id")
+    @Mapping(target = "adults", source = "adultsCount")
+    @Mapping(target = "children", source = "childrenCount")
+    @Mapping(target = "status", expression = "java( booking.getStatus().name() )")
+    abstract public BookingModerCalendarDto bookingToBookingModerCalendarDto(Booking booking);
+    @IterableMapping(qualifiedByName = "bookingToBookingModerCalendarDto")
+    abstract public List<BookingModerCalendarDto> bookingToBookingModerCalendarDto(List<Booking> bookings);
 }
