@@ -17,6 +17,7 @@ public abstract class SecUserMapper extends AbstractMapper {
     @Mapping(target = "userType", source = "secUser.userType")
     @Mapping(target = "city", expression = "java( dictionaryToDto(secUser.getCity()) )")
     @Mapping(target = "gender", expression = "java( dictionaryToDto(secUser.getGender()) )")
+    @Mapping(target = "pic", expression = "java( fileToDto(secUser.getPic()) )")
     abstract public SecUserDto userToDto(SecUser secUser);
     @IterableMapping(qualifiedByName = "userToDto")
     abstract public List<SecUserDto> userToDto(List<SecUser> secUsers);

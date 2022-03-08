@@ -17,4 +17,5 @@ public class SecUserDto extends AbstractDto {
     private DictionaryLangDto city;
     private DictionaryLangDto gender;
     private String confirmationStatus;
+    private FileDto pic;
 }
