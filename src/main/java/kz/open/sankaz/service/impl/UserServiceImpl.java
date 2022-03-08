@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -373,6 +374,11 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
         user.setEmail("deleted_" + user.getEmail());
         user.setActive(false);
         repo.save(user);
+    }
+
+    @Override
+    public Page<SecUser> getAll(int page, int size) {
+        return repo.getAllByActive(true, PageRequest.of(page, size));
     }
 
     @Override

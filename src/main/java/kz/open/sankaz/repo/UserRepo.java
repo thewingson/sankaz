@@ -1,6 +1,8 @@
 package kz.open.sankaz.repo;
 
 import kz.open.sankaz.model.SecUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +16,5 @@ public interface UserRepo extends CommonRepo<SecUser> {
     Optional<SecUser> findByTelNumber(@Param("telNumber") String telNumber);
     SecUser getByUsername(@Param("username") String username);
     List<SecUser> getAllByActive(@Param("active") boolean active);
+    Page<SecUser> getAllByActive(@Param("active") boolean active, Pageable pageable);
 }
