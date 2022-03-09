@@ -84,6 +84,7 @@ public class UserAuthRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/send-reset")
     public ResponseEntity<?> sendResetNumber(@Valid @RequestBody TelNumberFilter filter) {
         try {
@@ -94,6 +95,7 @@ public class UserAuthRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/check-reset")
     public ResponseEntity<?> checkResetNumber(@Valid @RequestBody RegisterFilter registerFilter) {
         try {
@@ -104,6 +106,7 @@ public class UserAuthRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/reset-pass")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordFilter filter) {
         try {

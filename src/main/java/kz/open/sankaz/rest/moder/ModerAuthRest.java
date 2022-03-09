@@ -138,6 +138,7 @@ public class ModerAuthRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/send-reset")
     public ResponseEntity<?> sedResetNumber(@Valid @RequestBody TelNumberFilter filter) {
         try {
@@ -148,6 +149,7 @@ public class ModerAuthRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/check-reset")
     public ResponseEntity<?> checkResetNumber(@Valid @RequestBody RegisterFilter registerFilter) {
         try {
@@ -158,6 +160,7 @@ public class ModerAuthRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/reset-pass")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordFilter filter) {
         try {

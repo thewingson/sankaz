@@ -247,9 +247,7 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setResetNumberStatus(ResetNumberStatus.ON_RESET);
         userByNumber.setResetNumber(getRandomConfirmationNumber());
         userByNumber.setResetNumberCreatedDate(LocalDateTime.now());
-        log.info("Updating user {}", userByNumber.getUsername());
         userService.editOneById(userByNumber);
-        log.info("Sending confirmation number {}", telNumber);
 
         String phones = userByNumber.getTelNumber();
         String message = "SanKaz приветствует Вас! \nВаш номер для сброса пароля: " + userByNumber.getResetNumber();
@@ -262,7 +260,6 @@ public class AuthServiceImpl implements AuthService {
         SmscApi smscApi = new SmscApi();
         smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
 //        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), message);
-        log.info("End of sending confirmation number {}", telNumber);
         return userByNumber.getResetNumber();
     }
 
@@ -633,9 +630,13 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Вы не подтвердили номер сброса!");
         }
         if(!password.equals(confirmPassword)){
-            throw new RuntimeException("Пароли не совпвдвют!");
+            throw new RuntimeException("Пароли не совподают!");
         }
         // TODO: CHECK WITH OLD PASSWORD
+        String encodedNewPassword = passwordEncoder.encode(password);
+        if(encodedNewPassword.equals(userByNumber.getPassword())){
+            throw new RuntimeException("Пароль не должен совподать со старым!");
+        }
 
         userByNumber.setResetNumberCreatedDate(null);
         userByNumber.setPassword(passwordEncoder.encode(password));
