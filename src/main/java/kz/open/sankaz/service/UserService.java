@@ -11,6 +11,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface UserService extends UserDetailsManager, CommonService<SecUser> {
     void deleteOneByUsernameSoft(String username);
@@ -34,4 +35,6 @@ public interface UserService extends UserDetailsManager, CommonService<SecUser> 
     SysFile addPic(Long userId, MultipartFile pic) throws IOException;
 
     void deletePic(Long userId);
+
+    List<SecUser> getAllPageWithFilter(String fullName, String telNumber, int page, int size);
 }

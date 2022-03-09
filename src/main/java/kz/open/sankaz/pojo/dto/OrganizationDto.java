@@ -22,6 +22,13 @@ public class OrganizationDto extends AbstractDto {
     private String confirmationStatus;
     private LocalDateTime confirmedDate;
     private String confirmedBy;
-    private SecUserDto user;
-    private List<String> picUrls;
+    private SecUserInOrgDto user;
+    private List<FileDto> pics;
+    private String companyName;
+    private String description;
+    private String address;
+    private String instagramLink;
+    private String siteLink;
+    private DictionaryLangDto companyCategory;
+    private String rejectMessage;
 }

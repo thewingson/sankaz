@@ -10,6 +10,7 @@ import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
 import kz.open.sankaz.model.enums.UserType;
+import kz.open.sankaz.pojo.dto.PageDto;
 import kz.open.sankaz.pojo.filter.OrganizationCreateFilter;
 import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
 import kz.open.sankaz.pojo.filter.OrganizationFilterFilter;
@@ -18,6 +19,8 @@ import kz.open.sankaz.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -341,6 +344,22 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
             throw new RuntimeException("Данная организация не является вашей!");
         }
         return true;
+    }
+
+    @Override
+    public PageDto getAllFilters(String name, String companyName, String address, String companyCategoryCode, String confirmationStatus, int page, int size) {
+        Page<Organization> pages = repo.findAllByFilters(
+                name.toLowerCase(),
+                companyName.toLowerCase(),
+                address.toLowerCase(),
+                companyCategoryCode.toLowerCase(),
+                confirmationStatus.toLowerCase(),
+                PageRequest.of(page, size));
+        PageDto dto = new PageDto();
+        dto.setTotal(pages.getTotalElements());
+        dto.setContent(organizationMapper.organizationToDto(pages.getContent()));
+        dto.setPageable(pages.getPageable());
+        return dto;
     }
 
     @Override

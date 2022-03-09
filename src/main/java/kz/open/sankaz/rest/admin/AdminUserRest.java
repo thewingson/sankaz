@@ -46,6 +46,18 @@ public class AdminUserRest {
         }
     }
 
+    @PostMapping("/for-org")
+    public ResponseEntity<?> getListForOrg(@RequestParam(value = "fullName", defaultValue = "") String fullName,
+                                    @RequestParam(value = "telNumber", defaultValue = "") String telNumber,
+                                    @RequestParam(value = "page", defaultValue = "0") int page,
+                                    @RequestParam(value = "size", defaultValue = "5") int size) {
+        try{
+            return ResponseModel.success(userMapper.userToSecUserForNewOrgDto(userService.getAllPageWithFilter(fullName, telNumber, page, size)));
+        } catch (Exception e){
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<?> getOneById(@PathVariable(name = "userId") Long userId) {
         try{

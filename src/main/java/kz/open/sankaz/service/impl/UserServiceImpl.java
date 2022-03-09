@@ -392,6 +392,11 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     }
 
     @Override
+    public List<SecUser> getAllPageWithFilter(String fullName, String telNumber, int page, int size) {
+        return repo.getAllForNewOrganization(true, fullName, telNumber, page, size);
+    }
+
+    @Override
     protected Class getCurrentClass() {
         return SecUser.class;
     }

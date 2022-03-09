@@ -2,6 +2,7 @@ package kz.open.sankaz.service;
 
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.pojo.dto.PageDto;
 import kz.open.sankaz.pojo.filter.OrganizationCreateFilter;
 import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
 import kz.open.sankaz.pojo.filter.OrganizationFilterFilter;
@@ -33,4 +34,6 @@ public interface OrganizationService extends CommonService<Organization> {
     Organization editOrg(Long orgId, OrganizationCreateFilter filter);
 
     boolean checkIfOwnOrg(Long orgId);
+
+    PageDto getAllFilters(String name, String companyName, String address, String companyCategoryCode, String confirmationStatus, int page, int size);
 }

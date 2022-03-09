@@ -2,6 +2,8 @@ package kz.open.sankaz.mapper;
 
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.pojo.dto.SecUserDto;
+import kz.open.sankaz.pojo.dto.SecUserForNewOrgDto;
+import kz.open.sankaz.pojo.dto.SecUserInOrgDto;
 import kz.open.sankaz.pojo.dto.SecUserOwnProfileDto;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -22,6 +24,11 @@ public abstract class SecUserMapper extends AbstractMapper {
     @IterableMapping(qualifiedByName = "userToDto")
     abstract public List<SecUserDto> userToDto(List<SecUser> secUsers);
 
+    @Named("userToSecUserForNewOrgDto")
+    abstract public SecUserForNewOrgDto userToSecUserForNewOrgDto(SecUser secUser);
+    @IterableMapping(qualifiedByName = "userToSecUserForNewOrgDto")
+    abstract public List<SecUserForNewOrgDto> userToSecUserForNewOrgDto(List<SecUser> secUsers);
+
     @Named("userToOwnProfileDto")
     @Mapping(target = "picUrl", expression = "java(getPicUrlFromSysFile(secUser.getPic()))")
     @Mapping(target = "genderId", source = "secUser.gender.id")
@@ -31,5 +38,10 @@ public abstract class SecUserMapper extends AbstractMapper {
     abstract public SecUserOwnProfileDto userToOwnProfileDto(SecUser secUser);
     @IterableMapping(qualifiedByName = "userToOwnProfileDto")
     abstract public List<SecUserOwnProfileDto> userToOwnProfileDto(List<SecUser> secUsers);
+
+    @Named("userToSecUserInOrgDto")
+    abstract public SecUserInOrgDto userToSecUserInOrgDto(SecUser secUser);
+    @IterableMapping(qualifiedByName = "userToSecUserInOrgDto")
+    abstract public List<SecUserInOrgDto> userToSecUserInOrgDto(List<SecUser> secUsers);
 
 }

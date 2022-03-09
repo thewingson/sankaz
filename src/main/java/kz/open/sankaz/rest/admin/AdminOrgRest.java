@@ -30,9 +30,17 @@ public class AdminOrgRest {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<?> getAll(
+                                    @RequestParam(value = "name", defaultValue = "") String name,
+                                    @RequestParam(value = "companyName", defaultValue = "") String companyName,
+                                    @RequestParam(value = "address", defaultValue = "") String address,
+                                    @RequestParam(value = "companyCategoryCode", defaultValue = "") String companyCategoryCode,
+                                    @RequestParam(value = "confirmationStatus", defaultValue = "") String confirmationStatus,
+                                    @RequestParam(value = "page", defaultValue = "0") int page,
+                                    @RequestParam(value = "size", defaultValue = "10") int size) {
         try{
-            return ResponseModel.success(organizationMapper.organizationToDto(organizationService.getAll()));
+            return ResponseModel.success(organizationService.getAllFilters(
+                    name, companyName, address, companyCategoryCode, confirmationStatus, page, size));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
