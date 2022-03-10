@@ -55,4 +55,6 @@ public interface AuthService {
     Long getUserIdFromToken(String token);
 
     Long getUserId(HttpServletRequest request);
+
+    TokenDto authenticateUser(String username, String password);
 }

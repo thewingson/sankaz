@@ -3,7 +3,7 @@ package kz.open.sankaz.service;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.dto.PictureDto;
-import kz.open.sankaz.pojo.dto.SecUserDto;
+import kz.open.sankaz.pojo.dto.TokenDto;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.pojo.filter.UserCreateFilter;
 import kz.open.sankaz.pojo.filter.UserEditFilter;
@@ -18,7 +18,7 @@ public interface UserService extends UserDetailsManager, CommonService<SecUser> 
 
     SecUser getUserByTelNumber(String telNumber);
 
-    SecUserDto changePassword(Long id, String password, String confirmPassword);
+    TokenDto changePassword(Long id, String password, String confirmPassword, String oldPassword);
 
     PictureDto changePicture(Long userId, MultipartFile file) throws IOException;
     void deletePicture(Long userId);

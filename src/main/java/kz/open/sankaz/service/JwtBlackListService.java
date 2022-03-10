@@ -1,12 +1,6 @@
 package kz.open.sankaz.service;
 
-import kz.open.sankaz.model.JwtBlackList;
+import kz.open.sankaz.model.SecUserToken;
 
-import java.util.List;
-
-public interface JwtBlackListService extends CommonService<JwtBlackList> {
-    /***
-     * for Entity
-     */
-    List<JwtBlackList> getAllByUsername(String username);
+public interface JwtBlackListService extends CommonService<SecUserToken> {
 }

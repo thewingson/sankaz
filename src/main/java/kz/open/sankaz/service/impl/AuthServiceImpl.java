@@ -21,6 +21,7 @@ import kz.open.sankaz.pojo.filter.RegisterFilter;
 import kz.open.sankaz.properties.MailProperties;
 import kz.open.sankaz.properties.SecurityProperties;
 import kz.open.sankaz.properties.SmsProperties;
+import kz.open.sankaz.repo.SecUserTokenRepo;
 import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +77,8 @@ public class AuthServiceImpl implements AuthService {
     private SecurityProperties securityProperties;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private SecUserTokenRepo tokenRepo;
 
     @Autowired
     private SecUserMapper userMapper;
@@ -485,9 +489,7 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setFirstName(filter.getFirstName());
         userByNumber.setLastName(filter.getLastName());
 
-        log.info("Updating user {}", filter.getTelNumber());
         userService.editOneById(userByNumber);
-        log.info("End of finishing registration {}", filter.getTelNumber());
 
         return authenticateUser(userByNumber.getUsername(), filter.getPassword());
     }
@@ -622,17 +624,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenDto resetPassword(String telNumber, String password, String confirmPassword) {
-        log.info("Start of resetting password {}", telNumber);
-        log.info("Checking user by tel number in DB");
         SecUser userByNumber = userService.getUserByTelNumber(telNumber);
 
-        if(userByNumber.getResetNumberStatus().equals("ON_RESET")){
+        if(userByNumber.getResetNumberStatus().equals(ResetNumberStatus.ON_RESET)){
             throw new RuntimeException("Вы не подтвердили номер сброса!");
         }
         if(!password.equals(confirmPassword)){
             throw new RuntimeException("Пароли не совподают!");
         }
-        // TODO: CHECK WITH OLD PASSWORD
+
         String encodedNewPassword = passwordEncoder.encode(password);
         if(encodedNewPassword.equals(userByNumber.getPassword())){
             throw new RuntimeException("Пароль не должен совподать со старым!");
@@ -640,16 +640,19 @@ public class AuthServiceImpl implements AuthService {
 
         userByNumber.setResetNumberCreatedDate(null);
         userByNumber.setPassword(passwordEncoder.encode(password));
-        log.info("Updating user {}", telNumber);
         userService.editOneById(userByNumber);
-        log.info("End of resetting password {}", telNumber);
 
-        // TODO: MAKE OLD TOKEN INACTIVE
+        List<SecUserToken> tokens = tokenRepo.findAllByUser(userByNumber);
+        tokens.forEach(token -> {
+            token.setIsBlocked(true);
+            token.setBlockDate(LocalDateTime.now());
+        });
+        tokenRepo.saveAll(tokens);
 
         return authenticateUser(userByNumber.getUsername(), password);
     }
 
-    private TokenDto authenticateUser(String username, String password){
+    public TokenDto authenticateUser(String username, String password){
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -657,18 +660,26 @@ public class AuthServiceImpl implements AuthService {
         SecUser user = (SecUser) authentication.getPrincipal();
 
         Algorithm algorithm = Algorithm.HMAC256(securityProperties.getSecurityTokenSecret().getBytes());
+        LocalDateTime accessTokenExpireDate = LocalDateTime.now().plusDays(7);
+        LocalDateTime refreshTokenExpireDate = LocalDateTime.now().plusDays(7);
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
+                .withExpiresAt(Date.from(accessTokenExpireDate.atZone(ZoneId.systemDefault()).toInstant()))
                 .withIssuer("/users/auth/finish-reg")
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .withClaim("userId", user.getId())
                 .sign(algorithm);
         String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000))
+                .withExpiresAt(Date.from(refreshTokenExpireDate.atZone(ZoneId.systemDefault()).toInstant()))
                 .withIssuer("/users/auth/finish-reg")
                 .sign(algorithm);
+
+        SecUserToken userToken = new SecUserToken();
+        userToken.setUser(user);
+        userToken.setAccessToken(accessToken);
+        userToken.setExpireDate(accessTokenExpireDate);
+        tokenRepo.save(userToken);
         return new TokenDto(accessToken, refreshToken, user.getId());
     }
 

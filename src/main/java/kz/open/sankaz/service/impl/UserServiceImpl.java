@@ -10,10 +10,11 @@ import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
 import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.PageDto;
 import kz.open.sankaz.pojo.dto.PictureDto;
-import kz.open.sankaz.pojo.dto.SecUserDto;
+import kz.open.sankaz.pojo.dto.TokenDto;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.pojo.filter.UserCreateFilter;
 import kz.open.sankaz.pojo.filter.UserEditFilter;
+import kz.open.sankaz.repo.SecUserTokenRepo;
 import kz.open.sankaz.repo.UserRepo;
 import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,10 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     @Autowired
     private SysFileService sysFileService;
 
+    @Lazy
+    @Autowired
+    private AuthService authService;
+
     @Autowired
     private SecUserMapper userMapper;
 
@@ -73,6 +78,9 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     @Lazy
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private SecUserTokenRepo tokenRepo;
 
     @Autowired
     public UserServiceImpl(UserRepo userRepo) {
@@ -273,16 +281,29 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     }
 
     @Override
-    public SecUserDto changePassword(Long id, String password, String confirmPassword) {
-        SecUser user = getOne(id);
-//        if(password.equals(confirmPassword)){
-//            throw new RuntimeException("It matches with old password!");
-//        }
+    public TokenDto changePassword(Long id, String password, String confirmPassword, String oldPassword) {
         if(!password.equals(confirmPassword)){
             throw new RuntimeException("Пароли не совпадают");
         }
+        if(oldPassword.equals(password)){
+            throw new RuntimeException("Новый пароль не должен совпадать со старым!");
+        }
+
+        SecUser user = getOne(id);
+        if(!passwordEncoder.matches(oldPassword, user.getPassword())){
+            throw new RuntimeException("Неправильно ввели текущий пароль!");
+        }
         user.setPassword(passwordEncoder.encode(password));
-        return userMapper.userToDto(editOneById(user));
+        editOneById(user);
+
+        List<SecUserToken> tokens = tokenRepo.findAllByUser(user);
+        tokens.forEach(token -> {
+            token.setIsBlocked(true);
+            token.setBlockDate(LocalDateTime.now());
+        });
+        tokenRepo.saveAll(tokens);
+
+        return authService.authenticateUser(user.getUsername(), password);
     }
 
     @Override

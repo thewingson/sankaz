@@ -4,7 +4,7 @@ import kz.open.sankaz.filter.CustomAuthenticationFilter;
 import kz.open.sankaz.filter.CustomAuthorizationFilter;
 import kz.open.sankaz.filter.CustomSecurityContextLogoutHandler;
 import kz.open.sankaz.properties.SecurityProperties;
-import kz.open.sankaz.service.JwtBlackListService;
+import kz.open.sankaz.repo.SecUserTokenRepo;
 import kz.open.sankaz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -34,17 +34,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final SecurityProperties securityProperties;
-    private final JwtBlackListService jwtBlackListService;
+    private final SecUserTokenRepo tokenRepo;
 
     @Autowired
     public WebSecurityConfig(UserService userService,
                              PasswordEncoder passwordEncoder,
                              SecurityProperties securityProperties,
-                             JwtBlackListService jwtBlackListService) {
+                             SecUserTokenRepo tokenRepo) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.securityProperties = securityProperties;
-        this.jwtBlackListService = jwtBlackListService;
+        this.tokenRepo = tokenRepo;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), securityProperties, userService);
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), securityProperties, userService, tokenRepo);
         customAuthenticationFilter.setFilterProcessesUrl("/auth/sign-in");
 
         http.csrf().disable();
@@ -78,8 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/moders/auth/send-reset",
                 "/moders/auth/check-reset",
                 "/moders/auth/reset-pass"
-        )
-                .permitAll();
+        ).permitAll();
 
         http.authorizeHttpRequests().antMatchers(HttpMethod.GET, "/users/sans/**").permitAll();
         http.authorizeHttpRequests().antMatchers(HttpMethod.POST, "/users/sans").permitAll();
@@ -90,16 +89,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated();
 
         http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(securityProperties, userService, jwtBlackListService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new CustomAuthorizationFilter(securityProperties, userService, tokenRepo), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/users/auth/sign-out"))
+                .logoutRequestMatcher(new AntPathRequestMatcher("/auth/sign-out"))
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .logoutSuccessUrl("/categories")
-                .logoutSuccessHandler(new CustomSecurityContextLogoutHandler(jwtBlackListService, securityProperties));
-
+                .logoutSuccessHandler(new CustomSecurityContextLogoutHandler(tokenRepo, securityProperties, userService));
     }
 
     @Override

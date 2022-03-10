@@ -5,8 +5,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.model.SecUserToken;
 import kz.open.sankaz.pojo.dto.UsernamePasswordDto;
 import kz.open.sankaz.properties.SecurityProperties;
+import kz.open.sankaz.repo.SecUserTokenRepo;
 import kz.open.sankaz.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,11 +40,13 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     private final AuthenticationManager authenticationManager;
     private final SecurityProperties securityProperties;
     private final UserService userService;
+    private final SecUserTokenRepo tokenRepo;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, SecurityProperties securityProperties, UserService userService) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, SecurityProperties securityProperties, UserService userService, SecUserTokenRepo tokenRepo) {
         this.authenticationManager = authenticationManager;
         this.securityProperties = securityProperties;
         this.userService = userService;
+        this.tokenRepo = tokenRepo;
     }
 
     @Override
@@ -66,6 +72,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         try{
             Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+
             SecurityContextHolder.getContext().setAuthentication(authenticate);
             return authenticate;
         } catch (AuthenticationException e){
@@ -80,16 +87,18 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 //        userService.updateUser(user);
 
         Algorithm algorithm = Algorithm.HMAC256(securityProperties.getSecurityTokenSecret().getBytes());
+        LocalDateTime accessTokenExpireDate = LocalDateTime.now().plusDays(7);
+        LocalDateTime refreshTokenExpireDate = LocalDateTime.now().plusDays(7);
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
+                .withExpiresAt(Date.from(accessTokenExpireDate.atZone(ZoneId.systemDefault()).toInstant()))
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .withClaim("userId", user.getId())
                 .sign(algorithm);
         String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000))
+                .withExpiresAt(Date.from(refreshTokenExpireDate.atZone(ZoneId.systemDefault()).toInstant()))
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
         response.setContentType(APPLICATION_JSON_VALUE);
@@ -98,6 +107,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         tokens.put("refreshToken", refreshToken);
         tokens.put("userId", user.getId());
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+
+        SecUserToken userToken = new SecUserToken();
+        userToken.setUser(user);
+        userToken.setAccessToken(accessToken);
+        userToken.setExpireDate(accessTokenExpireDate);
+        tokenRepo.save(userToken);
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)

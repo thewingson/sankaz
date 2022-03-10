@@ -59,13 +59,12 @@ public class UserProfileRest {
         }
     }
 
-    @PutMapping("/{userId}/change-pass")
-    public ResponseEntity<?> changePassword(@PathVariable("userId") Long userId,
+    @PostMapping("/new-pass")
+    public ResponseEntity<?> changePassword(HttpServletRequest request,
                                             @Valid @RequestBody ChangePasswordFilter filter) {
         try {
-            authService.checkIfOwnProfile(userId);
-            userService.changePassword(userId, filter.getPassword(), filter.getConfirmPassword());
-            return ResponseModel.successPure();
+            Long userId = authService.getUserId(request);
+            return ResponseModel.success(userService.changePassword(userId, filter.getPassword(), filter.getConfirmPassword(), filter.getOldPassword()));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

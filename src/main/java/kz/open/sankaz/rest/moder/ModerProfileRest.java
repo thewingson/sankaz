@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -27,13 +28,12 @@ public class ModerProfileRest {
         this.authService = authService;
     }
 
-    @PutMapping("/{userId}/change-pass")
-    public ResponseEntity<?> changePassword(@PathVariable("userId") Long userId,
+    @PostMapping("/new-pass")
+    public ResponseEntity<?> changePassword(HttpServletRequest request,
                                             @Valid @RequestBody ChangePasswordFilter filter) {
         try {
-            authService.checkIfOwnProfile(userId);
-            userService.changePassword(userId, filter.getPassword(), filter.getConfirmPassword());
-            return ResponseModel.successPure();
+            Long userId = authService.getUserId(request);
+            return ResponseModel.success(userService.changePassword(userId, filter.getPassword(), filter.getConfirmPassword(), filter.getOldPassword()));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

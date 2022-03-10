@@ -1,33 +1,26 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.model.JwtBlackList;
-import kz.open.sankaz.repo.JwtBlackListRepo;
+import kz.open.sankaz.model.SecUserToken;
+import kz.open.sankaz.repo.SecUserTokenRepo;
 import kz.open.sankaz.service.JwtBlackListService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @Slf4j
 @Transactional
-public class JwtBlackListServiceImpl extends AbstractService<JwtBlackList, JwtBlackListRepo> implements JwtBlackListService {
+public class JwtBlackListServiceImpl extends AbstractService<SecUserToken, SecUserTokenRepo> implements JwtBlackListService {
 
-    private final JwtBlackListRepo blackListRepo;
+    private final SecUserTokenRepo blackListRepo;
 
-    public JwtBlackListServiceImpl(JwtBlackListRepo blackListRepo) {
+    public JwtBlackListServiceImpl(SecUserTokenRepo blackListRepo) {
         super(blackListRepo);
         this.blackListRepo = blackListRepo;
     }
 
     @Override
     protected Class getCurrentClass() {
-        return JwtBlackList.class;
-    }
-
-    @Override
-    public List<JwtBlackList> getAllByUsername(String username) {
-        return blackListRepo.findAllByUsername(username);
+        return SecUserToken.class;
     }
 }
