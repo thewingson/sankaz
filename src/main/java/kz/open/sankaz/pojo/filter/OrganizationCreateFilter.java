@@ -39,11 +39,5 @@ public class OrganizationCreateFilter extends BaseFilter {
     private String description;
     private String address;
     private String companyName;
-//    private List<SysFile> pics;
-
-
-
-
-
-
+    private String confirmationStatus = "NEW";
 }

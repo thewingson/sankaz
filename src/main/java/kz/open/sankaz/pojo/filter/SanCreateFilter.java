@@ -31,4 +31,6 @@ public class SanCreateFilter extends BaseFilter {
     private Long orgId;
     private Double longitude;
     private Double latitude;
+    @NotNull
+    private String address;
 }

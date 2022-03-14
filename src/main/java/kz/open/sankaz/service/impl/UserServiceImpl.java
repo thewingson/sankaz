@@ -38,8 +38,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Service
 @Transactional
+@Service
 @Slf4j
 public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implements UserService {
 
@@ -129,6 +129,7 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
         repo.save(user);
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @Override
     public SecUser getUserByTelNumber(String telNumber) throws EntityNotFoundException {
         Optional<SecUser> secUser = repo.findByTelNumber(telNumber);
@@ -344,6 +345,7 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
         editOneById(user);
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @Override
     public SecUser getUserByEmail(String email) {
         Optional<SecUser> secUser = repo.findByEmail(email);

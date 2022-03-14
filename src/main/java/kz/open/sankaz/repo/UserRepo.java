@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+
 @Repository
 public interface UserRepo extends CommonRepo<SecUser> {
     Optional<SecUser> findByUsername(@Param("username") String username);

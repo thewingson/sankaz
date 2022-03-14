@@ -102,9 +102,9 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         if(filter.getLatitude() != null){
             san.setLatitude(filter.getLatitude());
         }
-//        if(filter.getAddress() != null){
-//            san.setAddress(filter.getAddress());
-//        }
+        if(filter.getAddress() != null){
+            san.setAddress(filter.getAddress());
+        }
 
         if(filter.getTelNumbers() != null && filter.getTelNumbers().length > 0){
             List<String> dtoTelNumbers = Arrays.asList(filter.getTelNumbers());
@@ -316,7 +316,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         san.setCity(city);
         san.setOrganization(organization);
         san.setSanType(sanType);
-//        san.setAddress(filter.getAddress());
 
         if(filter.getSiteLink() != null){
             san.setSiteLink(filter.getSiteLink());
@@ -329,6 +328,9 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         }
         if(filter.getLatitude() != null){
             san.setLatitude(filter.getLatitude());
+        }
+        if(filter.getAddress() != null){
+            san.setAddress(filter.getAddress());
         }
 
         for (String telNumber : filter.getTelNumbers()) {

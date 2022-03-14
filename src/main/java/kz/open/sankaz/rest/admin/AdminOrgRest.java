@@ -1,6 +1,7 @@
 package kz.open.sankaz.rest.admin;
 
 import kz.open.sankaz.mapper.OrganizationMapper;
+import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.pojo.filter.OrganizationCreateFilter;
 import kz.open.sankaz.pojo.filter.OrganizationFilterFilter;
 import kz.open.sankaz.pojo.filter.RejectMessageFilter;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -67,7 +69,8 @@ public class AdminOrgRest {
     @PostMapping
     public ResponseEntity<?> addOne(@Valid @RequestBody OrganizationCreateFilter filter) {
         try{
-            return ResponseModel.success(organizationMapper.organizationToDto(organizationService.createOrg(filter)));
+            Organization org = organizationService.createOrg(filter);
+            return ResponseModel.success(organizationMapper.organizationToDto(org));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -77,7 +80,6 @@ public class AdminOrgRest {
     public ResponseEntity<?> editOneById(@PathVariable(name = "orgId") Long orgId,
                                          @Valid @RequestBody OrganizationCreateFilter filter) {
         try{
-            ;
             return ResponseModel.success(organizationMapper.organizationToDto(organizationService.editOrg(orgId, filter)));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -111,6 +113,27 @@ public class AdminOrgRest {
             organizationService.rejectOrganizationData(orgId, filter.getRejectMessage());
             return ResponseModel.successPure();
         } catch (RuntimeException e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PutMapping("/{orgId}/pics")
+    public ResponseEntity<?> addPics(@PathVariable(name = "orgId") Long orgId,
+                                    @RequestParam("pics") MultipartFile[] pics) {
+        try {
+            return ResponseModel.success(organizationMapper.fileToDto(organizationService.addPics(orgId, pics)));
+        } catch (Exception e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{orgId}/pics/{picId}")
+    public ResponseEntity<?> deletePic(@PathVariable(name = "orgId") Long orgId,
+                                        @PathVariable(name = "picId") Long picId) {
+        try {
+            organizationService.deletePics(orgId, picId);
+            return ResponseModel.successPure();
+        } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

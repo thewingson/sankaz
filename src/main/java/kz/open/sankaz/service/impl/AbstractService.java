@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
@@ -41,6 +42,7 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
         return repo.getAllByIdIn(ids);
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @Override
     public E getOne(Long id) {
         Optional<E> entityById = repo.findById(id);

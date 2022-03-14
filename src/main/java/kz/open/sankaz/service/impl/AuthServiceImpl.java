@@ -35,6 +35,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,6 +50,7 @@ import java.util.stream.Collectors;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Transactional
 @Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -514,7 +516,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Organization registerNewOrganization(SecUser userByNumber, OrganizationRegisterFinishFilter filter) {
-        System.out.println();
         try{ // проверка email
             userService.getUserByEmail(filter.getEmail());
             throw new MessageCodeException(OrganizationCodes.EMAIL_IS_ALREADY_TAKEN);

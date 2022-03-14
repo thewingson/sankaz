@@ -21,6 +21,7 @@ public class OrganizationEditFilter extends BaseFilter {
     @NotEmpty
     @Size(min = 10, max = 2000)
     private String description;
+    @NotNull
     private String address;
     private String instagramLink;
     private String siteLink;

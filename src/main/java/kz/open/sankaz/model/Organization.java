@@ -94,4 +94,16 @@ public class Organization extends AbstractEntity {
         getPics().add(pic);
     }
 
+    public void deletePic(SysFile pic){
+        if(!getPics().isEmpty()){
+            getPics().remove(pic);
+        }
+    }
+
+    public void deletePics(List<SysFile> pics){
+        if(!getPics().isEmpty()){
+            this.getPics().removeAll(pics);
+        }
+    }
+
 }

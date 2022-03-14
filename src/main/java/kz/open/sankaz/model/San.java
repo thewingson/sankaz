@@ -79,6 +79,9 @@ public class San extends AbstractEntity{
     @Column(name = "LATITUDE")
     private Double latitude;
 
+    @Column(name = "ADDRESS")
+    private String address;
+
     public void addPic(SysFile pic){
         if(getPics() == null){
             this.pics = new ArrayList<>();

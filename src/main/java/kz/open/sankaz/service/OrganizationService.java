@@ -2,6 +2,7 @@ package kz.open.sankaz.service;
 
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.dto.PageDto;
 import kz.open.sankaz.pojo.filter.OrganizationCreateFilter;
 import kz.open.sankaz.pojo.filter.OrganizationEditFilter;
@@ -36,4 +37,8 @@ public interface OrganizationService extends CommonService<Organization> {
     boolean checkIfOwnOrg(Long orgId);
 
     PageDto getAllFilters(String name, String companyName, String address, String companyCategoryCode, String confirmationStatus, int page, int size);
+
+    List<SysFile> addPics(Long orgId, MultipartFile[] pics) throws IOException;
+
+    void deletePics(Long orgId, Long picId);
 }

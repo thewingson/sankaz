@@ -27,14 +27,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Service
 @Transactional
+@Service
 public class OrganizationServiceImpl extends AbstractService<Organization, OrganizationRepo> implements OrganizationService {
-
-    private final OrganizationRepo organizationRepo;
 
     @Autowired
     private OrganizationMapper organizationMapper;
@@ -52,6 +51,9 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private SysFileService sysFileService;
+
     @Value("${application.file.upload.path.image}")
     private String APPLICATION_UPLOAD_PATH_IMAGE;
 
@@ -60,7 +62,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
     public OrganizationServiceImpl(OrganizationRepo organizationRepo) {
         super(organizationRepo);
-        this.organizationRepo = organizationRepo;
     }
 
     @Override
@@ -76,7 +77,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
     @Override
     public Organization getOrganizationByUser(SecUser user) {
-        Optional<Organization> organization = organizationRepo.findByUser(user);
+        Optional<Organization> organization = repo.findByUser(user);
         if(!organization.isPresent()){
             Map<String, Object> params = new HashMap<>();
             params.put("user", user.getUsername());
@@ -109,7 +110,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
     @Override
     public List<Organization> getAllByConfirmationStatuses(OrganizationFilterFilter filter) {
-        return organizationRepo.findAllByConfirmationStatusIn(filter.getConfirmationStatuses());
+        return repo.findAllByConfirmationStatusIn(filter.getConfirmationStatuses());
     }
 
     @Override
@@ -118,6 +119,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         if(organization.getConfirmationStatus().equals(OrganizationConfirmationStatus.CONFIRMED)){
             throw new RuntimeException("Данная организация уже одобрена!");
         }
+        organization.setRejectMessage(null);
         organization.setConfirmationStatus(OrganizationConfirmationStatus.CONFIRMED);
         organization.setConfirmedDate(LocalDateTime.now());
         organization.setConfirmedBy(authService.getCurrentUsername());
@@ -129,6 +131,9 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         Organization organization = getOne(orgId);
         if(organization.getConfirmationStatus().equals(OrganizationConfirmationStatus.REJECTED)){
             throw new RuntimeException("Данная организация уже отклонена!");
+        }
+        if(!organization.getConfirmationStatus().equals(OrganizationConfirmationStatus.ON_CONFIRMATION)){
+            throw new RuntimeException("Организация не находится на утверждении!");
         }
         organization.setConfirmationStatus(OrganizationConfirmationStatus.REJECTED);
         organization.setConfirmedDate(LocalDateTime.now());
@@ -222,38 +227,38 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
         CompanyCategory companyCategory = companyCategoryService.getOne(filter.getCompanyCategoryId());
 
-        try{ // проверка email
+        try{
             userService.getUserByEmail(filter.getEmail());
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.EMAIL_IS_BUSY_CODE);
+            throw new RuntimeException("IBAN уже зарегистрирован");
         } catch (EntityNotFoundException e){
         }
 
-        try{ // проверка iban
+        try{
             getOrganizationByIban(filter.getIban());
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.IBAN_IS_BUSY_CODE);
+            throw new RuntimeException("IBAN уже зарегистрирован");
         } catch (EntityNotFoundException e){
         }
 
-        try{ // проверка iin
+        try{
             getOrganizationByIin(filter.getIin());
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.IIN_IS_BUSY_CODE);
+            throw new RuntimeException("IIN уже зарегистрирован");
         } catch (EntityNotFoundException e){
         }
 
         try{ // проверка номера в организациях
             getOrganizationByTelNumber(filter.getTelNumber());
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.TEL_NUMBER_IS_BUSY_CODE);
+            throw new RuntimeException("Номер телефона уже зарегистрирован");
         } catch (EntityNotFoundException e){
         }
         try{ // проверка организации по юзеру / один юзер - одна организация !
             getOrganizationByUser(user);
-            throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.ORG_ALREADY_REGISTERED_CODE);
+            throw new RuntimeException("По данному номеру уже зарегистрирована организация");
         } catch (EntityNotFoundException e){
         }
 
         Organization organization = new Organization();
         organization.setUser(user);
-        organization.setConfirmationStatus(OrganizationConfirmationStatus.CONFIRMED);
+        organization.setConfirmationStatus(OrganizationConfirmationStatus.valueOf(filter.getConfirmationStatus()));
         organization.setEmail(filter.getEmail());
         organization.setIban(filter.getIban());
         organization.setName(filter.getName());
@@ -266,8 +271,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         organization.setDescription(filter.getDescription());
         organization.setSiteLink(filter.getSiteLink());
         organization.setInstagramLink(filter.getInstagramLink());
-        addOne(organization);
-        return organization;
+        return repo.save(organization);
     }
 
     @Override
@@ -360,6 +364,47 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         dto.setContent(organizationMapper.organizationToDto(pages.getContent()));
         dto.setPageable(pages.getPageable());
         return dto;
+    }
+
+    @Override
+    public List<SysFile> addPics(Long orgId, MultipartFile[] pics) throws IOException {
+        Organization organization = getOne(orgId);
+
+        for(MultipartFile pic : pics){
+            if (!pic.getOriginalFilename().isEmpty()) {
+                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdir();
+                }
+
+                String uuidFile = UUID.randomUUID().toString();
+                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
+                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
+
+                pic.transferTo(new File(fileNameWithPath));
+
+                SysFile file = new SysFile();
+                file.setFileName(resultFilename);
+                file.setExtension(pic.getContentType());
+                file.setSize(pic.getSize());
+                file = sysFileService.addOne(file);
+
+                organization.addPic(file);
+            }
+        }
+
+        return editOneById(organization).getPics();
+    }
+
+    @Override
+    public void deletePics(Long orgId, Long picId) {
+        Organization organization = getOne(orgId);
+
+        SysFile picToDelete = sysFileService.getOne(picId);
+        picToDelete.setDeletedDate(LocalDate.now());
+        sysFileService.editOneById(picToDelete);
+        organization.deletePic(picToDelete);
+        editOneById(organization);
     }
 
     @Override
