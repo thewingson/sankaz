@@ -12,13 +12,9 @@ import javax.validation.constraints.NotNull;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReviewCreateFilter extends BaseFilter {
-    private Long id;
-    @NotNull
-    private Float rating;
+public class ReviewModerCreateFilter extends BaseFilter {
     @NotEmpty
     protected String text;
-    @NotEmpty
-    protected String username;
+    @NotNull
     private Long parentReviewId;
 }

@@ -16,13 +16,16 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: public
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     show-sql: true
   datasource:
     url: jdbc:postgresql://localhost/sk_local
     username: postgres
     password: root
 #    url: jdbc:postgresql://185.146.1.64:5432/sankaz_dev
+#    username: sankaz
+#    password: sankaz
+#    url: jdbc:postgresql://185.146.1.64:5432/sankaz_admin_dev
 #    username: sankaz
 #    password: sankaz
   mail:
@@ -83,9 +86,12 @@ application:
   file:
     upload:
       path:
-        image: D:/var/www/content/sankaz/images/
+        image: D:/sankaz_files/images/
+#        image: http://185.146.1.64/sankaz/images
+#        image: http://185.146.1.64/sankaz/images
     download:
       path:
-        image: D:/var/www/content/sankaz/images/
+        image: D:/sankaz_files/images/
+#        image: http://185.146.1.64/sankaz/images
 fcm:
   service-account-file: sankaz-push-firebase-adminsdk.json

@@ -3,18 +3,25 @@ package kz.open.sankaz.service.impl;
 import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.exception.UserCodes;
+import kz.open.sankaz.mapper.BookingMapper;
+import kz.open.sankaz.mapper.NotificationMapper;
 import kz.open.sankaz.mapper.SecUserMapper;
 import kz.open.sankaz.model.*;
 import kz.open.sankaz.model.enums.ConfirmationStatus;
 import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
+import kz.open.sankaz.model.enums.UserNotificationType;
 import kz.open.sankaz.model.enums.UserType;
+import kz.open.sankaz.pojo.dto.BookingByIdUserDto;
 import kz.open.sankaz.pojo.dto.PageDto;
 import kz.open.sankaz.pojo.dto.PictureDto;
 import kz.open.sankaz.pojo.dto.TokenDto;
+import kz.open.sankaz.pojo.dto.notifications.*;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.pojo.filter.UserCreateFilter;
 import kz.open.sankaz.pojo.filter.UserEditFilter;
 import kz.open.sankaz.repo.SecUserTokenRepo;
+import kz.open.sankaz.repo.StockRepo;
+import kz.open.sankaz.repo.UserNotificationRepo;
 import kz.open.sankaz.repo.UserRepo;
 import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +45,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -62,6 +72,12 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     @Autowired
     private SecUserMapper userMapper;
 
+    @Autowired
+    private BookingMapper bookingMapper;
+
+    @Autowired
+    private NotificationMapper notificationMapper;
+
     @Value("${application.file.upload.path.image}")
     private String APPLICATION_UPLOAD_PATH_IMAGE;
 
@@ -81,6 +97,12 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
 
     @Autowired
     private SecUserTokenRepo tokenRepo;
+
+    @Autowired
+    private UserNotificationRepo notificationRepo;
+
+    @Autowired
+    private StockRepo stockRepo;
 
     @Autowired
     public UserServiceImpl(UserRepo userRepo) {
@@ -417,6 +439,128 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     @Override
     public List<SecUser> getAllPageWithFilter(String fullName, String telNumber, int page, int size) {
         return repo.getAllForNewOrganization(true, fullName, telNumber, page, size);
+    }
+
+    @Override
+    public UserNotificationDto getNotifications(Long userId, int page, int size) {
+        List<UserNotification> notifications = notificationRepo.findAllByUserId(userId, PageRequest.of(page, size, Sort.by("notifyDate").descending()));
+        int notViewedCount = notificationRepo.getNotViewedNotificationsCount(userId, false);
+        UserNotificationDto dto = notificationsToDto(notifications);
+        dto.setNewNotifyCount(notViewedCount);
+        return dto;
+    }
+
+    @Override
+    public void viewNotification(Long notId) {
+        Optional<UserNotification> notification = notificationRepo.findById(notId);
+        if(notification.isPresent()){
+            notification.get().setViewed(true);
+            notificationRepo.save(notification.get());
+
+            Stock stock = notification.get().getStock();
+            if(stock != null){
+                stock.setViewCount(stock.getViewCount() + 1);
+                stockRepo.save(stock);
+            }
+        }
+    }
+
+    private UserNotificationDto notificationsToDto(List<UserNotification> notifications){
+        UserNotificationDto dto = new UserNotificationDto();
+
+        List<UserNotification> stockNots = notifications
+                .stream()
+                .filter(userNotification -> userNotification.getNotificationType().equals(UserNotificationType.STOCK))
+                .collect(Collectors.toList());
+        StockNotificationDto stockNotificationDto = new StockNotificationDto();
+        stockNotificationDto.setNewNotifyCount((int) stockNots
+                .stream()
+                .filter(userNotification -> !userNotification.isViewed())
+                .count());
+        stockNotificationDto.setStocks(stockNots
+                .stream()
+                .map(this::stockToDto)
+                .collect(Collectors.toList()));
+        dto.setStockNotification(stockNotificationDto);
+
+        List<UserNotification> bookNots = notifications
+                .stream()
+                .filter(userNotification -> userNotification.getNotificationType().equals(UserNotificationType.BOOKING))
+                .collect(Collectors.toList());
+        dto.setBookingNotification(bookToDto(bookNots));
+
+        List<UserNotification> paymentNots = notifications
+                .stream()
+                .filter(userNotification -> userNotification.getNotificationType().equals(UserNotificationType.PAYMENT))
+                .collect(Collectors.toList());
+        dto.setPaymentNotification(paymentToDto(paymentNots));
+
+        int payments = dto.getPaymentNotification().getNewNotifyCount() == 0 ? 0 : 1;
+        int books = dto.getBookingNotification().getNewNotifyCount() == 0 ? 0 : 1;
+        int stocks = dto.getStockNotification().getNewNotifyCount() == 0 ? 0 : 1;
+        int newNotsCount = payments + books + stocks;
+        dto.setNewNotifyCount(newNotsCount);
+
+        return dto;
+    }
+
+    private StockNotItemDto stockToDto(UserNotification notification){
+        StockNotItemDto dto = new StockNotItemDto();
+        dto.setId(notification.getId());
+        dto.setNotifyDate(notification.getNotifyDate());
+        dto.setViewed(notification.isViewed());
+
+        StockDto stockDto = notificationMapper.stockToDto(notification.getStock());
+        dto.setStock(stockDto);
+        return dto;
+    }
+
+    private BookingNotificationDto bookToDto(List<UserNotification> notifications){
+        BookingNotificationDto dto = new BookingNotificationDto();
+        AtomicInteger newNotsCount = new AtomicInteger();
+
+        List<BookNotItemDto> bookNotItemDtos = new ArrayList<>();
+        notifications.forEach(userNotification -> {
+            BookNotItemDto bookNotItemDto = new BookNotItemDto();
+            bookNotItemDto.setId(userNotification.getId());
+            bookNotItemDto.setViewed(userNotification.isViewed());
+            bookNotItemDto.setNotifyDate(userNotification.getNotifyDate());
+            bookNotItemDto.setTitle(userNotification.getTitle());
+            bookNotItemDto.setTitleKz(userNotification.getTitleKz());
+
+            BookingByIdUserDto booking = bookingMapper.bookingToBookingByIdUserDto(userNotification.getBookingHistory().getBooking());
+            booking.setStatus(userNotification.getBookingHistory().getStatus().name());
+            bookNotItemDto.setBooking(booking);
+            bookNotItemDtos.add(bookNotItemDto);
+            if(!userNotification.isViewed()) newNotsCount.getAndIncrement();
+        });
+        dto.setBooks(bookNotItemDtos);
+        dto.setNewNotifyCount(newNotsCount.get());
+        return dto;
+    }
+
+    private PaymentNotificationDto paymentToDto(List<UserNotification> notifications){
+        PaymentNotificationDto dto = new PaymentNotificationDto();
+        AtomicInteger newNotsCount = new AtomicInteger();
+
+        List<BookNotItemDto> bookNotItemDtos = new ArrayList<>();
+        notifications.forEach(userNotification -> {
+            BookNotItemDto bookNotItemDto = new BookNotItemDto();
+            bookNotItemDto.setId(userNotification.getId());
+            bookNotItemDto.setViewed(userNotification.isViewed());
+            bookNotItemDto.setNotifyDate(userNotification.getNotifyDate());
+            bookNotItemDto.setTitle(userNotification.getTitle());
+            bookNotItemDto.setTitleKz(userNotification.getTitleKz());
+
+            BookingByIdUserDto booking = bookingMapper.bookingToBookingByIdUserDto(userNotification.getBookingHistory().getBooking());
+            booking.setStatus(userNotification.getBookingHistory().getStatus().name());
+            bookNotItemDto.setBooking(booking);
+            bookNotItemDtos.add(bookNotItemDto);
+            if(!userNotification.isViewed()) newNotsCount.getAndIncrement();
+        });
+        dto.setBooks(bookNotItemDtos);
+        dto.setNewNotifyCount(newNotsCount.get());
+        return dto;
     }
 
     @Override

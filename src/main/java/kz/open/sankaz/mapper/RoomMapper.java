@@ -26,8 +26,6 @@ public abstract class RoomMapper extends AbstractMapper {
     @IterableMapping(qualifiedByName = "roomToRoomCreateDto")
     abstract public List<RoomCreateDto> roomToRoomCreateDto(List<Room> rooms);
 
-    private Long roomClassDicId;
-    private Long roomClassName;
     @Named("roomToRoomForBookCreateDto")
     @Mapping(target = "roomClassDicId", source = "room.roomClassDic.id")
     @Mapping(target = "roomClassName", source = "room.roomClassDic.currentLocaleName")
@@ -55,6 +53,14 @@ public abstract class RoomMapper extends AbstractMapper {
     @IterableMapping(qualifiedByName = "roomToRoomByIdDtoForUser")
     abstract public List<RoomByIdDto> roomToRoomByIdDtoForUser(List<Room> rooms);
 
+    @Named("roomToRoomByIdDtoForAdmin")
+    @Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles(room.getPics()) )")
+    @Mapping(target = "name", source = "room.roomClassDic.name")
+    @Mapping(target = "description", source = "room.roomClassDic.description")
+    abstract public RoomByIdDto roomToRoomByIdDtoForAdmin(Room room);
+    @IterableMapping(qualifiedByName = "roomToRoomByIdDtoForAdmin")
+    abstract public List<RoomByIdDto> roomToRoomByIdDtoForAdmin(List<Room> rooms);
+
     @Named("roomToRoomByIdDto")
     @Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles(roomClass.getPics()) )")
     abstract public RoomByIdDto roomToRoomByIdDto(RoomClass roomClass);
@@ -71,7 +77,7 @@ public abstract class RoomMapper extends AbstractMapper {
 
     @Named("roomToRoomInClassDicDto")
     @Mapping(target = "roomNumber", source = "room.roomNumber")
-    @Mapping(target = "mainPic", expression = "java( room.getMainPicUrl() )")
+    @Mapping(target = "mainPic", expression = "java( fileToDto(room.getMainPic()) )")
     @Mapping(target = "pics", expression = "java( fileToDto(room.getPics()) )")
     @Mapping(target = "price", source = "room.price")
     abstract public RoomInClassDicDto roomToRoomInClassDicDto(Room room);

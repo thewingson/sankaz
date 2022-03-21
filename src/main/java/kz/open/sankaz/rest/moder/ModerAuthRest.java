@@ -138,6 +138,17 @@ public class ModerAuthRest {
         }
     }
 
+    @DeleteMapping("/org/{orgId}/delete-pic/{picId}")
+    public ResponseEntity<?> deletePic(@PathVariable(name = "orgId") Long orgId,
+                                       @PathVariable(name = "picId") Long picId) {
+        try{
+            organizationService.deletePics(orgId, picId);
+            return ResponseModel.successPure();
+        } catch (Exception e){
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
     @PreAuthorize("permitAll()")
     @PostMapping("/send-reset")
     public ResponseEntity<?> sedResetNumber(@Valid @RequestBody TelNumberFilter filter) {

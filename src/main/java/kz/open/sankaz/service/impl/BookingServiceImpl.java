@@ -4,11 +4,9 @@ import kz.open.sankaz.exception.BookingCodes;
 import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.mapper.BookingMapper;
 import kz.open.sankaz.mapper.RoomMapper;
-import kz.open.sankaz.model.Booking;
-import kz.open.sankaz.model.Room;
-import kz.open.sankaz.model.RoomClassDic;
-import kz.open.sankaz.model.SecUser;
+import kz.open.sankaz.model.*;
 import kz.open.sankaz.model.enums.BookingStatus;
+import kz.open.sankaz.model.enums.UserNotificationType;
 import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.BookingModerCalendarDto;
 import kz.open.sankaz.pojo.dto.DatesDto;
@@ -17,8 +15,10 @@ import kz.open.sankaz.pojo.dto.RoomModerCalendarDto;
 import kz.open.sankaz.pojo.filter.BookingAdminCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingModerCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
+import kz.open.sankaz.repo.BookingHistoryRepo;
 import kz.open.sankaz.repo.BookingRepo;
 import kz.open.sankaz.repo.RoomRepo;
+import kz.open.sankaz.repo.UserNotificationRepo;
 import kz.open.sankaz.repo.dictionary.RoomClassDicRepo;
 import kz.open.sankaz.service.BookingService;
 import kz.open.sankaz.service.RoomService;
@@ -48,7 +48,13 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
     private RoomRepo roomRepo;
 
     @Autowired
+    private UserNotificationRepo notificationRepo;
+
+    @Autowired
     private RoomClassDicRepo roomClassDicRepo;
+
+    @Autowired
+    private BookingHistoryRepo bookingHistoryRepo;
 
     @Autowired
     private RoomMapper roomMapper;
@@ -189,7 +195,15 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setStartDate(filter.getStartDate());
         booking.setSumPrice(filter.getPrice());
 
-        return addOne(booking);
+        addOne(booking);
+
+        BookingHistory history = new BookingHistory();
+        history.setStatus(booking.getStatus());
+        history.setBooking(booking);
+        bookingHistoryRepo.save(history);
+
+        return booking;
+
     }
 
     @Override
@@ -232,7 +246,14 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setStartDate(filter.getStartDate());
         booking.setSumPrice(filter.getPrice());
 
-        return editOneById(booking);
+        editOneById(booking);
+
+        BookingHistory history = new BookingHistory();
+        history.setStatus(booking.getStatus());
+        history.setBooking(booking);
+        bookingHistoryRepo.save(history);
+
+        return booking;
     }
 
     @Override
@@ -243,7 +264,26 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         }
         booking.setStatus(BookingStatus.CANCELLED);
         booking.setCancelledDate(LocalDateTime.now());
-        return editOneById(booking);
+        editOneById(booking);
+
+        BookingHistory history = new BookingHistory();
+        history.setStatus(booking.getStatus());
+        history.setBooking(booking);
+        bookingHistoryRepo.save(history);
+
+        if(booking.getUser() != null){
+            //TODO: send to firebase
+            UserNotification notification = new UserNotification();
+            notification.setUser(booking.getUser());
+            notification.setNotificationType(UserNotificationType.BOOKING);
+            notification.setNotifyDate(LocalDateTime.now());
+            notification.setBookingHistory(history);
+            notification.setTitle("Ваша бронь #" + booking.getId() + " отменена");
+            notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз кері қайтарылды");
+            notificationRepo.save(notification);
+        }
+
+        return booking;
     }
 
     @Override
@@ -265,8 +305,27 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
             throw new MessageCodeException(BookingCodes.ROOM_IS_BUSY_IN_CHOSEN_DATE_RANGE, data);
         }
         booking.setStatus(BookingStatus.APPROVED);
-        booking.setCancelledDate(LocalDateTime.now());
-        return editOneById(booking);
+        booking.setApprovedDate(LocalDateTime.now());
+        editOneById(booking);
+
+        BookingHistory history = new BookingHistory();
+        history.setStatus(booking.getStatus());
+        history.setBooking(booking);
+        bookingHistoryRepo.save(history);
+
+        if(booking.getUser() != null){
+            //TODO: send to firebase
+            UserNotification notification = new UserNotification();
+            notification.setUser(booking.getUser());
+            notification.setNotificationType(UserNotificationType.PAYMENT);
+            notification.setNotifyDate(LocalDateTime.now());
+            notification.setBookingHistory(history);
+            notification.setTitle("Ваша бронь #" + booking.getId() + " подтверждена");
+            notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз қабылданды");
+            notificationRepo.save(notification);
+        }
+
+        return booking;
     }
 
     @Override
@@ -280,7 +339,25 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         }
         booking.setStatus(BookingStatus.PAID);
         booking.setPaidDate(LocalDateTime.now());
-        return editOneById(booking);
+        editOneById(booking);
+
+        BookingHistory history = new BookingHistory();
+        history.setStatus(booking.getStatus());
+        history.setBooking(booking);
+        bookingHistoryRepo.save(history);
+
+        if(booking.getUser() != null){
+            //TODO: send to firebase
+            UserNotification notification = new UserNotification();
+            notification.setUser(booking.getUser());
+            notification.setNotificationType(UserNotificationType.PAYMENT);
+            notification.setNotifyDate(LocalDateTime.now());
+            notification.setBookingHistory(history);
+            notification.setTitle("Ваша бронь #" + booking.getId() + " успешно оплачено");
+            notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз төленді");
+            notificationRepo.save(notification);
+        }
+        return booking;
     }
 
     @Override
@@ -313,7 +390,24 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setAdultsCount(filter.getAdults());
         booking.setSumPrice(filter.getPrice());
 
-        return addOne(booking);
+        addOne(booking);
+
+        BookingHistory history = new BookingHistory();
+        history.setStatus(booking.getStatus());
+        history.setBooking(booking);
+        bookingHistoryRepo.save(history);
+
+        // TODO: send notification to firebase
+        UserNotification notification = new UserNotification();
+        notification.setUser(user);
+        notification.setNotificationType(UserNotificationType.BOOKING);
+        notification.setBookingHistory(history);
+        notification.setNotifyDate(LocalDateTime.now());
+        notification.setTitle("Ваша бронь #" + booking.getId() + " рассматривается");
+        notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз қарастырылуда");
+        notificationRepo.save(notification);
+
+        return booking;
     }
 
     @Override

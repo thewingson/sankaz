@@ -6,16 +6,14 @@ import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.response.ResponseModel;
-import kz.open.sankaz.service.ReviewService;
-import kz.open.sankaz.service.RoomClassDicService;
-import kz.open.sankaz.service.RoomService;
-import kz.open.sankaz.service.SanService;
+import kz.open.sankaz.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,6 +37,9 @@ public class UserSanRest {
     private RoomClassDicService roomClassDicService;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private SanMapper sanMapper;
 
     @Autowired
@@ -55,7 +56,10 @@ public class UserSanRest {
     @PreAuthorize("permitAll()")
     @PostMapping
     public ResponseEntity<?> getAll(
+            HttpServletRequest request,
             @RequestParam(required = false) Long cityId,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String sanTypeCode,
             @RequestParam(value="startDate", required = false) String startDate,
             @RequestParam(value="endDate", required = false) String endDate,
             @RequestParam(required = false) Integer adults,
@@ -63,11 +67,13 @@ public class UserSanRest {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
         try{
+            Long userId = authService.getUserId(request);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            SanForMainFilter filter = new SanForMainFilter(cityId,
+            SanForMainFilter filter = new SanForMainFilter(cityId, name,
+                    sanTypeCode,
                     startDate.isEmpty() ? null : LocalDateTime.parse(startDate, formatter),
                     endDate.isEmpty() ? null : LocalDateTime.parse(endDate, formatter), adults, children);
-            return ResponseModel.success(sanService.getAllForMain(filter, page, size));
+            return ResponseModel.success(sanService.getAllForMain(userId, filter, page, size));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

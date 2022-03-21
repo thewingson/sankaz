@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class RoomInClassDicDto extends BaseDto {
     private String roomNumber;
-    private String mainPic;
+    private FileDto mainPic;
     private BigDecimal price;
     private Integer roomCount;
     private Integer bedCount;

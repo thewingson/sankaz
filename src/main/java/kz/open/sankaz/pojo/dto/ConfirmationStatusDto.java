@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,4 +14,8 @@ import lombok.Setter;
 public class ConfirmationStatusDto {
     private Long orgId;
     private String confirmationStatus;
+    private String rejectMessage;
+    private LocalDateTime requestDate;
+    private LocalDateTime approvedDate;
+    private LocalDateTime rejectedDate;
 }

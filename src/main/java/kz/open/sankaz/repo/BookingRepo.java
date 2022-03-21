@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,4 +56,38 @@ public interface BookingRepo extends CommonRepo<Booking> {
     List<Booking> getBookingCalendar(@Param("roomIds") List<Long> roomIds,
                                      @Param("startDate") LocalDate startDate,
                                      @Param("endDate") LocalDate endDate);
+
+    @Query(value = "select b.* " +
+            "from booking b " +
+            "join room r on r.id = b.room_id " +
+            "join room_class_dic rc on rc.id = r.class_id " +
+            "join san s on s.id = rc.san_id " +
+            "where " +
+            "((cast(b.start_date as date) between :startDate and :endDate) " +
+            "or (cast(b.end_date as date) between :startDate and :endDate)) " +
+            "and case " +
+            "    when cast(cast(:sanId as text) as numeric) is not null " +
+            "    then s.id = cast(cast(:sanId as text) as numeric) " +
+            "    else 1=1 end " +
+            "and lower(b.tel_number) like concat('%', :telNumber, '%') " +
+            "and lower(b.status) like concat('%', :status, '%') " +
+            "and case " +
+            "    when :minPrice is not null " +
+            "    then b.sum_price >= cast(cast(:minPrice as text) as numeric) " +
+            "    else 1=1 end " +
+            "and case " +
+            "    when :maxPrice is not null " +
+            "    then b.sum_price <= cast(cast(:maxPrice as text) as numeric) " +
+            "    else 1=1 end " +
+            " limit cast(cast(:size as text) as numeric) offset cast(cast(:page as text) as numeric);",
+            nativeQuery = true)
+    List<Booking> getBookingByFilter(@Param("startDate") LocalDate startDate,
+                                     @Param("endDate") LocalDate endDate,
+                                     @Param("sanId") Long sanId,
+                                     @Param("telNumber") String telNumber,
+                                     @Param("status") String status,
+                                     @Param("minPrice") BigDecimal minPrice,
+                                     @Param("maxPrice") BigDecimal maxPrice,
+                                     @Param("page") Integer page,
+                                     @Param("size") Integer size);
 }

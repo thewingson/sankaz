@@ -14,6 +14,11 @@ import java.util.Optional;
 @Repository
 public interface OrganizationRepo extends CommonRepo<Organization> {
     Optional<Organization> findByTelNumber(@Param("telNumber") String telNumber);
+
+    @Query(value = "select o " +
+                    "from Organization o " +
+                    "left join fetch o.sans s " +
+                    "where o.user = :user")
     Optional<Organization> findByUser(@Param("user") SecUser user);
     Optional<Organization> findByIban(@Param("iban") String iban);
     Optional<Organization> findByIin(@Param("iin") String iin);

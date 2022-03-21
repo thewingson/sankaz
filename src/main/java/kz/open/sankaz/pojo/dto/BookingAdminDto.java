@@ -18,11 +18,11 @@ public class BookingAdminDto extends AbstractDto {
     private String telNumber;
     private Integer adults;
     private Integer children;
-    private Long roomId;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String status;
     private LocalDateTime approvedDate;
     private LocalDateTime cancelledDate;
     private LocalDateTime paidDate;
+    private RoomByIdDto room;
 }

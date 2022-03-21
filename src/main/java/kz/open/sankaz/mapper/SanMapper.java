@@ -25,8 +25,8 @@ public abstract class SanMapper extends AbstractMapper {
     protected RoomMapper roomMapper;
 
     @Named("sanToAdminDto")
-    @Mapping(target = "sanTypeId", source = "san.sanType.id")
-    @Mapping(target = "cityId", source = "san.city.id")
+    @Mapping(target = "sanType", expression = "java( dictionaryToDto(san.getSanType()) )")
+    @Mapping(target = "city", expression = "java( dictionaryToDto(san.getCity()) )")
     @Mapping(target = "orgId", source = "san.organization.id")
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
     @Mapping(target = "pics", expression = "java( fileToDto(san.getPics()) )")
@@ -47,10 +47,23 @@ public abstract class SanMapper extends AbstractMapper {
     @Mapping(target = "sanType", expression = "java( dictionaryToDto(san.getSanType()) )")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
-    @Mapping(target = "picUrls", expression = "java( fileToDto(san.getPics()) )")
+    @Mapping(target = "picUrls", expression = "java( fileToDto(san.getPices()) )")
     abstract public SanForMainDto sanToSanForMainDto(San san);
     @IterableMapping(qualifiedByName = "sanToSanForMainDto")
     abstract public List<SanForMainDto> sanToSanForMainDto(List<San> sans);
+
+    @Named("sanToSanForMainAdminDto")
+    @Mapping(target = "mainPicUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
+    @Mapping(target = "rating", source = "san.rating")
+    @Mapping(target = "sanType", expression = "java( dictionaryToDto(san.getSanType()) )")
+    @Mapping(target = "city", expression = "java( dictionaryToDto(san.getCity()) )")
+    @Mapping(target = "address", source = "san.address")
+    @Mapping(target = "reviewCount", source = "san.reviewCount")
+    @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
+    @Mapping(target = "picUrls", expression = "java( fileToDto(san.getPices()) )")
+    abstract public SanForMainAdminDto sanToSanForMainAdminDto(San san);
+    @IterableMapping(qualifiedByName = "sanToSanForMainAdminDto")
+    abstract public List<SanForMainAdminDto> sanToSanForMainAdminDto(List<San> sans);
 
     @Named("sanToSanByIdDto")
     @Mapping(target = "pics", expression = "java( fileToDto(san.getPics()) )")

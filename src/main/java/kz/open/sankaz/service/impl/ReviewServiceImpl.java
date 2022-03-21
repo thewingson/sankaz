@@ -56,10 +56,7 @@ public class ReviewServiceImpl extends AbstractService<Review, ReviewRepo> imple
             put(4, 0);
             put(5, 0);
         }};
-//        reviews.forEach(review -> {
-//            int count = ratings.getOrDefault(review.getRating().intValue(), 0);
-//            ratings.put(review.getRating().intValue(), ++count);
-//        });
+        
         ratingInfo.forEach(rat -> {
             ratings.put((int) rat.getRating(), rat.getCount());
         });

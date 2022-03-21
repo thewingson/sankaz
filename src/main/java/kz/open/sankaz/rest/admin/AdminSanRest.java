@@ -1,19 +1,19 @@
 package kz.open.sankaz.rest.admin;
 
 import kz.open.sankaz.mapper.SanMapper;
-import kz.open.sankaz.pojo.filter.DeletePicsFilter;
-import kz.open.sankaz.pojo.filter.SanCreateFilter;
+import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.response.ResponseModel;
+import kz.open.sankaz.service.AuthService;
 import kz.open.sankaz.service.SanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
@@ -23,6 +23,9 @@ public class AdminSanRest {
     private final SanService sanService;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private SanMapper sanMapper;
 
     @Autowired
@@ -30,71 +33,27 @@ public class AdminSanRest {
         this.sanService = sanService;
     }
 
-    @GetMapping
-    public ResponseEntity<?> getAll() {
-        try{
-            return ResponseModel.success(sanMapper.sanToAdminDto(sanService.getAll()));
-        } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @GetMapping("/{sanId}")
-    public ResponseEntity<?> getOneById(@PathVariable(name = "sanId") Long sanId) {
-        try{
-            return ResponseModel.success(sanMapper.sanToAdminDto(sanService.getOne(sanId)));
-        } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
     @PostMapping
-    public ResponseEntity<?> addOne(@Valid @RequestBody SanCreateFilter filter) {
+    public ResponseEntity<?> getAll(
+            HttpServletRequest request,
+            @RequestParam(required = false) Long cityId,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String sanTypeCode,
+            @RequestParam(value="startDate", required = false) String startDate,
+            @RequestParam(value="endDate", required = false) String endDate,
+            @RequestParam(required = false) Integer adults,
+            @RequestParam(required = false) Integer children,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
+    ) {
         try{
-            return ResponseModel.success(sanMapper.sanToDto(sanService.createSan(filter)));
+            Long userId = authService.getUserId(request);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            SanForMainFilter filter = new SanForMainFilter(cityId, name, sanTypeCode,
+                    startDate.isEmpty() ? null : LocalDateTime.parse(startDate, formatter),
+                    endDate.isEmpty() ? null : LocalDateTime.parse(endDate, formatter), adults, children);
+            return ResponseModel.success(sanService.getAllForMainAdmin(userId, filter, page, size));
         } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/{sanId}")
-    public ResponseEntity<?> deleteOneById(@PathVariable(name = "sanId") Long sanId) {
-        try{
-            sanService.deleteOneById(sanId);
-            return ResponseModel.successPure();
-        } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @PutMapping("/{sanId}")
-    public ResponseEntity<?> editOneById(@PathVariable(name = "sanId") Long sanId,
-                                         @Valid @RequestBody SanCreateFilter filter) {
-        try{
-            sanService.updateOneDto(sanId, filter);
-            return ResponseModel.successPure();
-        } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @PutMapping("/{sanId}/pics/list")
-    public ResponseEntity<?> addPics(@PathVariable(name = "sanId") Long sanId,
-                                         @RequestParam("pics") MultipartFile[] pics) {
-        try {
-            return ResponseModel.success(sanMapper.fileToDto(sanService.addPics(sanId, pics)));
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @DeleteMapping("{sanId}/pics/list")
-    public ResponseEntity<?> deletePics(@PathVariable(name = "sanId") Long sanId,
-                                           @Valid @RequestBody DeletePicsFilter filter) {
-        try {
-            sanService.deletePics(sanId, filter.getPicIds());
-            return ResponseModel.successPure();
-        } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

@@ -20,7 +20,7 @@ public class OrganizationDto extends AbstractDto {
     private String email;
     private String telNumber;
     private String confirmationStatus;
-    private LocalDateTime confirmedDate;
+    private LocalDateTime approvedDate;
     private String confirmedBy;
     private SecUserInOrgDto user;
     private List<FileDto> pics;

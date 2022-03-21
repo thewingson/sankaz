@@ -1,5 +1,6 @@
 package kz.open.sankaz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kz.open.sankaz.model.enums.ConfirmationStatus;
 import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
@@ -49,8 +50,14 @@ public class Organization extends AbstractEntity {
     @Column(name = "CONFIRMATION_STATUS")
     private OrganizationConfirmationStatus confirmationStatus = OrganizationConfirmationStatus.NEW;
 
-    @Column(name = "CONFIRMED_DATE")
-    private LocalDateTime confirmedDate;
+    @Column(name = "APPROVED_DATE")
+    private LocalDateTime approvedDate;
+
+    @Column(name = "REJECTED_DATE")
+    private LocalDateTime rejectedDate;
+
+    @Column(name = "REQUEST_DATE")
+    private LocalDateTime requestDate;
 
     @Column(name = "CONFIRMED_BY")
     private String confirmedBy;
@@ -89,6 +96,10 @@ public class Organization extends AbstractEntity {
 
     @Column(name = "REJECT_MESSAGE")
     private String rejectMessage;
+
+    @OneToMany(mappedBy = "organization")
+    @JsonBackReference
+    private List<San> sans;
 
     public void addPic(SysFile pic){
         getPics().add(pic);

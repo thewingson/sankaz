@@ -1,12 +1,12 @@
 package kz.open.sankaz.rest.moder;
 
+import kz.open.sankaz.mapper.NotificationMapper;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.pojo.filter.*;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.ReviewService;
-import kz.open.sankaz.service.RoomClassDicService;
 import kz.open.sankaz.service.RoomService;
 import kz.open.sankaz.service.SanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +34,6 @@ public class ModerSanRest {
     private RoomService roomService;
 
     @Autowired
-    private RoomClassDicService roomClassDicService;
-
-    @Autowired
     private SanMapper sanMapper;
 
     @Autowired
@@ -44,6 +41,9 @@ public class ModerSanRest {
 
     @Autowired
     private RoomMapper roomMapper;
+
+    @Autowired
+    private NotificationMapper notificationMapper;
 
     @Autowired
     public ModerSanRest(SanService sanService) {
@@ -96,18 +96,6 @@ public class ModerSanRest {
         try{
             sanService.checkIfOwnSan(sanId);
             sanService.updateOneDto(sanId, filter);
-            return ResponseModel.successPure();
-        } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @PutMapping("/{sanId}/geo")
-    public ResponseEntity<?> changeGeo(@PathVariable(name = "sanId") Long sanId,
-                                       @Valid @RequestBody GeoFilter filter) {
-        try{
-            sanService.checkIfOwnSan(sanId);
-            sanService.addGeo(sanId, filter.getLongitude(), filter.getLatitude());
             return ResponseModel.successPure();
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -183,7 +171,8 @@ public class ModerSanRest {
     }
 
     @GetMapping("/{sanId}/reviews/filter")
-    public ResponseEntity<?> getReviewsByFilter(@PathVariable(name = "sanId") Long sanId, @Valid @RequestBody ReviewBySanIdFilter filter) {
+    public ResponseEntity<?> getReviewsByFilter(@PathVariable(name = "sanId") Long sanId,
+                                                @Valid @RequestBody ReviewBySanIdFilter filter) {
         try{
             sanService.checkIfOwnSan(sanId);
             return ResponseModel.success(reviewMapper.reviewToReviewBySanIdDto(reviewService.getAllByFilter(sanId, filter)));
@@ -199,6 +188,46 @@ public class ModerSanRest {
             return ResponseModel.success(roomMapper.roomToRoomForBookCreateDto(roomService.getAllByDate(sanId, filter.getStartDate(), filter.getEndDate())));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PutMapping("/{sanId}/reviews")
+    public ResponseEntity<?> answerToReview(@PathVariable(name = "sanId") Long sanId,
+                                       @Valid @RequestBody ReviewModerCreateFilter filter) {
+        try {
+            return ResponseModel.success(reviewMapper.reviewToReviewCreateDto(sanService.answerToReview(sanId, filter)));
+        } catch (Exception e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/{sanId}/stock")
+    public ResponseEntity<?> addStock(@PathVariable(name = "sanId") Long sanId,
+                                       @Valid @RequestBody StockCreateFilter filter) {
+        try {
+            return ResponseModel.success(notificationMapper.stockToDto(sanService.addStock(sanId, filter)));
+        } catch (Exception e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PutMapping("/stock/{stockId}")
+    public ResponseEntity<?> editStock(@PathVariable(name = "stockId") Long stockId,
+                                      @Valid @RequestBody StockCreateFilter filter) {
+        try {
+            return ResponseModel.success(notificationMapper.stockToDto(sanService.editStock(stockId, filter)));
+        } catch (Exception e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/stock/{stockId}")
+    public ResponseEntity<?> deleteStock(@PathVariable(name = "stockId") Long stockId) {
+        try {
+            sanService.deleteStock(stockId);
+            return ResponseModel.successPure();
+        } catch (Exception e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 

@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "SAN")
@@ -53,14 +54,14 @@ public class San extends AbstractEntity{
     @JsonManagedReference
     private SanType sanType;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST})
+    @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
             name = "SAN_PICS",
             joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_PICS_SAN_FK")),
             inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_PICS_PIC_FK")))
     private List<SysFile> pics;
 
-    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JsonBackReference
     private List<Review> reviews;
 
@@ -81,6 +82,19 @@ public class San extends AbstractEntity{
 
     @Column(name = "ADDRESS")
     private String address;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        San san = (San) o;
+        return Objects.equals(id, san.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     public void addPic(SysFile pic){
         if(getPics() == null){
@@ -135,7 +149,7 @@ public class San extends AbstractEntity{
     }
 
     public Float getRating(){
-        return (float)getReviews().stream().mapToDouble(Review::getRating).average().orElse(0.0);
+        return (float)getReviews().stream().filter(review -> review.getParentReview() == null).mapToDouble(Review::getRating).average().orElse(0.0);
     }
 
     public Integer getReviewCount(){
@@ -143,6 +157,7 @@ public class San extends AbstractEntity{
     }
 
     public SysFile getMainPic(){
+        initPics();
         if(getPics() != null && !getPics().isEmpty()){
             return getPics().get(0);
         }
@@ -160,5 +175,14 @@ public class San extends AbstractEntity{
 
     public List<Room> getRooms(){
         return getRoomClasses().stream().map(RoomClassDic::getRooms).collect(ArrayList::new, List::addAll, List::addAll);
+    }
+
+    public List<SysFile> getPices(){
+        initPics();
+        return getPics();
+    }
+
+    public void initPics(){
+//        Hibernate.initialize(this.pics);
     }
 }

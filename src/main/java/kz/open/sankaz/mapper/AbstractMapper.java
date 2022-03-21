@@ -1,8 +1,10 @@
 package kz.open.sankaz.mapper;
 
 import kz.open.sankaz.model.AbstractDictionaryLangEntity;
+import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.model.TelNumber;
+import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.DictionaryLangDto;
 import kz.open.sankaz.pojo.dto.FileDto;
 import org.mapstruct.IterableMapping;
@@ -50,6 +52,22 @@ public abstract class AbstractMapper extends BaseMapper {
 
     protected List<String> getTelNumberValuesFromEntity(List<TelNumber> telNumbers){
         return telNumbers.stream().map(TelNumber::getValue).collect(Collectors.toList());
+    }
+
+    protected String getNameFromUser(SecUser user){
+        if(user.getUserType().equals(UserType.USER)){
+            return user.getFullName();
+        } else {
+            if(!user.getOrganizations().isEmpty()){
+                if(!user.getOrganizations().get(0).getSans().isEmpty()){
+                    return user.getOrganizations().get(0).getSans().get(0).getName();
+                } else {
+                    return user.getOrganizations().get(0).getCompanyName();
+                }
+            } else {
+                return user.getUsername();
+            }
+        }
     }
 
 }

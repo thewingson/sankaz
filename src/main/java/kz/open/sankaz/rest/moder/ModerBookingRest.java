@@ -41,15 +41,16 @@ public class ModerBookingRest {
         }
     }
 
-    @GetMapping("/sans/{sanId}/calendar")
+    @PostMapping("/sans/{sanId}/calendar")
     public ResponseEntity<?> getBookingCalendar(@PathVariable("sanId") Long sanId,
                                                 @RequestParam(value="startDate") String startDate,
                                                 @RequestParam(value="endDate") String endDate) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             return ResponseModel.success(bookingService.getBookingCalendar(sanId,
-                    LocalDateTime.parse(startDate.substring(1, startDate.length()-1), formatter),
-                    LocalDateTime.parse(endDate.substring(1, endDate.length()-1), formatter)));
+                    startDate.isEmpty() ? null : LocalDateTime.parse(startDate, formatter),
+                    endDate.isEmpty() ? null : LocalDateTime.parse(endDate, formatter)
+            ));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

@@ -6,11 +6,15 @@ import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public abstract class BookingMapper extends AbstractMapper {
+
+    @Autowired
+    protected RoomMapper roomMapper;
 
     @Named("bookingToBookingAdminDto")
     @Mapping(target = "userId", source = "booking.user.id")
@@ -19,13 +23,13 @@ public abstract class BookingMapper extends AbstractMapper {
     @Mapping(target = "telNumber", source = "telNumber")
     @Mapping(target = "adults", source = "adultsCount")
     @Mapping(target = "children", source = "childrenCount")
-    @Mapping(target = "roomId", source = "booking.room.id")
     @Mapping(target = "startDate", source = "startDate")
     @Mapping(target = "endDate", source = "endDate")
     @Mapping(target = "status", expression = "java( booking.getStatus().name() )")
     @Mapping(target = "approvedDate", source = "approvedDate")
     @Mapping(target = "cancelledDate", source = "cancelledDate")
     @Mapping(target = "paidDate", source = "paidDate")
+    @Mapping(target = "room", expression = "java( roomMapper.roomToRoomByIdDtoForAdmin( booking.getRoom() ) )")
     abstract public BookingAdminDto bookingToBookingAdminDto(Booking booking);
     @IterableMapping(qualifiedByName = "bookingToBookingAdminDto")
     abstract public List<BookingAdminDto> bookingToBookingAdminDto(List<Booking> bookings);

@@ -66,7 +66,6 @@ public class RoomClassDicServiceImpl extends AbstractService<RoomClassDic, RoomC
 
     @Override
     public List<RoomClassDic> getBySan(Long sanId) {
-        San san = sanService.getOne(sanId);
-        return san.getRoomClasses();
+        return repo.getRoomClassDicBySanId(sanId);
     }
 }

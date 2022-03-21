@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public abstract class ReviewMapper {
+public abstract class ReviewMapper extends AbstractMapper {
 
     @Autowired
     protected SanMapper sanMapper;
@@ -55,9 +55,9 @@ public abstract class ReviewMapper {
     }
 
     @Named("reviewToReviewBySanIdDto")
-    @Mapping(target = "id", source = "review.user.id")
+    @Mapping(target = "id", source = "review.id")
     @Mapping(target = "userId", source = "review.user.id")
-    @Mapping(target = "username", source = "review.user.username")
+    @Mapping(target = "username", expression = "java( getNameFromUser(review.getUser()) )")
     @Mapping(target = "reviewDate", source = "review.messageDate")
     @Mapping(target = "parentReviewId", source = "review.parentReview.id")
     @Mapping(target = "childReviews", expression = "java( reviewToReviewBySanIdDto(review.getChildReviews()) )")

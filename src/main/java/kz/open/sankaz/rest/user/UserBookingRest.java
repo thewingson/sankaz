@@ -4,7 +4,6 @@ import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.mapper.BookingMapper;
 import kz.open.sankaz.pojo.dto.DatesDto;
 import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
-import kz.open.sankaz.pojo.filter.BookingUserGetFilter;
 import kz.open.sankaz.pojo.filter.DateRangeFilter;
 import kz.open.sankaz.repo.BookingRepo;
 import kz.open.sankaz.repo.RoomRepo;
@@ -21,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @PreAuthorize("hasRole('ROLE_USER')")
@@ -83,37 +81,6 @@ public class UserBookingRest {
         }
     }
 
-    @PostMapping("/books/filter")
-    public ResponseEntity<?> getAllByFilter(HttpServletRequest request,
-                                            @Valid @RequestBody BookingUserGetFilter filter) {
-        try {
-            Long userId = authService.getUserId(request);
-            return ResponseModel.success(bookingMapper.bookingToBookingAllForModerDto(bookingRepo.getAllByUserIdAndStatus(userId, filter.getStatus())));
-        } catch (RuntimeException e) {
-            return ResponseModel.error(BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @GetMapping("/books/active")
-    public ResponseEntity<?> getAllActive(HttpServletRequest request) {
-        try {
-            Long userId = authService.getUserId(request);
-            return ResponseModel.success(bookingMapper.bookingToBookingUserDto(bookingRepo.getAllActiveByUserId(userId)));
-        } catch (RuntimeException e) {
-            return ResponseModel.error(BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @GetMapping("/books/inactive")
-    public ResponseEntity<?> getAllHistory(HttpServletRequest request) {
-        try {
-            Long userId = authService.getUserId(request);
-            return ResponseModel.success(bookingMapper.bookingToBookingUserDto(bookingRepo.getAllHistoryByUserId(userId)));
-        } catch (RuntimeException e) {
-            return ResponseModel.error(BAD_REQUEST, e.getMessage());
-        }
-    }
-
     @GetMapping("/books/{bookId}")
     public ResponseEntity<?> getById(@PathVariable("bookId") Long bookId) {
         try {
@@ -146,6 +113,35 @@ public class UserBookingRest {
         }
     }
 
+//    @GetMapping("/books/inactive")
+//    public ResponseEntity<?> getAllHistory(HttpServletRequest request) {
+//        try {
+//            Long userId = authService.getUserId(request);
+//            return ResponseModel.success(bookingMapper.bookingToBookingUserDto(bookingRepo.getAllHistoryByUserId(userId)));
+//        } catch (RuntimeException e) {
+//            return ResponseModel.error(BAD_REQUEST, e.getMessage());
+//        }
+//    }
 
+//    @GetMapping("/books/active")
+//    public ResponseEntity<?> getAllActive(HttpServletRequest request) {
+//        try {
+//            Long userId = authService.getUserId(request);
+//            return ResponseModel.success(bookingMapper.bookingToBookingUserDto(bookingRepo.getAllActiveByUserId(userId)));
+//        } catch (RuntimeException e) {
+//            return ResponseModel.error(BAD_REQUEST, e.getMessage());
+//        }
+//    }
+
+//    @PostMapping("/books/filter")
+//    public ResponseEntity<?> getAllByFilter(HttpServletRequest request,
+//                                            @Valid @RequestBody BookingUserGetFilter filter) {
+//        try {
+//            Long userId = authService.getUserId(request);
+//            return ResponseModel.success(bookingMapper.bookingToBookingAllForModerDto(bookingRepo.getAllByUserIdAndStatus(userId, filter.getStatus())));
+//        } catch (RuntimeException e) {
+//            return ResponseModel.error(BAD_REQUEST, e.getMessage());
+//        }
+//    }
 
 }

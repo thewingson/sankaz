@@ -25,10 +25,10 @@ import java.util.List;
         }
 )
 @NamedNativeQuery(name="Review.getRatingInfo",
-        query="select r.rating as rat, count(r.id) as cnt " +
+        query="select coalesce(round(cast(r.rating as numeric)), 0) as rat, count(r.id) as cnt " +
                 "from review r " +
-                "where r.san_id = :sanId and r.rating between :ratingStart and :ratingEnd " +
-                "group by r.rating;",
+                "where r.san_id = :sanId and r.rating between :ratingStart and :ratingEnd and r.parent_id is null " +
+                "group by round(cast(r.rating as numeric));",
         resultSetMapping="getRatingInfoMapping")
 @SqlResultSetMapping(
         name="getReviewInfoMapping",
@@ -45,7 +45,7 @@ import java.util.List;
 @NamedNativeQuery(name="Review.getReviewInfo",
         query="select coalesce(cast(avg(r.rating) as float), 0) as aver , count(r.id) as cnt " +
                 "from  review r " +
-                "where r.san_id = :sanId and r.rating between :ratingStart and :ratingEnd",
+                "where r.san_id = :sanId and r.rating between :ratingStart and :ratingEnd and r.parent_id is null ",
         resultSetMapping="getReviewInfoMapping")
 @Entity
 @Table(name = "REVIEW")
@@ -60,7 +60,7 @@ public class Review extends Message {
     @SequenceGenerator(sequenceName = "REVIEW_ID_SEQ", name = "REVIEW_ID", allocationSize = 1)
     private Long id;
 
-    @Column(name = "RATING", nullable = false)
+    @Column(name = "RATING")
     private Float rating;
 
     @ManyToOne

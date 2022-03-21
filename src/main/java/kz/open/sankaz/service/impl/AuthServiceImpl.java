@@ -24,6 +24,7 @@ import kz.open.sankaz.properties.SmsProperties;
 import kz.open.sankaz.repo.SecUserTokenRepo;
 import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -81,6 +82,9 @@ public class AuthServiceImpl implements AuthService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private SecUserTokenRepo tokenRepo;
+
+    @Autowired
+    private SanService sanService;
 
     @Autowired
     private SecUserMapper userMapper;
@@ -437,7 +441,12 @@ public class AuthServiceImpl implements AuthService {
             log.info("Checking tel number {} in DB", telNumber);
             Organization organization = organizationService.getOrganizationByTelNumber(telNumber);
             log.info("End of checking number {}", telNumber);
-            return new ConfirmationStatusDto(organization.getId(), organization.getConfirmationStatus().name());
+            return new ConfirmationStatusDto(organization.getId(),
+                    organization.getConfirmationStatus().name(),
+                    organization.getRejectMessage(),
+                    organization.getRequestDate(),
+                    organization.getApprovedDate(),
+                    organization.getRejectedDate());
         } catch (EntityNotFoundException e){
             throw new RuntimeException("Указан неправильный номер для поиска!");
         }
@@ -455,6 +464,8 @@ public class AuthServiceImpl implements AuthService {
 
             SecUser user = (SecUser) userService.loadUserByUsername(username);
             Organization organization = organizationService.getOrganizationByUser(user);
+            List<San> sans = sanService.getAllByIdIn(organization.getSans().stream().map(San::getId).collect(Collectors.toList()));
+            organization.setSans(sans);
             return organization;
         }
         return null;
@@ -559,6 +570,7 @@ public class AuthServiceImpl implements AuthService {
         userService.editOneById(userByNumber);
 
         Organization organization = new Organization();
+        organization.setRequestDate(LocalDateTime.now());
         organization.setConfirmationStatus(OrganizationConfirmationStatus.ON_CONFIRMATION);
         organization.setUser(userByNumber);
         organization.setEmail(filter.getEmail());
@@ -615,6 +627,7 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setLastName(filter.getFullName());
         userService.editOneById(userByNumber);
 
+        organization.setRequestDate(LocalDateTime.now());
         organization.setName(filter.getOrgName());
         organization.setConfirmationStatus(OrganizationConfirmationStatus.ON_CONFIRMATION);
         organization.setManagerFullName(filter.getFullName());
@@ -713,7 +726,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Long getUserId(HttpServletRequest request){
-        String tokenFromAuthorization = getTokenFromAuthorization(request.getHeader(AUTHORIZATION));
+        String header = request.getHeader(AUTHORIZATION);
+        if(header == null){
+            return -1l;
+        }
+        String tokenFromAuthorization = getTokenFromAuthorization(header);
         return getUserIdFromToken(tokenFromAuthorization);
     }
 

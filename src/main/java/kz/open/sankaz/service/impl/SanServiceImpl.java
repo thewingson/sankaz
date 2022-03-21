@@ -1,15 +1,17 @@
 package kz.open.sankaz.service.impl;
 
+import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.mapper.FileMapper;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.model.*;
 import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
+import kz.open.sankaz.model.enums.UserNotificationType;
+import kz.open.sankaz.model.enums.UserType;
+import kz.open.sankaz.pojo.dto.SanForMainAdminDto;
 import kz.open.sankaz.pojo.dto.SanForMainDto;
-import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
-import kz.open.sankaz.pojo.filter.SanCreateFilter;
-import kz.open.sankaz.pojo.filter.SanForMainFilter;
-import kz.open.sankaz.repo.SanRepo;
+import kz.open.sankaz.pojo.filter.*;
+import kz.open.sankaz.repo.*;
 import kz.open.sankaz.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -20,6 +22,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,18 @@ import java.util.stream.Collectors;
 public class SanServiceImpl extends AbstractService<San, SanRepo> implements SanService {
 
     private final SanRepo sanRepo;
+
+    @Autowired
+    private StockRepo stockRepo;
+
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private RoleRepo roleRepo;
+
+    @Autowired
+    private UserNotificationRepo notificationRepo;
 
     @Lazy
     @Autowired
@@ -204,16 +219,77 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
-    public List<SanForMainDto> getAllForMain(SanForMainFilter filter, int page, int size) {
+    public Review answerToReview(Long sanId, ReviewModerCreateFilter filter) {
+        San san = getOne(sanId);
+        Review parentReview = reviewService.getOne(filter.getParentReviewId());
+
+        Review review = new Review();
+        review.setUser(san.getOrganization().getUser());
+        review.setSan(san);
+        review.setText(filter.getText());
+        review.setParentReview(parentReview);
+
+        reviewService.addOne(review);
+
+        return review;
+    }
+
+    @Override
+    public List<SanForMainDto> getAllForMain(Long userId, SanForMainFilter filter, int page, int size) {
         int personCount = Optional.ofNullable(filter.getAdults()).orElse(0) + Optional.ofNullable(filter.getChildren()).orElse(0);
         List<San> result = sanRepo.getAllBySanForMainFilter(
                 filter.getCityId(),
+                filter.getName().toLowerCase(),
+                filter.getSanTypeCode().toLowerCase(),
                 filter.getStartDate(),
                 filter.getEndDate(),
                 personCount,
                 page, size);
 
-        return sanMapper.sanToSanForMainDto(result);
+        List<SanForMainDto> sanForMainDtos = sanMapper.sanToSanForMainDto(result);
+        List<Long> favSanIds = repo.getFavSanId(userId);
+        sanForMainDtos.forEach(dto -> {
+            if(favSanIds.contains(dto.getId())){
+                dto.setFav(true);
+            }
+
+        });
+        return sanForMainDtos;
+    }
+
+    @Override
+    public List<SanForMainAdminDto> getAllForMainAdmin(Long userId, SanForMainFilter filter, int page, int size) {
+        int personCount = Optional.ofNullable(filter.getAdults()).orElse(0) + Optional.ofNullable(filter.getChildren()).orElse(0);
+        List<San> result = sanRepo.getAllBySanForMainFilter(
+                filter.getCityId(),
+                filter.getName().toLowerCase(),
+                filter.getSanTypeCode().toLowerCase(),
+                filter.getStartDate(),
+                filter.getEndDate(),
+                personCount,
+                page, size);
+
+        List<SanForMainAdminDto> sanForMainDtos = sanMapper.sanToSanForMainAdminDto(result);
+        List<Long> favSanIds = repo.getFavSanId(userId);
+        sanForMainDtos.forEach(dto -> {
+            if(favSanIds.contains(dto.getId())){
+                dto.setFav(true);
+            }
+
+        });
+        return sanForMainDtos;
+    }
+
+    @Override
+    public List<SanForMainDto> getFavs(Long userId, int page, int size) {
+        List<San> result = sanRepo.getFavs(userId, page, size);
+
+        List<SanForMainDto> sanForMainDtos = sanMapper.sanToSanForMainDto(result);
+        List<Long> favSanIds = repo.getFavSanId(userId);
+        sanForMainDtos.forEach(dto -> {
+            dto.setFav(true);
+        });
+        return sanForMainDtos;
     }
 
     @Override
@@ -296,6 +372,71 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     }
 
     @Override
+    public Stock addStock(Long sanId, StockCreateFilter filter) {
+        San san = getOne(sanId);
+        Stock stock = new Stock();
+        stock.setSan(san);
+        stock.setTitle(filter.getTitle());
+        stock.setTitleKz(filter.getTitleKz());
+        stock.setDescription(filter.getDescription());
+        stock.setDescriptionKz(filter.getDescriptionKz());
+        stockRepo.save(stock);
+
+        Optional<SecRole> admin = roleRepo.findByName("ROLE_ADMIN");
+        List<SecUser> activeUsers = userRepo.findAllByUserTypeAndActive(UserType.USER.name(), true);
+        List<UserNotification> notifications = new ArrayList<>();
+        activeUsers.forEach(user -> {
+            if(!user.getRoles().contains(admin.get())){
+                UserNotification notification = new UserNotification();
+                notification.setUser(user);
+                notification.setStock(stock);
+                notification.setNotifyDate(LocalDateTime.now());
+                notification.setNotificationType(UserNotificationType.STOCK);
+                notification.setTitle(stock.getTitle());
+                notification.setTitleKz(stock.getTitleKz());
+                notification.setDescription(stock.getDescription());
+                notification.setDescriptionKz(stock.getDescriptionKz());
+                notifications.add(notification);
+            }
+        });
+        notificationRepo.saveAll(notifications);
+        //TODO: send to firebase
+
+        return stock;
+    }
+
+    @Override
+    public Stock editStock(Long stockId, StockCreateFilter filter) {
+        Optional<Stock> stock = stockRepo.findById(stockId);
+        if (stock.isPresent()) {
+            Stock stock1 = stock.get();
+            stock1.setTitle(filter.getTitle());
+            stock1.setTitleKz(filter.getTitleKz());
+            stock1.setDescription(filter.getDescription());
+            stock1.setDescriptionKz(filter.getDescriptionKz());
+            return stockRepo.save(stock1);
+        } else {
+            Map<String, Object> params = new HashMap<>();
+            params.put("ID", stockId);
+            throw new EntityNotFoundException(Stock.class, params);
+        }
+    }
+
+    @Override
+    public void deleteStock(Long stockId) {
+        Optional<Stock> stock = stockRepo.findById(stockId);
+        if (stock.isPresent()) {
+            Stock stock1 = stock.get();
+            stock1.setActive(false);
+            stockRepo.save(stock1);
+        } else {
+            Map<String, Object> params = new HashMap<>();
+            params.put("ID", stockId);
+            throw new EntityNotFoundException(Stock.class, params);
+        }
+    }
+
+    @Override
     protected Class getCurrentClass() {
         return San.class;
     }
@@ -341,6 +482,34 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         }
 
         return addOne(san);
+    }
+
+    @Override
+    public void addFav(Long userId, Long sanId) {
+        San san = getOne(sanId);
+        SecUser user = userService.getOne(userId);
+
+        List<Long> sanIds = user.getFavorites().stream().map(San::getId).collect(Collectors.toList());
+        if(sanIds.contains(sanId)){
+            throw new RuntimeException("Вы уже добавили данную запись в избранное");
+        }
+
+        user.addFav(san);
+        userService.editOneById(user);
+    }
+
+    @Override
+    public void deleteFav(Long userId, Long sanId) {
+        San san = getOne(sanId);
+        SecUser user = userService.getOne(userId);
+
+        List<Long> sanIds = user.getFavorites().stream().map(San::getId).collect(Collectors.toList());
+        if(!sanIds.contains(sanId)){
+            throw new RuntimeException("Вы уже убрали данную запись из избранного");
+        }
+
+        user.deleteFav(san);
+        userService.editOneById(user);
     }
 
     @Override

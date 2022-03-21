@@ -37,7 +37,7 @@ public class SankazApplication {
 						  CompanyCategoryRepo companyCategoryRepo,
 						  PasswordEncoder passwordEncoder){
 		return  args -> {
-			callScript(userRepo, organizationRepo, sanRepo, roomClassDicRepo, roomRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
+//			callScript(userRepo, organizationRepo, sanRepo, roomClassDicRepo, roomRepo, roleRepo, sanTypeRepo, cityRepo, genderRepo, companyCategoryRepo, passwordEncoder);
 		};
 	}
 
@@ -64,9 +64,9 @@ public class SankazApplication {
 		adminUser.setFirstName("Admin");
 		adminUser.setLastName("Admin");
 		adminUser.setTelNumber("+77770000000");
-		adminUser.setEmail("admin@mail.kz");
+		adminUser.setEmail("admin@admin.kz");
 		adminUser.setUsername("+77770000000");
-		adminUser.setPassword(passwordEncoder.encode("123"));
+		adminUser.setPassword(passwordEncoder.encode("123123123"));
 		adminUser.addRole(admin);
 		adminUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
 		adminUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
@@ -79,12 +79,12 @@ public class SankazApplication {
 
 		SecUser testUser = new SecUser();
 		testUser.setUserType(UserType.USER);
-		testUser.setFirstName("Test_user");
-		testUser.setLastName("Test_user");
+		testUser.setFirstName("User");
+		testUser.setLastName("User");
 		testUser.setTelNumber("+77770000002");
-		testUser.setEmail("testuser@mail.kz");
+		testUser.setEmail("user@user.kz");
 		testUser.setUsername("+77770000002");
-		testUser.setPassword(passwordEncoder.encode("123"));
+		testUser.setPassword(passwordEncoder.encode("123123123"));
 		testUser.addRole(user);
 		testUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
 		testUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
@@ -95,23 +95,23 @@ public class SankazApplication {
 		testUser.setLoggedOut(false);
 		userRepo.save(testUser);
 
-		SecUser orgUser = new SecUser();
-		orgUser.setUserType(UserType.ORG);
-		orgUser.setFirstName("Org");
-		orgUser.setLastName("Org");
-		orgUser.setTelNumber("+77770000003");
-		orgUser.setEmail("org@mail.kz");
-		orgUser.setUsername("+77770000003");
-		orgUser.setPassword(passwordEncoder.encode("123"));
-		orgUser.addRole(moderator);
-		orgUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
-		orgUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
-		orgUser.setConfirmationNumber(0);
-		orgUser.setConfirmedBy("admin");
-		orgUser.setConfirmedDate(LocalDateTime.now());
-		orgUser.setActive(true);
-		orgUser.setLoggedOut(false);
-		userRepo.save(orgUser);
+		SecUser testUser2 = new SecUser();
+		testUser2.setUserType(UserType.USER);
+		testUser2.setFirstName("User2");
+		testUser2.setLastName("User2");
+		testUser2.setTelNumber("+77770000004");
+		testUser2.setEmail("user4@user.kz");
+		testUser2.setUsername("+77770000004");
+		testUser2.setPassword(passwordEncoder.encode("123123123"));
+		testUser2.addRole(user);
+		testUser2.setConfirmationStatus(ConfirmationStatus.FINISHED);
+		testUser2.setResetNumberStatus(ResetNumberStatus.EMPTY);
+		testUser2.setConfirmationNumber(0);
+		testUser2.setConfirmedBy("admin");
+		testUser2.setConfirmedDate(LocalDateTime.now());
+		testUser2.setActive(true);
+		testUser2.setLoggedOut(false);
+		userRepo.save(testUser2);
 
 		SanType sanType = new SanType();
 		sanType.setCode("ENTERTAINMENT");
@@ -150,86 +150,136 @@ public class SankazApplication {
 		genderRepo.save(gender2);
 
 		CompanyCategory companyCategory = new CompanyCategory();
-		companyCategory.setCode("CAT1");
-		companyCategory.setName("companyCategory 1");
+		companyCategory.setCode("TOUR");
+		companyCategory.setName("Туристическая");
 		companyCategory.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
 		companyCategoryRepo.save(companyCategory);
 
 		CompanyCategory companyCategory1 = new CompanyCategory();
-		companyCategory1.setCode("CAT2");
-		companyCategory1.setName("companyCategory 2");
+		companyCategory1.setCode("PROF");
+		companyCategory1.setName("Прфилактическая");
 		companyCategory1.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
 		companyCategoryRepo.save(companyCategory1);
 
+		createOrganization1(userRepo,
+				moderator,
+				companyCategory,
+				sanType,
+				city,
+				organizationRepo,
+				sanRepo,
+				roomClassDicRepo,
+				roomRepo,
+				passwordEncoder);
+
+		createOrganization2(userRepo,
+				moderator,
+				companyCategory,
+				sanType,
+				city,
+				organizationRepo,
+				sanRepo,
+				roomClassDicRepo,
+				roomRepo,
+				passwordEncoder);
+
+		createOrganization3(userRepo,
+				moderator,
+				companyCategory1,
+				sanType2,
+				city2,
+				organizationRepo,
+				sanRepo,
+				roomClassDicRepo,
+				roomRepo,
+				passwordEncoder);
+
+		createOrganization4(userRepo,
+				moderator,
+				companyCategory1,
+				sanType2,
+				city2,
+				organizationRepo,
+				sanRepo,
+				roomClassDicRepo,
+				roomRepo,
+				passwordEncoder);
+
+
+	}
+
+	public static void createOrganization1(UserRepo userRepo,
+								  SecRole moderator,
+								  CompanyCategory companyCategory,
+								  SanType sanType,
+								  City city,
+								  OrganizationRepo organizationRepo,
+								  SanRepo sanRepo,
+								  RoomClassDicRepo roomClassDicRepo,
+								  RoomRepo roomRepo,
+								  PasswordEncoder passwordEncoder) {
+		SecUser orgUser = new SecUser();
+		orgUser.setUserType(UserType.ORG);
+		orgUser.setFirstName("Organ");
+		orgUser.setLastName("Organ");
+		orgUser.setTelNumber("+77770000070");
+		orgUser.setEmail("organ@organ.kz");
+		orgUser.setUsername("+77770000070");
+		orgUser.setPassword(passwordEncoder.encode("123123123"));
+		orgUser.addRole(moderator);
+		orgUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
+		orgUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
+		orgUser.setConfirmationNumber(0);
+		orgUser.setConfirmedBy("admin");
+		orgUser.setConfirmedDate(LocalDateTime.now());
+		orgUser.setActive(true);
+		orgUser.setLoggedOut(false);
+		userRepo.save(orgUser);
+
 		Organization organization = new Organization();
-//		organization.setSiteLink();
-//		organization.setInstagramLink();
-//		organization.setAddress();
-//		organization.setDescription();
-//		organization.setCompanyName();
-//		organization.setConfirmedBy("+77770000000");
-//		organization.setConfirmedDate(LocalDateTime.now());
+		organization.setSiteLink("smsc.kz");
+		organization.setInstagramLink("instagram.com/rkalmat");
+		organization.setAddress("г.Сатпаев, ул.Абая, д.175");
+		organization.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		organization.setCompanyName("Берега");
+		organization.setConfirmedBy("+77770000000");
+		organization.setApprovedDate(LocalDateTime.now());
 		organization.setCompanyCategory(companyCategory);
-		organization.setIin("121212121212");
-		organization.setIban("12121212121212");
+		organization.setIin("707070707070");
+		organization.setIban("70707070707070");
 		organization.setTelNumber(orgUser.getTelNumber());
 		organization.setManagerFullName(orgUser.getFullName());
 		organization.setUser(orgUser);
-		organization.setName("Test ORG 1");
+		organization.setName("ТОО Отдых");
 		organization.setEmail("org@mail.kz");
-		organization.setConfirmationStatus(OrganizationConfirmationStatus.CONFIRMED);
+		organization.setConfirmationStatus(OrganizationConfirmationStatus.SERVICE_CREATED);
 		organizationRepo.save(organization);
 
 		San san = new San();
-		san.setName("test");
-		san.setDescription("test test test");
+		san.setName("Ақбұлак");
+		san.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		san.setAddress("Талгар, ул.Бокейханов, д.17");
 		san.setSanType(sanType);
 		san.setCity(city);
 		san.setOrganization(organization);
 		sanRepo.save(san);
 
-		San san1 = new San();
-		san1.setName("test 1");
-		san1.setDescription("test 1 test 1 test 1");
-		san1.setSanType(sanType);
-		san1.setCity(city2);
-		san1.setOrganization(organization);
-		sanRepo.save(san1);
-
-		San san2 = new San();
-		san2.setName("test 2");
-		san2.setDescription("test 2 test 2 test 2");
-		san2.setSanType(sanType2);
-		san2.setCity(city2);
-		san2.setOrganization(organization);
-		sanRepo.save(san2);
-
-		San san3 = new San();
-		san3.setName("test 3");
-		san3.setDescription("test 3 test 3 test 3");
-		san3.setSanType(sanType);
-		san3.setCity(city);
-		san3.setOrganization(organization);
-		sanRepo.save(san3);
-
-		San san4 = new San();
-		san4.setName("test 4");
-		san4.setDescription("test 4 test 4 test 4");
-		san4.setSanType(sanType2);
-		san4.setCity(city);
-		san4.setOrganization(organization);
-		sanRepo.save(san4);
-
 		RoomClassDic roomClassDic = new RoomClassDic();
-		roomClassDic.setSan(san4);
+		roomClassDic.setSan(san);
 		roomClassDic.setCode("LUX");
-		roomClassDic.setName("lux");
+		roomClassDic.setName("Люкс");
+		roomClassDic.setNameKz("Люкс");
+		roomClassDic.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDic.setDescriptionKz("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
 		roomClassDicRepo.save(roomClassDic);
 
 		RoomClassDic roomClassDic2 = new RoomClassDic();
-		roomClassDic2.setSan(san4);
+		roomClassDic2.setSan(san);
 		roomClassDic2.setCode("COM");
-		roomClassDic2.setName("Comfort");
+		roomClassDic2.setName("Комфорт");
+		roomClassDic2.setNameKz("Комфорт");
+		roomClassDic2.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDic2.setDescriptionKz("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
 		roomClassDicRepo.save(roomClassDic2);
 
 		Room room = new Room();
@@ -237,7 +287,7 @@ public class SankazApplication {
 		room.setPrice(BigDecimal.valueOf(14500));
 		room.setRoomCount(2);
 		room.setBedCount(1);
-		room.setRoomNumber("101E");
+		room.setRoomNumber("201E");
 		roomRepo.save(room);
 
 		Room room2 = new Room();
@@ -248,5 +298,280 @@ public class SankazApplication {
 		room2.setRoomNumber("101");
 		roomRepo.save(room2);
 	}
+
+	public static void createOrganization2(UserRepo userRepo,
+										   SecRole moderator,
+										   CompanyCategory companyCategory,
+										   SanType sanType,
+										   City city,
+										   OrganizationRepo organizationRepo,
+										   SanRepo sanRepo,
+										   RoomClassDicRepo roomClassDicRepo,
+										   RoomRepo roomRepo,
+										   PasswordEncoder passwordEncoder) {
+		SecUser orgUser = new SecUser();
+		orgUser.setUserType(UserType.ORG);
+		orgUser.setFirstName("Organ 1");
+		orgUser.setLastName("Organ 1");
+		orgUser.setTelNumber("+77770000071");
+		orgUser.setEmail("organ1@organ.kz");
+		orgUser.setUsername("+77770000071");
+		orgUser.setPassword(passwordEncoder.encode("123123123"));
+		orgUser.addRole(moderator);
+		orgUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
+		orgUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
+		orgUser.setConfirmationNumber(0);
+		orgUser.setConfirmedBy("admin");
+		orgUser.setConfirmedDate(LocalDateTime.now());
+		orgUser.setActive(true);
+		orgUser.setLoggedOut(false);
+		userRepo.save(orgUser);
+
+		Organization organization = new Organization();
+		organization.setSiteLink("github.com");
+		organization.setInstagramLink("instagram.com/fckairat");
+		organization.setAddress("г.Сатпаев, ул.Төле би, д.100");
+		organization.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		organization.setCompanyName("Номад");
+		organization.setConfirmedBy("+77770000000");
+		organization.setApprovedDate(LocalDateTime.now());
+		organization.setCompanyCategory(companyCategory);
+		organization.setIin("717171717171");
+		organization.setIban("71717171717171");
+		organization.setTelNumber(orgUser.getTelNumber());
+		organization.setManagerFullName(orgUser.getFullName());
+		organization.setUser(orgUser);
+		organization.setName("ИП Общак");
+		organization.setEmail("org1@mail.kz");
+		organization.setConfirmationStatus(OrganizationConfirmationStatus.SERVICE_CREATED);
+		organizationRepo.save(organization);
+
+		San san = new San();
+		san.setName("Лесная сказка");
+		san.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		san.setAddress("Талгар, ул.Абылай хан, д.20");
+		san.setSanType(sanType);
+		san.setCity(city);
+		san.setOrganization(organization);
+		sanRepo.save(san);
+
+		RoomClassDic roomClassDic = new RoomClassDic();
+		roomClassDic.setSan(san);
+		roomClassDic.setCode("LUX");
+		roomClassDic.setName("Люкс");
+		roomClassDic.setNameKz("Люкс");
+		roomClassDic.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDic.setDescriptionKz("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDicRepo.save(roomClassDic);
+
+		RoomClassDic roomClassDic2 = new RoomClassDic();
+		roomClassDic2.setSan(san);
+		roomClassDic2.setCode("COM");
+		roomClassDic2.setName("Комфорт");
+		roomClassDic2.setNameKz("Комфорт");
+		roomClassDic2.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDic2.setDescriptionKz("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDicRepo.save(roomClassDic2);
+
+		Room room = new Room();
+		room.setRoomClassDic(roomClassDic2);
+		room.setPrice(BigDecimal.valueOf(14500));
+		room.setRoomCount(2);
+		room.setBedCount(1);
+		room.setRoomNumber("31");
+		roomRepo.save(room);
+
+		Room room2 = new Room();
+		room2.setRoomClassDic(roomClassDic);
+		room2.setPrice(BigDecimal.valueOf(34500));
+		room2.setRoomCount(3);
+		room2.setBedCount(2);
+		room2.setRoomNumber("9");
+		roomRepo.save(room2);
+	}
+
+	public static void createOrganization3(UserRepo userRepo,
+										   SecRole moderator,
+										   CompanyCategory companyCategory,
+										   SanType sanType,
+										   City city,
+										   OrganizationRepo organizationRepo,
+										   SanRepo sanRepo,
+										   RoomClassDicRepo roomClassDicRepo,
+										   RoomRepo roomRepo,
+										   PasswordEncoder passwordEncoder) {
+		SecUser orgUser = new SecUser();
+		orgUser.setUserType(UserType.ORG);
+		orgUser.setFirstName("Organ 2");
+		orgUser.setLastName("Organ 2");
+		orgUser.setTelNumber("+77770000072");
+		orgUser.setEmail("organ2@organ.kz");
+		orgUser.setUsername("+77770000072");
+		orgUser.setPassword(passwordEncoder.encode("123123123"));
+		orgUser.addRole(moderator);
+		orgUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
+		orgUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
+		orgUser.setConfirmationNumber(0);
+		orgUser.setConfirmedBy("admin");
+		orgUser.setConfirmedDate(LocalDateTime.now());
+		orgUser.setActive(true);
+		orgUser.setLoggedOut(false);
+		userRepo.save(orgUser);
+
+		Organization organization = new Organization();
+		organization.setSiteLink("jira.com");
+		organization.setInstagramLink("instagram.com/dauletten");
+		organization.setAddress("г.Жезказган, ул.Сейдімбек, д.10");
+		organization.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		organization.setCompanyName("Степь");
+		organization.setConfirmedBy("+77770000000");
+		organization.setApprovedDate(LocalDateTime.now());
+		organization.setCompanyCategory(companyCategory);
+		organization.setIin("727272727272");
+		organization.setIban("72727272727272");
+		organization.setTelNumber(orgUser.getTelNumber());
+		organization.setManagerFullName(orgUser.getFullName());
+		organization.setUser(orgUser);
+		organization.setName("ИП Улытау");
+		organization.setEmail("org2@mail.kz");
+		organization.setConfirmationStatus(OrganizationConfirmationStatus.CONFIRMED);
+		organizationRepo.save(organization);
+
+		San san = new San();
+		san.setName("Шымбұлак");
+		san.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		san.setAddress("Талгар, ул.Есенберлин, д.");
+		san.setSanType(sanType);
+		san.setCity(city);
+		san.setOrganization(organization);
+		sanRepo.save(san);
+
+		RoomClassDic roomClassDic = new RoomClassDic();
+		roomClassDic.setSan(san);
+		roomClassDic.setCode("LUX");
+		roomClassDic.setName("Люкс");
+		roomClassDic.setNameKz("Люкс");
+		roomClassDic.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDic.setDescriptionKz("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDicRepo.save(roomClassDic);
+
+		RoomClassDic roomClassDic2 = new RoomClassDic();
+		roomClassDic2.setSan(san);
+		roomClassDic2.setCode("COM");
+		roomClassDic2.setName("Комфорт");
+		roomClassDic2.setNameKz("Комфорт");
+		roomClassDic2.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDic2.setDescriptionKz("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDicRepo.save(roomClassDic2);
+
+		Room room = new Room();
+		room.setRoomClassDic(roomClassDic2);
+		room.setPrice(BigDecimal.valueOf(14500));
+		room.setRoomCount(2);
+		room.setBedCount(1);
+		room.setRoomNumber("13");
+		roomRepo.save(room);
+
+		Room room2 = new Room();
+		room2.setRoomClassDic(roomClassDic);
+		room2.setPrice(BigDecimal.valueOf(34500));
+		room2.setRoomCount(3);
+		room2.setBedCount(2);
+		room2.setRoomNumber("7");
+		roomRepo.save(room2);
+	}
+
+	public static void createOrganization4(UserRepo userRepo,
+										   SecRole moderator,
+										   CompanyCategory companyCategory,
+										   SanType sanType,
+										   City city,
+										   OrganizationRepo organizationRepo,
+										   SanRepo sanRepo,
+										   RoomClassDicRepo roomClassDicRepo,
+										   RoomRepo roomRepo,
+										   PasswordEncoder passwordEncoder) {
+		SecUser orgUser = new SecUser();
+		orgUser.setUserType(UserType.ORG);
+		orgUser.setFirstName("Organ 3");
+		orgUser.setLastName("Organ 3");
+		orgUser.setTelNumber("+77770000073");
+		orgUser.setEmail("organ3@organ.kz");
+		orgUser.setUsername("+77770000073");
+		orgUser.setPassword(passwordEncoder.encode("123123123"));
+		orgUser.addRole(moderator);
+		orgUser.setConfirmationStatus(ConfirmationStatus.FINISHED);
+		orgUser.setResetNumberStatus(ResetNumberStatus.EMPTY);
+		orgUser.setConfirmationNumber(0);
+		orgUser.setConfirmedBy("admin");
+		orgUser.setConfirmedDate(LocalDateTime.now());
+		orgUser.setActive(true);
+		orgUser.setLoggedOut(false);
+		userRepo.save(orgUser);
+
+		Organization organization = new Organization();
+		organization.setSiteLink("bitbucket.com");
+		organization.setInstagramLink("instagram.com/apple");
+		organization.setAddress("г.Кокшетау, ул.Тау, д.14а");
+		organization.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		organization.setCompanyName("Көкше");
+		organization.setConfirmedBy("+77770000000");
+		organization.setApprovedDate(LocalDateTime.now());
+		organization.setCompanyCategory(companyCategory);
+		organization.setIin("737373737373");
+		organization.setIban("73737373737373");
+		organization.setTelNumber(orgUser.getTelNumber());
+		organization.setManagerFullName(orgUser.getFullName());
+		organization.setUser(orgUser);
+		organization.setName("Kokshe Group");
+		organization.setEmail("org3@mail.kz");
+		organization.setConfirmationStatus(OrganizationConfirmationStatus.SERVICE_CREATED);
+		organizationRepo.save(organization);
+
+		San san = new San();
+		san.setName("8 озер");
+		san.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		san.setSanType(sanType);
+		san.setAddress("Талгар, ул.Кунаев, д.90");
+		san.setCity(city);
+		san.setOrganization(organization);
+		sanRepo.save(san);
+
+		RoomClassDic roomClassDic = new RoomClassDic();
+		roomClassDic.setSan(san);
+		roomClassDic.setCode("LUX");
+		roomClassDic.setName("Люкс");
+		roomClassDic.setNameKz("Люкс");
+		roomClassDic.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDic.setDescriptionKz("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDicRepo.save(roomClassDic);
+
+		RoomClassDic roomClassDic2 = new RoomClassDic();
+		roomClassDic2.setSan(san);
+		roomClassDic2.setCode("COM");
+		roomClassDic2.setName("Комфорт");
+		roomClassDic2.setNameKz("Комфорт");
+		roomClassDic2.setDescription("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDic2.setDescriptionKz("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+		roomClassDicRepo.save(roomClassDic2);
+
+		Room room = new Room();
+		room.setRoomClassDic(roomClassDic2);
+		room.setPrice(BigDecimal.valueOf(14500));
+		room.setRoomCount(2);
+		room.setBedCount(1);
+		room.setRoomNumber("13");
+		roomRepo.save(room);
+
+		Room room2 = new Room();
+		room2.setRoomClassDic(roomClassDic);
+		room2.setPrice(BigDecimal.valueOf(34500));
+		room2.setRoomCount(3);
+		room2.setBedCount(2);
+		room2.setRoomNumber("7");
+		roomRepo.save(room2);
+	}
+
+
 
 }

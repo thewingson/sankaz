@@ -12,7 +12,7 @@ import java.util.List;
 public interface RoomClassDicRepo extends CommonRepo<RoomClassDic> {
 
     @Query("select distinct d from RoomClassDic d " +
-            "join fetch d.rooms r " +
+            "left join fetch d.rooms r " +
             "where d.san.id = :sanId")
     List<RoomClassDic> getRoomClassDicBySanId(@Param("sanId") Long sanId);
 

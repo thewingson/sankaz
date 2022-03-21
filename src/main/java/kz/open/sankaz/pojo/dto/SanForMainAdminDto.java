@@ -11,9 +11,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SanForMainDto extends BaseDto {
+public class SanForMainAdminDto extends BaseDto {
     private String name;
     private DictionaryLangDto sanType;
+    private DictionaryLangDto city;
+    private String address;
     private String description;
     private String mainPicUrl;
     private Float rating;

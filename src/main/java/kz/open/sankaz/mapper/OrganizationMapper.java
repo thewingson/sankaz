@@ -17,6 +17,9 @@ public abstract class OrganizationMapper extends AbstractMapper {
     @Autowired
     protected SecUserMapper secUserMapper;
 
+    @Autowired
+    protected SanMapper sanMapper;
+
     @Named("organizationToDto")
     @Mapping(target = "user", expression = "java( secUserMapper.userToSecUserInOrgDto(organization.getUser()) )")
     @Mapping(target = "pics", expression = "java( fileToDto(organization.getPics()) )")
@@ -34,6 +37,8 @@ public abstract class OrganizationMapper extends AbstractMapper {
     abstract public List<OrganizationDto> organizationToDtoWithAddData(List<Organization> organizations);
 
     @Named("organizationToOrganizationRegisterDto")
+    @Mapping(target = "orgId", source = "organization.id")
+    @Mapping(target = "sans", expression = "java( sanMapper.sanToSanForMainDto(organization.getSans()) )")
     abstract public OrganizationRegisterDto toOrganizationRegisterDto(Organization organization);
     @IterableMapping(qualifiedByName = "organizationToOrganizationRegisterDto")
     abstract public List<OrganizationRegisterDto> toOrganizationRegisterDto(List<Organization> organizations);

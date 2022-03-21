@@ -4,6 +4,7 @@ import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.dto.PictureDto;
 import kz.open.sankaz.pojo.dto.TokenDto;
+import kz.open.sankaz.pojo.dto.notifications.UserNotificationDto;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
 import kz.open.sankaz.pojo.filter.UserCreateFilter;
 import kz.open.sankaz.pojo.filter.UserEditFilter;
@@ -37,4 +38,8 @@ public interface UserService extends UserDetailsManager, CommonService<SecUser> 
     void deletePic(Long userId);
 
     List<SecUser> getAllPageWithFilter(String fullName, String telNumber, int page, int size);
+
+    UserNotificationDto getNotifications(Long userId, int page, int size);
+
+    void viewNotification(Long notId);
 }

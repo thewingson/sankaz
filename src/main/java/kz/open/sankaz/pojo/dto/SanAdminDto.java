@@ -16,12 +16,10 @@ public class SanAdminDto extends AbstractDto {
     private String description;
     private String instagramLink;
     private String siteLink;
-    private Long sanTypeId;
+    private DictionaryLangDto sanType;
     private List<String> telNumbers;
     private FileDto pic;
-    private Long cityId;
+    private DictionaryLangDto city;
     private Long orgId;
-    private Double longitude;
-    private Double latitude;
     private List<FileDto> pics;
 }

@@ -36,4 +36,12 @@ public interface UserRepo extends CommonRepo<SecUser> {
                                         String telNumber,
                                         int page,
                                         int size);
+
+    @Query(value = "select e.* from sec_user e where e.user_type = :userType and e.active = :active",
+            nativeQuery = true)
+    List<SecUser> findAllByUserTypeAndActive(@Param("userType") String userType,
+                                             @Param("active") boolean active);
+
+    @Query("select e from SecUser e left join fetch e.favorites where e.id = :id")
+    Optional<SecUser> findById(@Param("id") Long id);
 }

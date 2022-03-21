@@ -7,7 +7,6 @@ import kz.open.sankaz.pojo.filter.ResetPasswordFilter;
 import kz.open.sankaz.pojo.filter.TelNumberFilter;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.AuthService;
-import kz.open.sankaz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +33,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/users/auth")
 public class UserAuthRest {
 
-    private final UserService userService;
     private final AuthService authService;
 
     @Autowired
-    public UserAuthRest(UserService userService, AuthService authService) {
-        this.userService = userService;
+    public UserAuthRest(AuthService authService) {
         this.authService = authService;
     }
 

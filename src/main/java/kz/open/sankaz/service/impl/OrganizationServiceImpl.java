@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -64,6 +65,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         super(organizationRepo);
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @Override
     public Organization getOrganizationByTelNumber(String telNumber) {
         Optional<Organization> organization = repo.findByTelNumber(telNumber);
@@ -75,6 +77,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         return organization.get();
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @Override
     public Organization getOrganizationByUser(SecUser user) {
         Optional<Organization> organization = repo.findByUser(user);
@@ -86,6 +89,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         return organization.get();
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @Override
     public Organization getOrganizationByIban(String iban) {
         Optional<Organization> organization = repo.findByIban(iban);
@@ -97,6 +101,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         return organization.get();
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @Override
     public Organization getOrganizationByIin(String iin) {
         Optional<Organization> organization = repo.findByIin(iin);
@@ -119,9 +124,10 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         if(organization.getConfirmationStatus().equals(OrganizationConfirmationStatus.CONFIRMED)){
             throw new RuntimeException("Данная организация уже одобрена!");
         }
+        organization.setRejectedDate(null);
         organization.setRejectMessage(null);
+        organization.setApprovedDate(LocalDateTime.now());
         organization.setConfirmationStatus(OrganizationConfirmationStatus.CONFIRMED);
-        organization.setConfirmedDate(LocalDateTime.now());
         organization.setConfirmedBy(authService.getCurrentUsername());
         editOneById(organization);
     }
@@ -135,10 +141,11 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         if(!organization.getConfirmationStatus().equals(OrganizationConfirmationStatus.ON_CONFIRMATION)){
             throw new RuntimeException("Организация не находится на утверждении!");
         }
-        organization.setConfirmationStatus(OrganizationConfirmationStatus.REJECTED);
-        organization.setConfirmedDate(LocalDateTime.now());
-        organization.setConfirmedBy(authService.getCurrentUsername());
+        organization.setApprovedDate(null);
+        organization.setRejectedDate(LocalDateTime.now());
         organization.setRejectMessage(rejectMessage);
+        organization.setConfirmationStatus(OrganizationConfirmationStatus.REJECTED);
+        organization.setConfirmedBy(authService.getCurrentUsername());
         editOneById(organization);
     }
 

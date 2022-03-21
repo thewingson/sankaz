@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SecUser extends AbstractEntity implements UserDetails{
+public class  SecUser extends AbstractEntity implements UserDetails{
 
     @Id
     @GeneratedValue(generator = "SEC_USER_SEQ", strategy = GenerationType.SEQUENCE)
@@ -119,6 +120,16 @@ public class SecUser extends AbstractEntity implements UserDetails{
     @JsonBackReference
     private List<Organization> organizations;
 
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "USER_FAVORITES",
+            joinColumns = @JoinColumn(name = "USER_ID", foreignKey = @ForeignKey(name = "FAV_USER_FK")),
+            inverseJoinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "FAV_SAN_FK")),
+            uniqueConstraints = @UniqueConstraint(name = "UK_USER_ID_AND_SAN_ID",
+                    columnNames = {"USER_ID", "SAN_ID"})
+    )
+    private List<San> favorites;
+
     public SecUser(Long id,
                    String username,
                    String password,
@@ -187,5 +198,31 @@ public class SecUser extends AbstractEntity implements UserDetails{
 
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+
+    public void addFav(San san){
+        if(getFavorites() == null){
+            this.favorites = new ArrayList<>();
+        }
+        favorites.add(san);
+    }
+
+    public void deleteFav(San san){
+        if(!getFavorites().isEmpty()){
+            favorites.remove(san);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SecUser secUser = (SecUser) o;
+        return Objects.equals(id, secUser.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
