@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,7 +20,15 @@ public class SecUserToken extends AbstractEntity {
 
     @Id
     @GeneratedValue(generator = "JWT_BLACK_LIST_SEQ", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(sequenceName = "JWT_BLACK_LIST_ID_SEQ", name = "JWT_BLACK_LIST_ID", allocationSize = 1)
+    @GenericGenerator(
+            name = "JWT_BLACK_LIST_SEQ",
+            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {
+                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "JWT_BLACK_LIST_SEQ"),
+                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
+                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+            }
+    )
     private Long id;
 
     @Column(name = "ACCESS_TOKEN", nullable = false)

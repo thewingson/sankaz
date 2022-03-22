@@ -5,22 +5,22 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="2" author="aleks_ush">
+    <changeSet id="1" author="almat_rakhmetolla">
         <sqlFile dbms="postgresql"
                  encoding="utf8"
-                 endDelimiter="\n>>"
+                 endDelimiter="\n;"
                  relativeToChangelogFile="true"
                  splitStatements="true"
                  stripComments="true"
-                 path="01-create-category-table.sql"/>
+                 path="20220322-01-init-db.sql"/>
         <rollback>
             <sqlFile dbms="postgresql"
                      encoding="utf8"
-                     endDelimiter="\n>>"
+                     endDelimiter="\n;"
                      relativeToChangelogFile="true"
                      splitStatements="true"
                      stripComments="true"
-                     path="01-drop-category-table.sql"/>
+                     path="20220322-01-init-db-drop.sql"/>
         </rollback>
     </changeSet>
 

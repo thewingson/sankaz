@@ -24,7 +24,6 @@ import kz.open.sankaz.properties.SmsProperties;
 import kz.open.sankaz.repo.SecUserTokenRepo;
 import kz.open.sankaz.service.*;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -68,10 +67,6 @@ public class AuthServiceImpl implements AuthService {
     private GenderService genderService;
     @Autowired
     private OrganizationService organizationService;
-    @Autowired
-    private SmsSender smsSender;
-    @Autowired
-    private MailSender mailSender;
     @Autowired
     private SmsProperties smsProperties;
     @Autowired

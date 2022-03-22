@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -18,7 +19,15 @@ public class UserDeviceToken extends AbstractEntity {
 
     @Id
     @GeneratedValue(generator = "USER_DEVICE_TOKEN_SEQ", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(sequenceName = "USER_DEVICE_TOKEN_ID_SEQ", name = "USER_DEVICE_TOKEN_ID", allocationSize = 1)
+    @GenericGenerator(
+            name = "USER_DEVICE_TOKEN_SEQ",
+            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {
+                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "USER_DEVICE_TOKEN_SEQ"),
+                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
+                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+            }
+    )
     private Long id;
 
     @Column(name = "TOKEN", nullable = false, unique = true)

@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -25,7 +26,15 @@ public class Organization extends AbstractEntity {
 
     @Id
     @GeneratedValue(generator = "ORGANIZATION_SEQ", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(sequenceName = "ORGANIZATION_ID_SEQ", name = "ORGANIZATION_ID", allocationSize = 1)
+    @GenericGenerator(
+            name = "ORGANIZATION_SEQ",
+            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {
+                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "ORGANIZATION_SEQ"),
+                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
+                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+            }
+    )
     private Long id;
 
     @Column(name = "NAME", nullable = false)

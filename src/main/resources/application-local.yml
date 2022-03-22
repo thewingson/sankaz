@@ -16,7 +16,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: public
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: true
   datasource:
     url: jdbc:postgresql://localhost/sk_local
@@ -35,8 +35,8 @@ spring:
     port: 465
     protocol: smtps
   liquibase:
-    enabled: false
-    change-log: classpath:liquibase/changelog-master.xml
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
   servlet:
     multipart:
       max-file-size: 2MB

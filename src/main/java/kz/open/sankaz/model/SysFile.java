@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -18,7 +19,15 @@ public class SysFile extends AbstractEntity {
 
     @Id
     @GeneratedValue(generator = "SYS_FILE_SEQ", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(sequenceName = "SYS_FILE_ID_SEQ", name = "SYS_FILE_ID", allocationSize = 1)
+    @GenericGenerator(
+            name = "SYS_FILE_SEQ",
+            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {
+                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "SYS_FILE_SEQ"),
+                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
+                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+            }
+    )
     private Long id;
 
     @Column(name = "FILE_NAME", nullable = false)

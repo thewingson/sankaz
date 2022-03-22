@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -17,7 +18,15 @@ public class Gender extends AbstractDictionaryLangEntity {
 
     @Id
     @GeneratedValue(generator = "GENDER_SEQ", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(sequenceName = "GENDER_ID_SEQ", name = "GENDER_ID", allocationSize = 1)
+    @GenericGenerator(
+            name = "GENDER_SEQ",
+            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {
+                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "GENDER_SEQ"),
+                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
+                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+            }
+    )
     private Long id;
 
 }

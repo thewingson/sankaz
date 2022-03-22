@@ -1,7 +1,6 @@
 package kz.open.sankaz.mapper;
 
 import kz.open.sankaz.model.Room;
-import kz.open.sankaz.model.RoomClass;
 import kz.open.sankaz.model.RoomClassDic;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.dto.*;
@@ -33,11 +32,6 @@ public abstract class RoomMapper extends AbstractMapper {
     @IterableMapping(qualifiedByName = "roomToRoomForBookCreateDto")
     abstract public List<RoomForBookCreateDto> roomToRoomForBookCreateDto(List<Room> rooms);
 
-//    @Named("roomToRoomInSanByIdDto")
-//    @Mapping(target = "mainPicUrl", expression = "java( getFirstPicUrlFromSysFiles(roomClass.getPics()) )")
-//    abstract public RoomInSanByIdDto roomToRoomInSanByIdDto(RoomClass roomClass);
-//    @IterableMapping(qualifiedByName = "roomToRoomInSanByIdDto")
-//    abstract public List<RoomInSanByIdDto> roomToRoomInSanByIdDto(List<RoomClass> roomClasses);
     @Named("roomToRoomInSanByIdDto")
     @Mapping(target = "mainPicUrl", expression = "java( getFirstPicUrlFromSysFiles(room.getPics()) )")
     @Mapping(target = "name", source = "room.roomClassDic.name")
@@ -60,13 +54,6 @@ public abstract class RoomMapper extends AbstractMapper {
     abstract public RoomByIdDto roomToRoomByIdDtoForAdmin(Room room);
     @IterableMapping(qualifiedByName = "roomToRoomByIdDtoForAdmin")
     abstract public List<RoomByIdDto> roomToRoomByIdDtoForAdmin(List<Room> rooms);
-
-    @Named("roomToRoomByIdDto")
-    @Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles(roomClass.getPics()) )")
-    abstract public RoomByIdDto roomToRoomByIdDto(RoomClass roomClass);
-    @IterableMapping(qualifiedByName = "roomToRoomByIdDto")
-    abstract public List<RoomByIdDto> roomToRoomByIdDto(List<RoomClass> roomClasses);
-
 
     protected String getFirstPicUrlFromSysFiles(List<SysFile> pics){
         if(pics != null && !pics.isEmpty()){
