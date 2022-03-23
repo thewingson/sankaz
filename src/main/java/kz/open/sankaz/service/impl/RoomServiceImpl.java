@@ -2,6 +2,7 @@ package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.Room;
+import kz.open.sankaz.model.RoomClassDic;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import kz.open.sankaz.repo.RoomRepo;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -57,8 +59,13 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
 
     @Override
     public Room addOne(RoomCreateFilter filter, MultipartFile[] pics) throws IOException {
+        RoomClassDic classDic = roomClassDicService.getOne(filter.getRoomClassDicId());
+        List<Room> rooms = repo.findRoomByNameAndSan(classDic.getSan().getId(), filter.getRoomNumber().toLowerCase());
+        if(!rooms.isEmpty()){
+            throw new RuntimeException("Такой номер уже записан! Выберите другой номер");
+        }
         Room room = new Room();
-        room.setRoomClassDic(roomClassDicService.getOne(filter.getRoomClassDicId()));
+        room.setRoomClassDic(classDic);
         room.setRoomNumber(filter.getRoomNumber());
         room.setBedCount(filter.getBedCount());
         room.setRoomCount(filter.getRoomCount());
@@ -110,6 +117,7 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
         log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
         Room room = getOne(roomId);
 
+        List<SysFile> savedPics = new ArrayList<>();
         for(MultipartFile pic : pics){
             if (!pic.getOriginalFilename().isEmpty()) {
                 File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
@@ -128,12 +136,13 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
                 file.setExtension(pic.getContentType());
                 file.setSize(pic.getSize());
                 file = sysFileService.addOne(file);
+                savedPics.add(file);
 
                 room.addPic(file);
             }
         }
 
-        return editOneById(room).getPics();
+        return savedPics;
     }
 
     @Override

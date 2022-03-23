@@ -39,7 +39,7 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.xml
   servlet:
     multipart:
-      max-file-size: 2MB
+      max-file-size: 7MB
 
 mail:
   host: localhost

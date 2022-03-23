@@ -259,14 +259,10 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Override
     public List<SanForMainAdminDto> getAllForMainAdmin(Long userId, SanForMainFilter filter, int page, int size) {
-        int personCount = Optional.ofNullable(filter.getAdults()).orElse(0) + Optional.ofNullable(filter.getChildren()).orElse(0);
-        List<San> result = sanRepo.getAllBySanForMainFilter(
+        List<San> result = sanRepo.getAllBySanForMainAdminFilter(
                 filter.getCityId(),
                 filter.getName().toLowerCase(),
                 filter.getSanTypeCode().toLowerCase(),
-                filter.getStartDate(),
-                filter.getEndDate(),
-                personCount,
                 page, size);
 
         List<SanForMainAdminDto> sanForMainDtos = sanMapper.sanToSanForMainAdminDto(result);

@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
@@ -39,19 +40,13 @@ public class AdminSanRest {
             @RequestParam(required = false) Long cityId,
             @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "") String sanTypeCode,
-            @RequestParam(value="startDate", required = false) String startDate,
-            @RequestParam(value="endDate", required = false) String endDate,
-            @RequestParam(required = false) Integer adults,
-            @RequestParam(required = false) Integer children,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
         try{
             Long userId = authService.getUserId(request);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            SanForMainFilter filter = new SanForMainFilter(cityId, name, sanTypeCode,
-                    startDate.isEmpty() ? null : LocalDateTime.parse(startDate, formatter),
-                    endDate.isEmpty() ? null : LocalDateTime.parse(endDate, formatter), adults, children);
+            SanForMainFilter filter =
+                    new SanForMainFilter(cityId, name, sanTypeCode, null, null, null, null);
             return ResponseModel.success(sanService.getAllForMainAdmin(userId, filter, page, size));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());

@@ -160,7 +160,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         organization.setConfirmationStatus(OrganizationConfirmationStatus.PROFILE_FINISHED);
         organization.setCompanyCategory(category);
         organization.setCompanyCategory(category);
-        organization.setCompanyName(filter.getCompanyName());
         organization.setDescription(filter.getDescription());
         organization.setAddress(filter.getAddress());
         organization.setInstagramLink(filter.getInstagramLink());
@@ -273,7 +272,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         organization.setTelNumber(filter.getTelNumber());
         organization.setIin(filter.getIin());
         organization.setCompanyCategory(companyCategory);
-        organization.setCompanyName(filter.getCompanyName());
         organization.setAddress(filter.getAddress());
         organization.setDescription(filter.getDescription());
         organization.setSiteLink(filter.getSiteLink());
@@ -338,7 +336,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         organization.setTelNumber(filter.getTelNumber());
         organization.setIin(filter.getIin());
         organization.setCompanyCategory(companyCategory);
-        organization.setCompanyName(filter.getCompanyName());
         organization.setAddress(filter.getAddress());
         organization.setDescription(filter.getDescription());
         organization.setSiteLink(filter.getSiteLink());

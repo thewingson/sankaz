@@ -76,9 +76,6 @@ public class Organization extends AbstractEntity {
     @JsonManagedReference
     private SecUser user;
 
-    @Column(name = "COMPANY_NAME")
-    private String companyName;
-
     @Column(name = "DESCRIPTION")
     private String description;
 

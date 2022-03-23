@@ -452,6 +452,16 @@ VALUES(nextval('public.sec_user_seq'), true, 0, NULL, 'FINISHED', 'admin', '2022
        (nextval('public.sec_user_seq'), true, 0, NULL, 'FINISHED', 'admin', '2022-03-22 20:10:14.576', 'organ2@organ.kz', 'Organ 2', 'Organ 2', false, '$2a$10$3kWTOoVN2oFsnwI3nn1GB..f596cPpl8S4tbYM0UAqPyGUnDlky3W', 0, NULL, 'EMPTY', '+77770000072', 'ORG', '+77770000072', NULL, NULL, NULL),
        (nextval('public.sec_user_seq'), true, 0, NULL, 'FINISHED', 'admin', '2022-03-22 20:10:14.693', 'organ3@organ.kz', 'Organ 3', 'Organ 3', false, '$2a$10$JdwvW8Fi11Gak/Dcm9hGN.oxNZXt00pLQYVhIyeRAaR1fBNO6uLKe', 0, NULL, 'EMPTY', '+77770000073', 'ORG', '+77770000073', NULL, NULL, NULL);
 
+INSERT INTO public.sec_user_roles
+(user_id, role_id)
+VALUES(1, 1),
+      (2, 3),
+      (3, 3),
+      (4, 2),
+      (5, 2),
+      (6, 2),
+      (6, 2);
+
 INSERT INTO public.san_type
 (id, code, description, "name", description_kz, name_kz)
 VALUES(nextval('public.san_type_seq'), 'ENTERTAINMENT', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Развлекательный', NULL, NULL),
@@ -473,11 +483,11 @@ VALUES(nextval('public.company_category_seq'), 'TOUR', 'Lorem Ipsum is simply du
        (nextval('public.company_category_seq'), 'PROF', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Прфилактическая', NULL, NULL);
 
 INSERT INTO public.organization
-(id, address, approved_date, company_name, confirmation_status, confirmed_by, description, email, iban, iin, instagram_link, manager_full_name, "name", reject_message, rejected_date, request_date, site_link, tel_number, company_category_id, user_id)
-VALUES(nextval('public.organization_seq'), 'г.Сатпаев, ул.Абая, д.175', '2022-03-22 20:10:14.194', 'Берега', 'SERVICE_CREATED', '+77770000000', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'org@mail.kz', '70707070707070', '707070707070', 'instagram.com/rkalmat', 'Organ Organ', 'ТОО Отдых', NULL, NULL, NULL, 'smsc.kz', '+77770000070', 1, 4),
-       (nextval('public.organization_seq'), 'г.Сатпаев, ул.Төле би, д.100', '2022-03-22 20:10:14.424', 'Номад', 'SERVICE_CREATED', '+77770000000', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'org1@mail.kz', '71717171717171', '717171717171', 'instagram.com/fckairat', 'Organ 1 Organ 1', 'ИП Общак', NULL, NULL, NULL, 'github.com', '+77770000071', 1, 5),
-       (nextval('public.organization_seq'), 'г.Жезказган, ул.Сейдімбек, д.10', '2022-03-22 20:10:14.579', 'Степь', 'CONFIRMED', '+77770000000', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'org2@mail.kz', '72727272727272', '727272727272', 'instagram.com/dauletten', 'Organ 2 Organ 2', 'ИП Улытау', NULL, NULL, NULL, 'jira.com', '+77770000072', 2, 6),
-       (nextval('public.organization_seq'), 'г.Кокшетау, ул.Тау, д.14а', '2022-03-22 20:10:14.702', 'Көкше', 'SERVICE_CREATED', '+77770000000', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'org3@mail.kz', '73737373737373', '737373737373', 'instagram.com/apple', 'Organ 3 Organ 3', 'Kokshe Group', NULL, NULL, NULL, 'bitbucket.com', '+77770000073', 2, 7);
+(id, address, approved_date, confirmation_status, confirmed_by, description, email, iban, iin, instagram_link, manager_full_name, "name", reject_message, rejected_date, request_date, site_link, tel_number, company_category_id, user_id)
+VALUES(nextval('public.organization_seq'), 'г.Сатпаев, ул.Абая, д.175', '2022-03-22 20:10:14.194', 'SERVICE_CREATED', '+77770000000', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'org@mail.kz', '70707070707070', '707070707070', 'instagram.com/rkalmat', 'Organ Organ', 'ТОО Отдых', NULL, NULL, NULL, 'smsc.kz', '+77770000070', 1, 4),
+       (nextval('public.organization_seq'), 'г.Сатпаев, ул.Төле би, д.100', '2022-03-22 20:10:14.424', 'SERVICE_CREATED', '+77770000000', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'org1@mail.kz', '71717171717171', '717171717171', 'instagram.com/fckairat', 'Organ 1 Organ 1', 'ИП Общак', NULL, NULL, NULL, 'github.com', '+77770000071', 1, 5),
+       (nextval('public.organization_seq'), 'г.Жезказган, ул.Сейдімбек, д.10', '2022-03-22 20:10:14.579', 'CONFIRMED', '+77770000000', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'org2@mail.kz', '72727272727272', '727272727272', 'instagram.com/dauletten', 'Organ 2 Organ 2', 'ИП Улытау', NULL, NULL, NULL, 'jira.com', '+77770000072', 2, 6),
+       (nextval('public.organization_seq'), 'г.Кокшетау, ул.Тау, д.14а', '2022-03-22 20:10:14.702', 'SERVICE_CREATED', '+77770000000', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'org3@mail.kz', '73737373737373', '737373737373', 'instagram.com/apple', 'Organ 3 Organ 3', 'Kokshe Group', NULL, NULL, NULL, 'bitbucket.com', '+77770000073', 2, 7);
 
 INSERT INTO public.san
 (id, address, description, instagram_link, latitude, longitude, "name", site_link, city_id, org_id, san_type_id)

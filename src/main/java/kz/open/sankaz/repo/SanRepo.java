@@ -58,6 +58,30 @@ public interface SanRepo extends CommonRepo<San>{
     @Query(
             value = "select s.* " +
                     "from san s " +
+                    "join san_type st on st.id = s.san_type_id " +
+                    "where 1=1 " +
+                    "and case when :name is not null " +
+                    "    then lower(s.name) like concat('%', :name, '%') " +
+                    "    else 1=1 end " +
+                    "and case when :sanTypeCode is not null " +
+                    "    then lower(st.code) like concat('%', :sanTypeCode, '%') " +
+                    "    else 1=1 end " +
+                    "and case " +
+                    "    when (cast(cast(:cityId as text) as numeric) is not null) " +
+                    "    then s.city_id = cast(cast(:cityId as text) as numeric) " +
+                    "    else 1=1 end" +
+                    "    group by s.id " +
+                    " limit cast(cast(:size as text) as numeric) offset cast(cast(:page as text) as numeric);",
+            nativeQuery = true)
+    List<San> getAllBySanForMainAdminFilter(@Param("cityId") Long cityId,
+                                       @Param("name") String name,
+                                       @Param("sanTypeCode") String sanTypeCode,
+                                       @Param("page") Integer page,
+                                       @Param("size") Integer size);
+
+    @Query(
+            value = "select s.* " +
+                    "from san s " +
                     "join USER_FAVORITES f on f.san_id = s.id " +
                     "join sec_user u on u.id = f.user_id and u.id = :userId" +
                     " limit cast(cast(:size as text) as numeric) offset cast(cast(:page as text) as numeric);",

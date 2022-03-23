@@ -28,4 +28,13 @@ public interface RoomRepo extends CommonRepo<Room> {
     List<DatesDto> getRoomAvailabilityForDateRange(@Param("roomId") Long roomId,
                                                    @Param("startDate") LocalDateTime startDate,
                                                    @Param("endDate") LocalDateTime endDate);
+
+    @Query(nativeQuery = true,
+            value = "select r.* " +
+            "from room r " +
+            "join room_class_dic d on d.id = r.class_id " +
+            "join san s on s.id = d.san_id and s.id = :sanId " +
+            "where lower(r.room_number) = :roomNumber")
+    List<Room> findRoomByNameAndSan(@Param("sanId") Long sanId,
+                                    @Param("roomNumber") String roomNumber);
 }

@@ -62,7 +62,7 @@ public abstract class AbstractMapper extends BaseMapper {
                 if(!user.getOrganizations().get(0).getSans().isEmpty()){
                     return user.getOrganizations().get(0).getSans().get(0).getName();
                 } else {
-                    return user.getOrganizations().get(0).getCompanyName();
+                    return user.getOrganizations().get(0).getName();
                 }
             } else {
                 return user.getUsername();
