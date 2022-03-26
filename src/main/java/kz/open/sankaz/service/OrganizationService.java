@@ -36,7 +36,7 @@ public interface OrganizationService extends CommonService<Organization> {
 
     boolean checkIfOwnOrg(Long orgId);
 
-    PageDto getAllFilters(String name, String companyName, String address, String companyCategoryCode, String confirmationStatus, int page, int size);
+    PageDto getAllFilters(String name, String address, String companyCategoryCode, String confirmationStatus, int page, int size);
 
     List<SysFile> addPics(Long orgId, MultipartFile[] pics) throws IOException;
 

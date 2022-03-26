@@ -24,5 +24,6 @@ public class SanForMainDto extends BaseDto {
     private List<String> telNumbers;
     private String instagramLink;
     private String siteLink;
+    private String address;
     private boolean isFav = false;
 }

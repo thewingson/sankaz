@@ -7,7 +7,6 @@
 
     <changeSet id="1" author="almat_rakhmetolla">
         <sqlFile dbms="postgresql"
-                 encoding="utf8"
                  endDelimiter="\n;"
                  relativeToChangelogFile="true"
                  splitStatements="true"
@@ -15,7 +14,6 @@
                  path="20220322-01-init-db.sql"/>
         <rollback>
             <sqlFile dbms="postgresql"
-                     encoding="utf8"
                      endDelimiter="\n;"
                      relativeToChangelogFile="true"
                      splitStatements="true"

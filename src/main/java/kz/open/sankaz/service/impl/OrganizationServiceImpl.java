@@ -355,10 +355,9 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     }
 
     @Override
-    public PageDto getAllFilters(String name, String companyName, String address, String companyCategoryCode, String confirmationStatus, int page, int size) {
+    public PageDto getAllFilters(String name, String address, String companyCategoryCode, String confirmationStatus, int page, int size) {
         Page<Organization> pages = repo.findAllByFilters(
                 name.toLowerCase(),
-                companyName.toLowerCase(),
                 address.toLowerCase(),
                 companyCategoryCode.toLowerCase(),
                 confirmationStatus.toLowerCase(),

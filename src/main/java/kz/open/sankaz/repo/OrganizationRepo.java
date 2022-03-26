@@ -31,14 +31,12 @@ public interface OrganizationRepo extends CommonRepo<Organization> {
             "left join company_category c on c.id = o.company_category_id " +
             "where " +
             "lower(o.name) like concat('%',:name,'%') " +
-            "and lower(coalesce(o.company_name, '')) like concat('%',:companyName,'%') " +
             "and lower(coalesce(o.address, '')) like concat('%',:address,'%') " +
             "and lower(coalesce(c.code, '')) like concat('%',:companyCategoryCode,'%') " +
             "and lower(o.confirmation_status) like concat('%',:confirmationStatus,'%') ",
             nativeQuery = true
     )
     Page<Organization> findAllByFilters(@Param("name") String name,
-                                        @Param("companyName") String companyName,
                                         @Param("address") String address,
                                         @Param("companyCategoryCode") String companyCategoryCode,
                                         @Param("confirmationStatus") String confirmationStatus,

@@ -42,7 +42,7 @@ public class AdminOrgRest {
                                     @RequestParam(value = "size", defaultValue = "10") int size) {
         try{
             return ResponseModel.success(organizationService.getAllFilters(
-                    name, companyName, address, companyCategoryCode, confirmationStatus, page, size));
+                    name, address, companyCategoryCode, confirmationStatus, page, size));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

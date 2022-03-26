@@ -1,4 +1,4 @@
-create sequence public.booking_history_seq start 1 increment 1;
+﻿create sequence public.booking_history_seq start 1 increment 1;
 create sequence public.booking_seq start 1 increment 1;
 create sequence public.city_seq start 1 increment 1;
 create sequence public.company_category_seq start 1 increment 1;
@@ -97,7 +97,6 @@ create table public.organization
     id                  int8         not null,
     address             varchar(255),
     approved_date       timestamp,
-    company_name        varchar(255),
     confirmation_status varchar(255),
     confirmed_by        varchar(255),
     description         varchar(255),
