@@ -60,8 +60,7 @@ public interface BookingRepo extends CommonRepo<Booking> {
     @Query(value = "select b.* " +
             "from booking b " +
             "join room r on r.id = b.room_id " +
-            "join room_class_dic rc on rc.id = r.class_id " +
-            "join san s on s.id = rc.san_id " +
+            "join san s on s.id = r.san_id " +
             "where " +
             "((cast(b.start_date as date) between :startDate and :endDate) " +
             "or (cast(b.end_date as date) between :startDate and :endDate)) " +
