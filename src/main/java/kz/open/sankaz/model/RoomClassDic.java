@@ -7,11 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.Locale;
 
+@SQLDelete(sql = "UPDATE ROOM_CLASS_DIC SET deleted = true WHERE id=?")
+@Where(clause = "deleted=false")
 @Entity
 @Table(name = "ROOM_CLASS_DIC",
         uniqueConstraints = { @UniqueConstraint(columnNames = { "CODE" }) })
@@ -33,6 +37,9 @@ public class RoomClassDic extends AbstractEntity {
             }
     )
     private Long id;
+
+    @Column(name = "DELETED", nullable = false)
+    private boolean deleted = Boolean.FALSE;
 
     @Column(name = "NAME", nullable = false)
     private String name;

@@ -149,6 +149,7 @@ create table public.room
 create table public.room_class_dic
 (
     id             int8         not null,
+    deleted        boolean      not null,
     code           varchar(255) not null,
     description    varchar(255),
     description_kz varchar(255),
@@ -496,9 +497,9 @@ VALUES(nextval('public.san_seq'), 'Талгар, ул.Бокейханов, д.1
        (nextval('public.san_seq'), 'Талгар, ул.Кунаев, д.90', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', NULL, NULL, NULL, '8 озер', NULL, 2, 4, 2);
 
 INSERT INTO public.room_class_dic
-(id, code, description, description_kz, "name", name_kz)
-VALUES(nextval('public.room_class_dic_seq'), 'LUX', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Люкс', 'Люкс'),
-       (nextval('public.room_class_dic_seq'), 'COM', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Комфорт', 'Комфорт');
+(id, deleted, code, description, description_kz, "name", name_kz)
+VALUES(nextval('public.room_class_dic_seq'), false, 'LUX', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Люкс', 'Люкс'),
+       (nextval('public.room_class_dic_seq'), false, 'COM', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Комфорт', 'Комфорт');
 
 INSERT INTO public.room
 (id, bed_count, price, room_count, room_number, san_id, class_id)

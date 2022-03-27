@@ -1,7 +1,6 @@
 package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.model.RoomClassDic;
-import kz.open.sankaz.model.San;
 import kz.open.sankaz.pojo.filter.RoomClassDicFilter;
 import kz.open.sankaz.repo.dictionary.RoomClassDicRepo;
 import kz.open.sankaz.service.RoomClassDicService;
