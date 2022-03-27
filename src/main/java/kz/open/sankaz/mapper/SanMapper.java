@@ -76,4 +76,10 @@ public abstract class SanMapper extends AbstractMapper {
     @IterableMapping(qualifiedByName = "sanToSanByIdDto")
     abstract public List<SanByIdDto> sanToSanByIdDto(List<San> sans);
 
+    @Named("sanToSanSimpleDto")
+    @Mapping(target = "mainPicUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
+    abstract public SanSimpleDto sanToSanSimpleDto(San san);
+    @IterableMapping(qualifiedByName = "sanToSanSimpleDto")
+    abstract public List<SanSimpleDto> sanToSanSimpleDto(List<San> sans);
+
 }

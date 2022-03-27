@@ -51,6 +51,7 @@ public abstract class RoomMapper extends AbstractMapper {
     abstract public List<RoomByIdDto> roomToRoomByIdDtoForUser(List<Room> rooms);
 
     @Named("roomToRoomByIdDtoForAdmin")
+    @Mapping(target = "san", expression = "java( sanMapper.sanToSanSimpleDto(room.getSan()) )")
     @Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles(room.getPics()) )")
     @Mapping(target = "name", source = "room.roomClassDic.name")
     @Mapping(target = "description", source = "room.roomClassDic.description")

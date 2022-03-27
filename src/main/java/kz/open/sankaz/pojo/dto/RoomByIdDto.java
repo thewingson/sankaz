@@ -20,4 +20,5 @@ public class RoomByIdDto extends BaseDto {
     private BigDecimal price;
     private Integer roomCount;
     private Integer bedCount;
+    private SanSimpleDto san;
 }
