@@ -93,4 +93,9 @@ public abstract class RoomMapper extends AbstractMapper {
     abstract public RoomClassModerCalendarDto roomClassToRoomClassModerCalendarDto(RoomClassDic roomClassDic);
     @IterableMapping(qualifiedByName = "roomClassToRoomClassModerCalendarDto")
     abstract public List<RoomClassModerCalendarDto> roomClassToRoomClassModerCalendarDto(List<RoomClassDic> roomClassDics);
+
+    @Named("roomClassDicSimpleToDto")
+    abstract public RoomClassDicSimpleDto roomClassDicSimpleToDto(RoomClassDic roomClassDic);
+    @IterableMapping(qualifiedByName = "roomClassDicSimpleToDto")
+    abstract public List<RoomClassDicSimpleDto> roomClassDicSimpleToDto(List<RoomClassDic> roomClassDics);
 }
