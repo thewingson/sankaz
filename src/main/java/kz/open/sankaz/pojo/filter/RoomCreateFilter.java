@@ -21,6 +21,8 @@ public class RoomCreateFilter extends BaseFilter {
     @NotNull
     private Long roomClassDicId;
     @NotNull
+    private Long sanId;
+    @NotNull
     private Integer roomCount;
     @NotNull
     private Integer bedCount;

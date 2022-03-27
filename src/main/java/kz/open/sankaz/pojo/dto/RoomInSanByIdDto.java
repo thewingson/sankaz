@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomInSanByIdDto extends BaseDto {
+    private Long roomClassDicId;
     private String mainPicUrl;
     private String name;
     private BigDecimal price;

@@ -1,8 +1,8 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.Room;
 import kz.open.sankaz.model.RoomClassDic;
+import kz.open.sankaz.model.San;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import kz.open.sankaz.repo.RoomRepo;
@@ -38,6 +38,10 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
     @Autowired
     private AuthService authService;
 
+    @Lazy
+    @Autowired
+    private SanService sanService;
+
     @Autowired
     private OrganizationService organizationService;
 
@@ -60,12 +64,14 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
     @Override
     public Room addOne(RoomCreateFilter filter, MultipartFile[] pics) throws IOException {
         RoomClassDic classDic = roomClassDicService.getOne(filter.getRoomClassDicId());
-        List<Room> rooms = repo.findRoomByNameAndSan(classDic.getSan().getId(), filter.getRoomNumber().toLowerCase());
+        San san = sanService.getOne(filter.getSanId());
+        List<Room> rooms = repo.findRoomByNameAndSan(san.getId(), filter.getRoomNumber().toLowerCase());
         if(!rooms.isEmpty()){
             throw new RuntimeException("Такой номер уже записан! Выберите другой номер");
         }
         Room room = new Room();
         room.setRoomClassDic(classDic);
+        room.setSan(san);
         room.setRoomNumber(filter.getRoomNumber());
         room.setBedCount(filter.getBedCount());
         room.setRoomCount(filter.getRoomCount());
@@ -75,8 +81,14 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
 
     @Override
     public Room editOneById(Long roomId, RoomCreateFilter filter) {
+        List<Room> rooms = repo.findRoomByNameAndSan(filter.getSanId(), filter.getRoomNumber().toLowerCase());
+        if(!rooms.isEmpty()){
+            throw new RuntimeException("Такой номер уже записан! Выберите другой номер");
+        }
+        San san = sanService.getOne(filter.getSanId());
         Room room = getOne(roomId);
         room.setRoomClassDic(roomClassDicService.getOne(filter.getRoomClassDicId()));
+        room.setSan(san);
         room.setRoomNumber(filter.getRoomNumber());
         room.setBedCount(filter.getBedCount());
         room.setRoomCount(filter.getRoomCount());
@@ -157,17 +169,6 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
         });
         room.deletePics(picsToDelete);
         editOneById(room);
-    }
-
-    @Override
-    public boolean checkIfOwnRoom(Long roomId) {
-        String currentUsername = authService.getCurrentUsername();
-        Organization currentUsersOrganization = organizationService.getOrganizationByTelNumber(currentUsername);
-        Room roomById = getOne(roomId);
-        if(!roomById.getRoomClassDic().getSan().getOrganization().getId().equals(currentUsersOrganization.getId())){
-            throw new RuntimeException("Данная комната не прикреплен к вашему санаторию!");
-        }
-        return true;
     }
 
     @Override

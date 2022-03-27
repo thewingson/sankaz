@@ -141,6 +141,7 @@ create table public.room
     price       numeric(19, 2),
     room_count  int4,
     room_number varchar(255) not null,
+    san_id    int8         not null,
     class_id    int8         not null,
     primary key (id)
 );
@@ -153,7 +154,6 @@ create table public.room_class_dic
     description_kz varchar(255),
     name           varchar(255) not null,
     name_kz        varchar(255),
-    san_id         int8         not null,
     primary key (id)
 );
 
@@ -346,9 +346,9 @@ alter table public.organization
 alter table public.organization
     add constraint UK_csspk5w1f93fqqkl9uet91fae unique (tel_number);
 alter table public.room
-    add constraint UKnhcy0jecpm5nd7r9xfmngbrd unique (room_number, class_id);
+    add constraint UKnhcy0jecpm5nd7r9xfmngbrd unique (room_number, san_id);
 alter table public.room_class_dic
-    add constraint UKl91ax35umclncnq413o8hicqq unique (code, san_id);
+    add constraint UKl91ax35umclncnq413o8hicqq unique (code);
 alter table public.san_type
     add constraint UK_nvcn26t59vjtpavtcf8dhyq78 unique (code);
 alter table public.sec_role
@@ -386,9 +386,9 @@ alter table public.review
 alter table public.review
     add constraint REVIEW_SAN_FK foreign key (san_id) references public.san;
 alter table public.room
-    add constraint ROOM_CLASS_FK foreign key (class_id) references public.room_class_dic;
-alter table public.room_class_dic
     add constraint ROOM_SAN_FK foreign key (san_id) references public.san;
+    alter table public.room
+    add constraint ROOM_CLASS_FK foreign key (class_id) references public.room_class_dic;
 alter table public.room_pics
     add constraint ROOM_PICS_PIC_FK foreign key (file_id) references public.sys_file;
 alter table public.room_pics
@@ -496,26 +496,20 @@ VALUES(nextval('public.san_seq'), 'Талгар, ул.Бокейханов, д.1
        (nextval('public.san_seq'), 'Талгар, ул.Кунаев, д.90', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', NULL, NULL, NULL, '8 озер', NULL, 2, 4, 2);
 
 INSERT INTO public.room_class_dic
-(id, code, description, description_kz, "name", name_kz, san_id)
-VALUES(nextval('public.room_class_dic_seq'), 'LUX', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Люкс', 'Люкс', 1),
-       (nextval('public.room_class_dic_seq'), 'COM', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Комфорт', 'Комфорт', 1),
-       (nextval('public.room_class_dic_seq'), 'LUX', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Люкс', 'Люкс', 2),
-       (nextval('public.room_class_dic_seq'), 'COM', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Комфорт', 'Комфорт', 2),
-       (nextval('public.room_class_dic_seq'), 'LUX', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Люкс', 'Люкс', 3),
-       (nextval('public.room_class_dic_seq'), 'COM', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Комфорт', 'Комфорт', 3),
-       (nextval('public.room_class_dic_seq'), 'LUX', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Люкс', 'Люкс', 4),
-       (nextval('public.room_class_dic_seq'), 'COM', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Комфорт', 'Комфорт', 4);
+(id, code, description, description_kz, "name", name_kz)
+VALUES(nextval('public.room_class_dic_seq'), 'LUX', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Люкс', 'Люкс'),
+       (nextval('public.room_class_dic_seq'), 'COM', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'Комфорт', 'Комфорт');
 
 INSERT INTO public.room
-(id, bed_count, price, room_count, room_number, class_id)
-VALUES(nextval('public.room_seq'), 1, 14500.00, 2, '201E', 2),
-       (nextval('public.room_seq'), 2, 34500.00, 3, '101', 1),
-       (nextval('public.room_seq'), 1, 14500.00, 2, '31', 4),
-       (nextval('public.room_seq'), 2, 34500.00, 3, '9', 3),
-       (nextval('public.room_seq'), 1, 14500.00, 2, '13', 6),
-       (nextval('public.room_seq'), 2, 34500.00, 3, '7', 5),
-       (nextval('public.room_seq'), 1, 14500.00, 2, '13', 8),
-       (nextval('public.room_seq'), 2, 34500.00, 3, '7', 7);
+(id, bed_count, price, room_count, room_number, san_id, class_id)
+VALUES(nextval('public.room_seq'), 1, 14500.00, 2, '201E', 1, 1),
+       (nextval('public.room_seq'), 1, 14500.00, 2, '13', 1, 2),
+       (nextval('public.room_seq'), 2, 34500.00, 3, '101', 2, 1),
+       (nextval('public.room_seq'), 2, 34500.00, 3, '7', 2, 2),
+       (nextval('public.room_seq'), 1, 14500.00, 2, '31', 3, 1),
+       (nextval('public.room_seq'), 1, 14500.00, 2, '13', 3, 2),
+       (nextval('public.room_seq'), 2, 34500.00, 3, '9', 4, 1),
+       (nextval('public.room_seq'), 2, 34500.00, 3, '7', 4, 2);
 
 INSERT INTO public.booking
 (id, adults_count, approved_date, booking_date, cancelled_date, children_count, end_date, first_name, last_name, paid_date, start_date, status, sum_price, tel_number, room_id, user_id)

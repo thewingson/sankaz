@@ -3,6 +3,7 @@ package kz.open.sankaz.rest.moder;
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.pojo.filter.DeletePicsFilter;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
+import kz.open.sankaz.repo.RoomRepo;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class ModerRoomRest {
     private final RoomService roomService;
 
     @Autowired
+    private RoomRepo roomRepo;
+
+    @Autowired
     private RoomMapper roomMapper;
 
     @Autowired
@@ -32,10 +36,11 @@ public class ModerRoomRest {
         this.roomService = roomService;
     }
 
-    @GetMapping("/class/{classId}")
-    public ResponseEntity<?> getAllByClass(@PathVariable(name = "classId") Long classId) {
+    @GetMapping("/san/{sanId}/class/{classId}")
+    public ResponseEntity<?> getAllByClassAndSan(@PathVariable(name = "sanId") Long sanId,
+                                           @PathVariable(name = "classId") Long classId) {
         try {
-            return ResponseModel.success(roomMapper.roomToRoomCreateDto(roomService.getAllByClass(classId)));
+            return ResponseModel.success(roomMapper.roomToRoomCreateDto(roomRepo.getAllByRoomClassDicIdAndSanId(classId, sanId)));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
@@ -53,12 +58,13 @@ public class ModerRoomRest {
     @PostMapping
     public ResponseEntity<?> addOne(@RequestParam String roomNumber,
                                     @RequestParam Long roomClassDicId,
+                                    @RequestParam Long sanId,
                                     @RequestParam Integer roomCount,
                                     @RequestParam Integer bedCount,
                                     @RequestParam BigDecimal price,
                                     @RequestParam(value = "pics", required = false) MultipartFile[] pics) {
         try {
-            RoomCreateFilter filter = new RoomCreateFilter(roomNumber, roomClassDicId, roomCount, bedCount, price);
+            RoomCreateFilter filter = new RoomCreateFilter(roomNumber, roomClassDicId, sanId, roomCount, bedCount, price);
             return ResponseModel.success(roomMapper.roomToRoomCreateDto(roomService.addOne(filter, pics)));
         } catch (Exception e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());

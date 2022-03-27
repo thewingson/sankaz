@@ -23,6 +23,4 @@ public class RoomClassDicFilter extends BaseFilter {
     protected String description;
     protected String nameKz;
     protected String descriptionKz;
-    @NotNull
-    protected Long sanId;
 }

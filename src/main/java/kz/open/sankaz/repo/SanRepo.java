@@ -18,10 +18,9 @@ public interface SanRepo extends CommonRepo<San>{
             value = "select s.* " +
                     "from san s " +
                     "join san_type st on st.id = s.san_type_id " +
-                    "join room_class_dic dic on dic.san_id = s.id " +
                     "join room r on " +
-                    "            case when (cast(cast(:personCount as text) as numeric) is null) then r.class_id = dic.id  " +
-                    "            else r.class_id = dic.id and r.bed_count >= cast(cast(:personCount as text) as numeric) " +
+                    "            case when (cast(cast(:personCount as text) as numeric) is null) then r.san_id = s.id  " +
+                    "            else r.bed_count >= cast(cast(:personCount as text) as numeric) " +
                     "            end " +
                     "left join booking b on" +
                     "                    case when (cast(cast(:startDate as text) as date) is null) then false " +

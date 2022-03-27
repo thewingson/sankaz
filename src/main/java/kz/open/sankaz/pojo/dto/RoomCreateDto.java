@@ -18,5 +18,6 @@ public class RoomCreateDto extends AbstractDto {
     private Integer bedCount;
     private BigDecimal price;
     private Long roomClassDicId;
+    private Long sanId;
     private List<FileDto> pics;
 }

@@ -9,4 +9,5 @@ public interface RoomClassDicService extends CommonService<RoomClassDic> {
     RoomClassDic addOne(RoomClassDicFilter filter);
     RoomClassDic editOne(Long id, RoomClassDicFilter filter);
     List<RoomClassDic> getBySan(Long sanId);
+    RoomClassDic getOne(Long dicId, Long sanId);
 }

@@ -40,7 +40,7 @@ import java.util.List;
         resultSetMapping="getRoomAvailabilityForDateRangeMapping")
 @Entity
 @Table(name = "ROOM",
-        uniqueConstraints = { @UniqueConstraint(columnNames = { "ROOM_NUMBER", "CLASS_ID" }) })
+        uniqueConstraints = { @UniqueConstraint(columnNames = { "ROOM_NUMBER", "SAN_ID" }) })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -76,6 +76,11 @@ public class Room extends AbstractEntity {
     @JoinColumn(name = "CLASS_ID", foreignKey = @ForeignKey(name = "ROOM_CLASS_FK"), nullable = false)
     @JsonManagedReference
     private RoomClassDic roomClassDic;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "ROOM_SAN_FK"), nullable = false)
+    @JsonManagedReference
+    private San san;
 
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(

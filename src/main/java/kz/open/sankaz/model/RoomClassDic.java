@@ -14,7 +14,7 @@ import java.util.Locale;
 
 @Entity
 @Table(name = "ROOM_CLASS_DIC",
-        uniqueConstraints = { @UniqueConstraint(columnNames = { "CODE", "SAN_ID" }) })
+        uniqueConstraints = { @UniqueConstraint(columnNames = { "CODE" }) })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -48,11 +48,6 @@ public class RoomClassDic extends AbstractEntity {
 
     @Column(name = "DESCRIPTION_KZ")
     private String descriptionKz;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "ROOM_SAN_FK"), nullable = false)
-    @JsonManagedReference
-    private San san;
 
     @OneToMany(mappedBy = "roomClassDic", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonBackReference

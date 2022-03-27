@@ -38,10 +38,8 @@ public class RoomClassDicServiceImpl extends AbstractService<RoomClassDic, RoomC
     @Override
     public RoomClassDic addOne(RoomClassDicFilter filter) {
         log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
-        San san = sanService.getOne(filter.getSanId());
 
         RoomClassDic dictionary = new RoomClassDic();
-        dictionary.setSan(san);
         dictionary.setCode(filter.getCode());
         dictionary.setName(filter.getName());
         dictionary.setDescription(filter.getDescription());
@@ -54,7 +52,6 @@ public class RoomClassDicServiceImpl extends AbstractService<RoomClassDic, RoomC
     public RoomClassDic editOne(Long id, RoomClassDicFilter filter) {
         log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
         RoomClassDic dictionary = getOne(id);
-        dictionary.setSan(sanService.getOne(filter.getSanId()));
 
         dictionary.setCode(filter.getCode());
         dictionary.setName(filter.getName());
@@ -67,5 +64,10 @@ public class RoomClassDicServiceImpl extends AbstractService<RoomClassDic, RoomC
     @Override
     public List<RoomClassDic> getBySan(Long sanId) {
         return repo.getRoomClassDicBySanId(sanId);
+    }
+
+    @Override
+    public RoomClassDic getOne(Long dicId, Long sanId) {
+        return repo.getRoomClassDicByIdAndBySanId(dicId, sanId);
     }
 }

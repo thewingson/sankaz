@@ -20,6 +20,7 @@ public abstract class RoomMapper extends AbstractMapper {
 
     @Named("roomToRoomCreateDto")
     @Mapping(target = "roomClassDicId", source = "room.roomClassDic.id")
+    @Mapping(target = "sanId", source = "room.san.id")
     @Mapping(target = "pics", expression = "java( fileToDto(room.getPics()) )")
     abstract public RoomCreateDto roomToRoomCreateDto(Room room);
     @IterableMapping(qualifiedByName = "roomToRoomCreateDto")
@@ -33,6 +34,7 @@ public abstract class RoomMapper extends AbstractMapper {
     abstract public List<RoomForBookCreateDto> roomToRoomForBookCreateDto(List<Room> rooms);
 
     @Named("roomToRoomInSanByIdDto")
+    @Mapping(target = "roomClassDicId", source = "room.roomClassDic.id")
     @Mapping(target = "mainPicUrl", expression = "java( getFirstPicUrlFromSysFiles(room.getPics()) )")
     @Mapping(target = "name", source = "room.roomClassDic.name")
     abstract public RoomInSanByIdDto roomToRoomInSanByIdDto(Room room);
@@ -40,6 +42,7 @@ public abstract class RoomMapper extends AbstractMapper {
     abstract public List<RoomInSanByIdDto> roomToRoomInSanByIdDto(List<Room> rooms);
 
     @Named("roomToRoomByIdDtoForUser")
+    @Mapping(target = "classId", source = "room.roomClassDic.id")
     @Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles(room.getPics()) )")
     @Mapping(target = "name", source = "room.roomClassDic.name")
     @Mapping(target = "description", source = "room.roomClassDic.description")
@@ -72,7 +75,7 @@ public abstract class RoomMapper extends AbstractMapper {
     abstract public List<RoomInClassDicDto> roomToRoomInClassDicDto(List<Room> rooms);
 
     @Named("roomClassDicToDto")
-    @Mapping(target = "sanId", source = "roomClassDic.san.id")
+    @Mapping(target = "sanId", ignore = true)
     @Mapping(target = "rooms", expression = "java( roomToRoomInClassDicDto( roomClassDic.getRooms() ) )")
     abstract public RoomClassDicDto roomClassDicToDto(RoomClassDic roomClassDic);
     @IterableMapping(qualifiedByName = "roomClassDicToDto")

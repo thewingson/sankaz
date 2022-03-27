@@ -74,10 +74,6 @@ public class San extends AbstractEntity{
     @JsonBackReference
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE)
-    @JsonBackReference
-    private List<RoomClassDic> roomClasses;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CITY_ID", foreignKey = @ForeignKey(name = "SAN_CITY_FK"), nullable = false)
     @JsonManagedReference
@@ -91,6 +87,10 @@ public class San extends AbstractEntity{
 
     @Column(name = "ADDRESS")
     private String address;
+
+    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Room> rooms;
 
     @Override
     public boolean equals(Object o) {
@@ -180,10 +180,6 @@ public class San extends AbstractEntity{
         } else{
             return null;
         }
-    }
-
-    public List<Room> getRooms(){
-        return getRoomClasses().stream().map(RoomClassDic::getRooms).collect(ArrayList::new, List::addAll, List::addAll);
     }
 
     public List<SysFile> getPices(){

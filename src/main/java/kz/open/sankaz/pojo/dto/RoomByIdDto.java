@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomByIdDto extends BaseDto {
+    private Long classId;
     private List<String> picUrls;
     private String name;
     private String description;

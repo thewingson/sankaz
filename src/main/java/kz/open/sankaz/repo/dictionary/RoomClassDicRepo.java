@@ -13,7 +13,13 @@ public interface RoomClassDicRepo extends CommonRepo<RoomClassDic> {
 
     @Query("select distinct d from RoomClassDic d " +
             "left join fetch d.rooms r " +
-            "where d.san.id = :sanId")
+            "where (r is NULL or r.san.id = :sanId)")
     List<RoomClassDic> getRoomClassDicBySanId(@Param("sanId") Long sanId);
+
+    @Query("select distinct d from RoomClassDic d " +
+            "left join fetch d.rooms r " +
+            "where d.id = :dicId and (r is NULL or r.san.id = :sanId)")
+    RoomClassDic getRoomClassDicByIdAndBySanId(@Param("dicId") Long dicId,
+                                               @Param("sanId") Long sanId);
 
 }
