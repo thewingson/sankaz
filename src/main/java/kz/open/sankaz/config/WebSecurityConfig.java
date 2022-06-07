@@ -77,7 +77,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/moders/auth/check-conf",
                 "/moders/auth/send-reset",
                 "/moders/auth/check-reset",
-                "/moders/auth/reset-pass"
+                "/moders/auth/reset-pass",
+                "/faqs/**"
         ).permitAll();
 
         http.authorizeHttpRequests().antMatchers(HttpMethod.GET, "/users/sans/**").permitAll();

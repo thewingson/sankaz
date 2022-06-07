@@ -22,4 +22,21 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="2" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220330-01-create-faq-db.sql"/>
+        <rollback>
+            <sqlFile dbms="postgresql"
+                     endDelimiter="\n;"
+                     relativeToChangelogFile="true"
+                     splitStatements="true"
+                     stripComments="true"
+                     path="20220330-01-create-faq-drop.sql"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
