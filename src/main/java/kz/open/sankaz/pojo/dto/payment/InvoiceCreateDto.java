@@ -1,4 +1,4 @@
-package kz.open.sankaz.pojo.dto;
+package kz.open.sankaz.pojo.dto.payment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,14 +15,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class InvoiceCreateDto {
     private String reference_id;
-    private BigInteger amount;
+    private BigDecimal amount;
     private String user_phone;
     private String email;
     private String merchant_name;
     private String back_url;
     private String description;
-    private LocalDateTime death_date;
-    private Integer option;
+    private String death_date;
+    private String option;
     private RequestUrl request_url;
 
 //        "reference_id" : "st123123",

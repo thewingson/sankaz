@@ -24,7 +24,7 @@ public interface BookingService extends CommonService<Booking> {
 
     Booking cancel(Long bookId);
 
-    Booking approve(Long bookId, String ecomOrderId);
+    Booking approve(Long bookId) throws IOException;
 
     String getPaymentPage(Long bookId) throws IOException;
 
@@ -33,6 +33,4 @@ public interface BookingService extends CommonService<Booking> {
     Booking bookRoomFromUser(Long userId, BookingUserCreateFilter filter);
 
     List<Booking> getAllByUser(SecUser user);
-
-    void addEcomOrder(Long bookId, String ecomOrderId);
 }

@@ -96,16 +96,17 @@ application:
 fcm:
   service-account-file: sankaz-push-firebase-adminsdk.json
 payment:
-  ecom:
-    api:
-      base-url: https://ecom.jysanbank.kz/ecom/api
-    merchant:
-      shared-secred: _01234567890123456789012
-      mid: TEST_ECOM
-      tid: WEB10004
-      login: kalelov_kk@jysanbank.kz
-      password: 123qweQWE
-    user:
-      test-card: 4413280046925120
-      exp: 04/23
-      cvv: 618
+  model:
+    prefix: sankaz_
+  api:
+    base-url: https://api.yii2-stage.test.wooppay.com/v1
+  operation:
+    create: /invoice/create
+    auth: /auth
+  merchant:
+    login: merchViktor
+    password: A12345678a
+  test-user:
+    card-number: 4111111111111111
+    card-exp: 09/25
+    card-cvv: 653

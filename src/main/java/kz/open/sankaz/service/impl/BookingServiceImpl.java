@@ -1,5 +1,6 @@
 package kz.open.sankaz.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kz.open.sankaz.exception.BookingCodes;
 import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.exception.PaymentIntegrationCodes;
@@ -13,6 +14,10 @@ import kz.open.sankaz.pojo.dto.BookingModerCalendarDto;
 import kz.open.sankaz.pojo.dto.DatesDto;
 import kz.open.sankaz.pojo.dto.RoomClassModerCalendarDto;
 import kz.open.sankaz.pojo.dto.RoomModerCalendarDto;
+import kz.open.sankaz.pojo.dto.payment.InvoiceCreateDto;
+import kz.open.sankaz.pojo.dto.payment.InvoiceCreateResponseDto;
+import kz.open.sankaz.pojo.dto.payment.UserAuthDto;
+import kz.open.sankaz.pojo.dto.payment.UserLoginDto;
 import kz.open.sankaz.pojo.filter.BookingAdminCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingModerCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
@@ -24,23 +29,19 @@ import kz.open.sankaz.repo.dictionary.RoomClassDicRepo;
 import kz.open.sankaz.service.BookingService;
 import kz.open.sankaz.service.RoomService;
 import kz.open.sankaz.service.UserService;
-import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -77,17 +78,32 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
     @Autowired
     private BookingMapper bookingMapper;
 
-    @Value("${payment.ecom.api.base-url}")
-    private String ecomBaseUrl;
+    @Value("${payment.api.base-url}")
+    private String paymentBaseUrl;
 
-    @Value("${payment.ecom.merchant.mid}")
-    private String ecomMid;
+    @Value("${payment.model.prefix}")
+    private String paymentModelPrefix;
 
-    @Value("${payment.ecom.merchant.tid}")
-    private String ecomTid;
+    @Value("${payment.operation.create}")
+    private String paymentOperationCreate;
 
-    @Value("${payment.ecom.merchant.shared-secred}")
-    private String ecomSharedSecred;
+    @Value("${payment.operation.auth}")
+    private String paymentOperationAuth;
+
+    @Value("${payment.merchant.login}")
+    private String paymentMerchantLogin;
+
+    @Value("${payment.merchant.password}")
+    private String paymentMerchantPassword;
+
+    @Value("${payment.test-user.card-number}")
+    private String paymentTestUserCardNumber;
+
+    @Value("${payment.test-user.card-exp}")
+    private String paymentTestUserCardExp;
+
+    @Value("${payment.test-user.card-cvv}")
+    private String paymentTestUserCardCvv;
 
     public BookingServiceImpl(BookingRepo bookingRepo) {
         super(bookingRepo);
@@ -314,7 +330,7 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
     }
 
     @Override
-    public Booking approve(Long bookId, String ecomOrderId) {
+    public Booking approve(Long bookId) throws IOException {
         Booking booking = getOne(bookId);
         if(!booking.isWaiting()){
             throw new MessageCodeException(BookingCodes.YOU_CAN_APPROVE_ONLY_WITH_WAITING_STATUS);
@@ -331,9 +347,14 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
             data.put("busyDates", busyDates);
             throw new MessageCodeException(BookingCodes.ROOM_IS_BUSY_IN_CHOSEN_DATE_RANGE, data);
         }
+
+        UserAuthDto userAuthDto = loginToPaymentService();
+        InvoiceCreateResponseDto invoiceCreateResponseDto = createInvoiceInPayment(userAuthDto.getToken().substring(4), booking);
+
         booking.setStatus(BookingStatus.APPROVED);
         booking.setApprovedDate(LocalDateTime.now());
-        booking.setEcomOrderId(ecomOrderId);
+        booking.setWoopOrderId(paymentModelPrefix + booking.getId());
+        booking.setPaymentUrl(invoiceCreateResponseDto.getOperation_url());
         editOneById(booking);
 
         BookingHistory history = new BookingHistory();
@@ -342,7 +363,7 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         bookingHistoryRepo.save(history);
 
         if(booking.getUser() != null){
-            //TODO: send to firebase
+//            TODO: send to firebase
             UserNotification notification = new UserNotification();
             notification.setUser(booking.getUser());
             notification.setNotificationType(UserNotificationType.PAYMENT);
@@ -356,6 +377,64 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         return booking;
     }
 
+    private UserAuthDto loginToPaymentService() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserLoginDto userLoginDto = new UserLoginDto(paymentMerchantLogin, paymentMerchantPassword);
+        String userLoginJson = objectMapper.writeValueAsString(userLoginDto);
+        StringEntity entity = new StringEntity(userLoginJson);
+
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(paymentBaseUrl + paymentOperationAuth);
+
+        httpPost.setEntity(entity);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-type", "application/json");
+
+        CloseableHttpResponse response = client.execute(httpPost);
+        int statusCode = response.getStatusLine().getStatusCode();
+        if(statusCode != 200){
+            throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION);
+        }
+        HttpEntity responseEntity = response.getEntity();
+        String json = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
+        client.close();
+        return objectMapper.readValue(json, UserAuthDto.class);
+    }
+
+    private InvoiceCreateResponseDto createInvoiceInPayment(String authJwt, Booking booking) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        InvoiceCreateDto invoiceCreateDto = new InvoiceCreateDto();
+        invoiceCreateDto.setReference_id(paymentModelPrefix + booking.getId());
+        invoiceCreateDto.setAmount(booking.getSumPrice());
+        invoiceCreateDto.setUser_phone(booking.getTelNumber());
+        invoiceCreateDto.setEmail("");
+        invoiceCreateDto.setMerchant_name(booking.getRoom().getSan().getName());
+        invoiceCreateDto.setBack_url("https://www.test.wooppay.com");
+        invoiceCreateDto.setDescription("from_backend");
+        invoiceCreateDto.setDeath_date(LocalDateTime.now().plusDays(1).toString());
+        invoiceCreateDto.setOption("4");
+        String userLoginJson = objectMapper.writeValueAsString(invoiceCreateDto);
+        StringEntity entity = new StringEntity(userLoginJson);
+
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(paymentBaseUrl + paymentOperationCreate);
+
+        httpPost.setEntity(entity);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setHeader("Authorization", "Bearer " + authJwt);
+
+        CloseableHttpResponse response = client.execute(httpPost);
+        int statusCode = response.getStatusLine().getStatusCode();
+        if(statusCode != 200){
+            throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION);
+        }
+        HttpEntity responseEntity = response.getEntity();
+        String json = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
+        client.close();
+        return objectMapper.readValue(json, InvoiceCreateResponseDto.class);
+    }
+
     @Override
     public String getPaymentPage(Long bookId) throws IOException {
         Booking booking = getOne(bookId);
@@ -365,142 +444,11 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         if(!booking.isApproved()){
             throw new MessageCodeException(BookingCodes.BOOKING_IS_NOT_APPROVED);
         }
-        if(!booking.hasOrderOnEcom()){
+        if(!booking.hasOrderOnWoop()){
             throw new MessageCodeException(PaymentIntegrationCodes.BOOKING_IS_NOT_YET_COMPLETE);
         }
 
-        boolean readyToPay = getEcomOrderPaymentStatus(booking.getEcomOrderId());
-        if(!readyToPay){
-            throw new MessageCodeException(PaymentIntegrationCodes.BOOKING_IS_NOT_YET_COMPLETE);
-        }
-
-        return getBookingPaymentPage(booking);
-    }
-
-    private String getBookingPaymentPage(Booking booking) {
-//        C_SHARED_KEY
-//            .$_POST["ORDER"].";"
-//            .$_POST["AMOUNT"].";"
-//            .$_POST["CURRENCY"].";"
-//            .$_POST["MERCHANT"].";"
-//            .$_POST["TERMINAL"].";"
-//            .$_POST["NONCE"].";"
-//            .$_POST["CLIE NT_ID"].";"
-//            .preg_replace("/\n|\r/g","",$_POST["DESC"]).";"
-//            .preg_replace("/\n|\r/g","",$_POST["DESC_ORDER"]). ";"
-//            .$_POST["EMAIL"].";"
-//            .$_POST["BACKREF"].";"
-//            .$_POST["Ucaf_Flag"].";"
-//            .$_POST["Ucaf_Authentication_Da ta"].";"
-//            .$_POST["RECUR_FREQ"].";"
-//            .$_POST["RECUR_EXP"].";"
-//            .$_POST["INT_REF"].";"
-//            .$_POST["RECUR_ REF"].";"
-//            .$_POST["PAYMENT_TO"].";"
-//            .$_POST["MK_TOKEN"].";"
-//            .$_POST["MERCH_TOKEN_ID "].";"
-        StringBuilder pSignParams = new StringBuilder(ecomSharedSecred.substring(1));
-        pSignParams
-                .append(booking.getEcomOrderId()).append(";")
-                .append(booking.getSumPrice()).append(";")
-                .append("KZT;")
-                .append(ecomMid).append(";")
-                .append(ecomTid).append(";")
-                .append(";")
-                .append(";")
-                .append("test_desc_").append(booking.getId()).append(";")
-                .append(";")
-                .append(";")
-                .append(";")
-                .append(";")
-                .append(";")
-                .append(";")
-                .append(";")
-                .append(";")
-                .append(";")
-                .append(";")
-                .append(";")
-                .append(";");
-        String pSign = DigestUtils.sha512Hex(pSignParams.toString());
-
-        StringBuilder resultUrl = new StringBuilder();
-        resultUrl.append(ecomBaseUrl)
-                .append("?")
-                .append("ORDER=").append(booking.getEcomOrderId())
-                .append("&AMOUNT=").append(booking.getSumPrice())
-                .append("&CURRENCY=").append("KZT")
-                .append("&MERCHANT=").append(ecomMid)
-                .append("&TERMINAL=").append(ecomTid)
-                .append("&LANGUAGE=ru")
-                .append("&DESC=test_desc_").append(booking.getId())
-                .append("&P_SIGN=").append(pSign);
-        return resultUrl.toString();
-    }
-
-    private boolean getEcomOrderPaymentStatus(String orderId) throws IOException {
-        StringBuilder resultUrl = new StringBuilder();
-        resultUrl.append(ecomBaseUrl)
-                .append("?")
-                .append("ORDER=").append(orderId)
-                .append("&MERCHANT=").append(ecomMid)
-                .append("&GETSTATUS=").append(1)
-                .append("&LANGUAGE=ru")
-                .append("&P_SIGN=").append(DigestUtils.sha512Hex(ecomSharedSecred.substring(1) + orderId + ";" + ecomMid));
-
-        URL url = new URL(resultUrl.toString());
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
-        }
-        in.close();
-        con.disconnect();
-        return isStatusSuccess(content.toString());
-    }
-
-    private boolean isStatusSuccess(String xmlContent){
-        boolean result = true;
-
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            final InputStream stream = new ByteArrayInputStream(xmlContent.getBytes(StandardCharsets.UTF_8));
-            Document doc = db.parse(stream);
-            NodeList results = doc.getElementsByTagName("result");
-
-
-            if (results.getLength() > 0) {
-                Node node = results.item(0);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) node;
-                    String code = element.getElementsByTagName("code").item(0).getTextContent();
-                    if(code == null || !code.equals("0")){
-                        result = false;
-                    }
-
-                    NodeList operations = element.getElementsByTagName("operation");
-                    if (operations.getLength() > 0) {
-                        Node operNode = operations.item(0);
-                        if (operNode.getNodeType() == Node.ELEMENT_NODE) {
-                            Element operElem = (Element) operNode;
-                            String status = operElem.getElementsByTagName("status").item(0).getTextContent();
-                            if(status == null || !status.equals("I")){
-                                result = false;
-                            }
-                        }
-                    }
-
-                }
-            }
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
-        }
-
-        return result;
+        return booking.getPaymentUrl();
     }
 
     @Override
@@ -591,15 +539,4 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         return repo.getAllByUserId(user.getId());
     }
 
-    @Override
-    public void addEcomOrder(Long bookId, String ecomOrderId) {
-        Booking booking = getOne(bookId);
-        if(booking.hasOrderOnEcom()){
-            throw new MessageCodeException(PaymentIntegrationCodes.BOOKING_ALREADY_HAS_AN_ECOM_ORDER);
-        }
-
-        booking.setEcomOrderId(ecomOrderId);
-        editOneById(booking);
-
-    }
 }

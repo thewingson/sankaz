@@ -83,11 +83,14 @@ public class Booking extends BaseEntity {
     @Column(name = "CANCELLED_DATE")
     private LocalDateTime cancelledDate;
 
-    @Column(name = "ECOM_ORDER_ID")
-    private String ecomOrderId;
+    @Column(name = "WOOP_ORDER_ID")
+    private String woopOrderId;
 
-    public boolean hasOrderOnEcom(){
-        return ecomOrderId != null;
+    @Column(name = "PAYMENT_URL")
+    private String paymentUrl;
+
+    public boolean hasOrderOnWoop(){
+        return paymentUrl != null;
     }
 
     public boolean isBookedByUser(){
