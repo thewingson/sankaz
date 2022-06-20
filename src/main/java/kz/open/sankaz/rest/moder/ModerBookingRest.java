@@ -101,9 +101,10 @@ public class ModerBookingRest {
     }
 
     @PostMapping("/{bookId}/approve")
-    public ResponseEntity<?> approveBook(@PathVariable(name = "bookId") Long bookId) {
+    public ResponseEntity<?> approveBook(@PathVariable(name = "bookId") Long bookId,
+                                         @RequestParam(value="ecomOrderId") String ecomOrderId) {
         try{
-            return ResponseModel.success(bookingMapper.bookingToBookingModerByIdDto(bookingService.approve(bookId)));
+            return ResponseModel.success(bookingMapper.bookingToBookingModerByIdDto(bookingService.approve(bookId, ecomOrderId)));
         } catch (MessageCodeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getData(), e.getMessage());
         } catch (Exception e){

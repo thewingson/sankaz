@@ -66,6 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/patient/**",
                 "/dict/**",
                 "/users/auth/numbers/is-free",
+                "/users/books/{bookId}/payment-status",
                 "/users/auth/send-conf",
                 "/users/auth/check-conf",
                 "/users/auth/finish-reg",

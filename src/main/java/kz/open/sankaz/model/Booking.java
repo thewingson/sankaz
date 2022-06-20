@@ -83,6 +83,13 @@ public class Booking extends BaseEntity {
     @Column(name = "CANCELLED_DATE")
     private LocalDateTime cancelledDate;
 
+    @Column(name = "ECOM_ORDER_ID")
+    private String ecomOrderId;
+
+    public boolean hasOrderOnEcom(){
+        return ecomOrderId != null;
+    }
+
     public boolean isBookedByUser(){
         return user != null;
     }

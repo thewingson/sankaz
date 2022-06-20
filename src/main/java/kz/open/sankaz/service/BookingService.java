@@ -7,6 +7,7 @@ import kz.open.sankaz.pojo.filter.BookingAdminCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingModerCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,11 +24,15 @@ public interface BookingService extends CommonService<Booking> {
 
     Booking cancel(Long bookId);
 
-    Booking approve(Long bookId);
+    Booking approve(Long bookId, String ecomOrderId);
+
+    String getPaymentPage(Long bookId) throws IOException;
 
     Booking pay(Long bookId);
 
     Booking bookRoomFromUser(Long userId, BookingUserCreateFilter filter);
 
     List<Booking> getAllByUser(SecUser user);
+
+    void addEcomOrder(Long bookId, String ecomOrderId);
 }

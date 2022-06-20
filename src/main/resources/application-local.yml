@@ -19,9 +19,9 @@ spring:
       ddl-auto: none
     show-sql: true
   datasource:
-    url: jdbc:postgresql://localhost/sk_local
+    url: jdbc:postgresql://localhost/sankaz_loc
     username: postgres
-    password: root
+    password: postgres
 #    url: jdbc:postgresql://185.146.1.64:5432/sankaz_dev
 #    username: sankaz
 #    password: sankaz
@@ -95,3 +95,17 @@ application:
 #        image: http://185.146.1.64/sankaz/images
 fcm:
   service-account-file: sankaz-push-firebase-adminsdk.json
+payment:
+  ecom:
+    api:
+      base-url: https://ecom.jysanbank.kz/ecom/api
+    merchant:
+      shared-secred: _01234567890123456789012
+      mid: TEST_ECOM
+      tid: WEB10004
+      login: kalelov_kk@jysanbank.kz
+      password: 123qweQWE
+    user:
+      test-card: 4413280046925120
+      exp: 04/23
+      cvv: 618

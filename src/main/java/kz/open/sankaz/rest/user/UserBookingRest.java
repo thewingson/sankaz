@@ -113,6 +113,18 @@ public class UserBookingRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
+    @PostMapping("/books/{bookId}/payment-status")
+    public ResponseEntity<?> paymentStatus(@PathVariable(name = "bookId") Long bookId) {
+        try{
+            return ResponseModel.success(bookingService.getPaymentPage(bookId));
+        } catch (MessageCodeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
+        } catch (Exception e){
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
 //    @GetMapping("/books/inactive")
 //    public ResponseEntity<?> getAllHistory(HttpServletRequest request) {
 //        try {
