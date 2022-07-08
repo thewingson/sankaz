@@ -29,6 +29,7 @@ import kz.open.sankaz.repo.dictionary.RoomClassDicRepo;
 import kz.open.sankaz.service.BookingService;
 import kz.open.sankaz.service.RoomService;
 import kz.open.sankaz.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -50,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @Transactional
 public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> implements BookingService {
@@ -104,6 +106,12 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
 
     @Value("${payment.test-user.card-cvv}")
     private String paymentTestUserCardCvv;
+
+    @Value("${application.url.base}")
+    private String appUrlBase;
+
+    private static final String ENDPOINT_MODERS_BOOK = "/moders/books";
+    private static final String ENDPOINT_PAYMENT = ENDPOINT_MODERS_BOOK + "/{bookId}/pay";
 
     public BookingServiceImpl(BookingRepo bookingRepo) {
         super(bookingRepo);
@@ -393,6 +401,7 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         CloseableHttpResponse response = client.execute(httpPost);
         int statusCode = response.getStatusLine().getStatusCode();
         if(statusCode != 200){
+            log.warn("WoopKassa: Authentication failed with credentials {}", paymentMerchantLogin + " " + paymentMerchantPassword);
             throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION);
         }
         HttpEntity responseEntity = response.getEntity();
@@ -409,6 +418,9 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         invoiceCreateDto.setUser_phone(booking.getTelNumber());
         invoiceCreateDto.setEmail("");
         invoiceCreateDto.setMerchant_name(booking.getRoom().getSan().getName());
+
+        String finalUrl = appUrlBase + ENDPOINT_PAYMENT.replace("{bookId}", booking.getId().toString());
+        invoiceCreateDto.setRequestUrl(finalUrl, "POST");
         invoiceCreateDto.setBack_url("https://www.test.wooppay.com");
         invoiceCreateDto.setDescription("from_backend");
         invoiceCreateDto.setDeath_date(LocalDateTime.now().plusDays(1).toString());
@@ -427,6 +439,7 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         CloseableHttpResponse response = client.execute(httpPost);
         int statusCode = response.getStatusLine().getStatusCode();
         if(statusCode != 200){
+            log.warn("WoopKassa: Invoice creation failed with body {}", userLoginJson);
             throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION);
         }
         HttpEntity responseEntity = response.getEntity();
@@ -449,6 +462,27 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         }
 
         return booking.getPaymentUrl();
+    }
+
+    @Override
+    public Booking transfer(Long bookId) {
+        Booking booking = getOne(bookId);
+        if(booking.isTransferred()){
+            throw new MessageCodeException(BookingCodes.BOOKING_IS_ALREADY_TRANSFERRED);
+        }
+        if(!booking.isPaid()){
+            throw new MessageCodeException(BookingCodes.BOOKING_IS_NOT_PAID);
+        }
+
+        booking.setStatus(BookingStatus.TRANSFERRED);
+        booking.setTransferredDate(LocalDateTime.now());
+        editOneById(booking);
+
+        BookingHistory history = new BookingHistory();
+        history.setStatus(booking.getStatus());
+        history.setBooking(booking);
+        bookingHistoryRepo.save(history);
+        return booking;
     }
 
     @Override

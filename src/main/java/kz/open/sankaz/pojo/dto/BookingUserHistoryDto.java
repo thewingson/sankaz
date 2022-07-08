@@ -38,4 +38,7 @@ public class BookingUserHistoryDto extends AbstractDto {
 
     private BigDecimal sumPrice;
     private String status;
+
+    private String woopOrderId;
+    private String paymentUrl;
 }

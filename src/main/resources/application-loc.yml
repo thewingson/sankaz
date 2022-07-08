@@ -1,5 +1,5 @@
 server:
-  port: 8099
+  port: 8080
   error:
     include-message: always
     include-binding-errors: always
@@ -16,12 +16,21 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: public
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: true
   datasource:
-    url: jdbc:postgresql://localhost/sankaz_dev
-    username: sankaz
-    password: sankaz
+    #    url: jdbc:postgresql://localhost:5439/sankaz_doc
+    #    username: postgres
+    #    password: root
+    url: jdbc:postgresql://localhost:5432/sankaz_loc
+    username: postgres
+    password: root
+  #    url: jdbc:postgresql://185.146.1.64:5432/sankaz_dev
+  #    username: sankaz
+  #    password: sankaz
+  #    url: jdbc:postgresql://185.146.1.64:5432/sankaz_admin_dev
+  #    username: sankaz
+  #    password: sankaz
   mail:
     host: smtp.gmail.com
     username: sanofkaz@gmail.com
@@ -29,11 +38,11 @@ spring:
     port: 465
     protocol: smtps
   liquibase:
-    enabled: false
-    change-log: classpath:liquibase/changelog-master.xml
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
   servlet:
     multipart:
-      max-file-size: 2MB
+      max-file-size: 7MB
 
 mail:
   host: localhost
@@ -69,10 +78,12 @@ notification:
 
 logging:
   file:
-    path: /opt/sankaz
+    #    path: C:\Users\Mi Notebook\Desktop\sankaz-config
     name: app.log
 
 application:
+  url:
+    base: http://localhost:8080
   rest:
     response:
       success: success
@@ -80,9 +91,29 @@ application:
   file:
     upload:
       path:
-        image: http://185.146.1.64/sankaz/images
+        #        image: D:/sankaz_files/images/
+        image: /Users/almatrakhmetolla/IdeaProjects/sankaz
+    #        image: http://185.146.1.64/sankaz/images
+    #        image: http://185.146.1.64/sankaz/images
     download:
       path:
-        image: http://185.146.1.64/sankaz/images
+        #        image: D:/sankaz_files/images/
+        image: /Users/almatrakhmetolla/IdeaProjects/sankaz
+#        image: http://185.146.1.64/sankaz/images
 fcm:
   service-account-file: sankaz-push-firebase-adminsdk.json
+payment:
+  model:
+    prefix: sankaz_loc_
+  api:
+    base-url: https://api.yii2-stage.test.wooppay.com/v1
+  operation:
+    create: /invoice/create
+    auth: /auth
+  merchant:
+    login: merchViktor
+    password: A12345678a
+  test-user:
+    card-number: 4111111111111111
+    card-exp: 09/25
+    card-cvv: 653

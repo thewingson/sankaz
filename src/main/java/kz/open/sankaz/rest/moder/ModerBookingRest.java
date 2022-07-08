@@ -122,6 +122,7 @@ public class ModerBookingRest {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/{bookId}/pay")
     public ResponseEntity<?> payBook(@PathVariable(name = "bookId") Long bookId) {
         try{

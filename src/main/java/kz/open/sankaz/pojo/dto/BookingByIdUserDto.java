@@ -25,4 +25,6 @@ public class BookingByIdUserDto extends AbstractDto {
     private LocalDateTime approvedDate;
     private LocalDateTime cancelledDate;
     private LocalDateTime paidDate;
+    private String woopOrderId;
+    private String paymentUrl;
 }

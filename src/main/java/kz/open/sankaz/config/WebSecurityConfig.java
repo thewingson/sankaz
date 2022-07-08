@@ -79,6 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/moders/auth/send-reset",
                 "/moders/auth/check-reset",
                 "/moders/auth/reset-pass",
+                "/moders/books/{bookId}/pay",
                 "/faqs/**"
         ).permitAll();
 

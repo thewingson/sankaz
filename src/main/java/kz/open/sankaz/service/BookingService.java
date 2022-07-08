@@ -30,6 +30,8 @@ public interface BookingService extends CommonService<Booking> {
 
     Booking pay(Long bookId);
 
+    Booking transfer(Long bookId);
+
     Booking bookRoomFromUser(Long userId, BookingUserCreateFilter filter);
 
     List<Booking> getAllByUser(SecUser user);

@@ -82,6 +82,8 @@ public class Booking extends BaseEntity {
     private LocalDateTime paidDate;
     @Column(name = "CANCELLED_DATE")
     private LocalDateTime cancelledDate;
+    @Column(name = "TRANSFERRED_DATE")
+    private LocalDateTime transferredDate;
 
     @Column(name = "WOOP_ORDER_ID")
     private String woopOrderId;
@@ -99,6 +101,10 @@ public class Booking extends BaseEntity {
 
     public boolean isApproved(){
         return status.equals(BookingStatus.APPROVED);
+    }
+
+    public boolean isTransferred(){
+        return status.equals(BookingStatus.TRANSFERRED);
     }
 
     public boolean isCancelled(){

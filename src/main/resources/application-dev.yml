@@ -1,5 +1,5 @@
 server:
-  port: 8099
+  port: 8080
   error:
     include-message: always
     include-binding-errors: always
@@ -16,12 +16,12 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: public
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     show-sql: true
   datasource:
-    url: jdbc:postgresql://localhost/sankaz_dev
-    username: sankaz
-    password: sankaz
+    url: jdbc:postgresql://localhost:5432/sanatour_dev
+    username: postgres
+    password: root
   mail:
     host: smtp.gmail.com
     username: sanofkaz@gmail.com
@@ -29,8 +29,11 @@ spring:
     port: 465
     protocol: smtps
   liquibase:
-    enabled: false
-    change-log: classpath:liquibase/changelog-master.xml
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+  servlet:
+    multipart:
+      max-file-size: 7MB
 
 mail:
   host: localhost
@@ -66,10 +69,13 @@ notification:
 
 logging:
   file:
-    path: /opt/sankaz
-    name: app.log
+    #    path: C:\Users\Mi Notebook\Desktop\sankaz-config
+    name: sankaz_logs.log
+    path: /home/ubuntu/
 
 application:
+  url:
+    base: http://195.210.47.239:8078
   rest:
     response:
       success: success
@@ -77,4 +83,24 @@ application:
   file:
     upload:
       path:
-        image: /var/www/content/sankaz/images/
+        image: /home/ubuntu/apache2/var/www/html/files/images/
+    download:
+      path:
+        image: http://195.210.47.239/files/images/
+fcm:
+  service-account-file: sankaz-push-firebase-adminsdk.json
+payment:
+  model:
+    prefix: sankaz_dev_
+  api:
+    base-url: https://api.yii2-stage.test.wooppay.com/v1
+  operation:
+    create: /invoice/create
+    auth: /auth
+  merchant:
+    login: merchViktor
+    password: A12345678a
+  test-user:
+    card-number: 4111111111111111
+    card-exp: 09/25
+    card-cvv: 653

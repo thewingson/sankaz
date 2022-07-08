@@ -51,4 +51,8 @@ public class InvoiceCreateDto {
     enum RequestType {
         GET, POST, PUT, DELETE;
     }
+
+    public void setRequestUrl(String url, String type){
+        this.request_url = new RequestUrl(url, RequestType.valueOf(type));
+    }
 }

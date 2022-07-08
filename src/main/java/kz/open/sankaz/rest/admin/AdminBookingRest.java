@@ -1,11 +1,13 @@
 package kz.open.sankaz.rest.admin;
 
+import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.mapper.BookingMapper;
 import kz.open.sankaz.model.Booking;
 import kz.open.sankaz.repo.BookingRepo;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +62,17 @@ public class AdminBookingRest {
             return ResponseModel.success(bookingMapper.bookingToBookingAdminDto(bookings));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/{bookId}/transfer")
+    public ResponseEntity<?> transfer(@PathVariable(name = "bookId") Long bookId) {
+        try{
+            return ResponseModel.success(bookingMapper.bookingToBookingModerByIdDto(bookingService.transfer(bookId)));
+        } catch (MessageCodeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
+        } catch (Exception e){
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
