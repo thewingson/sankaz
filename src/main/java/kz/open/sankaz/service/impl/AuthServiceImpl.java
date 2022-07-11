@@ -482,16 +482,6 @@ public class AuthServiceImpl implements AuthService {
             Gender gender = genderService.getOne(filter.getGenderId());
             userByNumber.setGender(gender);
         }
-        if(!filter.getEmail().isEmpty()){
-            try{
-                SecUser userByEmail = userService.getUserByEmail(filter.getEmail());
-                log.warn("Email is busy");
-                throw new RuntimeException("Данный email занят. Пожалуйста, введите другой email.");
-            } catch (EntityNotFoundException e){
-                log.info("Email is free");
-                userByNumber.setEmail(filter.getEmail());
-            }
-        }
         userByNumber.setConfirmationStatus(ConfirmationStatus.FINISHED);
         userByNumber.setPassword(passwordEncoder.encode(filter.getPassword()));
         userByNumber.setFirstName(filter.getFirstName());

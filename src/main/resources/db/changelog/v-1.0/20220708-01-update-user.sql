@@ -1,0 +1,1 @@
+﻿ALTER TABLE public.sec_user DROP CONSTRAINT UK_numjsbs0wblvnqi7po8eyeo6y;

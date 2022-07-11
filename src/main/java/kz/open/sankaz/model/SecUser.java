@@ -55,7 +55,7 @@ public class  SecUser extends AbstractEntity implements UserDetails{
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
-    @Column(name = "EMAIL", unique = true)
+    @Column(name = "EMAIL")
     private String email;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE})

@@ -528,8 +528,8 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
             bookNotItemDto.setTitle(userNotification.getTitle());
             bookNotItemDto.setTitleKz(userNotification.getTitleKz());
 
-            BookingByIdUserDto booking = bookingMapper.bookingToBookingByIdUserDto(userNotification.getBookingHistory().getBooking());
-            booking.setStatus(userNotification.getBookingHistory().getStatus().name());
+            BookingByIdUserDto booking = bookingMapper.bookingToBookingByIdUserDto(userNotification.getBooking());
+            booking.setStatus(userNotification.getBooking().getStatus().name());
             bookNotItemDto.setBooking(booking);
             bookNotItemDtos.add(bookNotItemDto);
             if(!userNotification.isViewed()) newNotsCount.getAndIncrement();
@@ -552,8 +552,8 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
             bookNotItemDto.setTitle(userNotification.getTitle());
             bookNotItemDto.setTitleKz(userNotification.getTitleKz());
 
-            BookingByIdUserDto booking = bookingMapper.bookingToBookingByIdUserDto(userNotification.getBookingHistory().getBooking());
-            booking.setStatus(userNotification.getBookingHistory().getStatus().name());
+            BookingByIdUserDto booking = bookingMapper.bookingToBookingByIdUserDto(userNotification.getBooking());
+            booking.setStatus(userNotification.getBooking().getStatus().name());
             bookNotItemDto.setBooking(booking);
             bookNotItemDtos.add(bookNotItemDto);
             if(!userNotification.isViewed()) newNotsCount.getAndIncrement();

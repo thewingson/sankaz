@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "BOOKING_HISTORY")
@@ -39,6 +40,9 @@ public class BookingHistory extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
     private BookingStatus status;
+
+    @Column(name = "HISTORY_DATE", nullable = false)
+    private LocalDateTime historyDate;
 
     public boolean isApproved(){
         return status.equals(BookingStatus.APPROVED);

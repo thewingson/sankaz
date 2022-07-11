@@ -39,4 +39,40 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="3" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220708-01-update-booking.sql"/>
+    </changeSet>
+
+    <changeSet id="4" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220708-01-update-user.sql"/>
+    </changeSet>
+
+    <changeSet id="5" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220708-01-update-booking-history.sql"/>
+    </changeSet>
+
+    <changeSet id="6" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220708-01-update-user-notification.sql"/>
+    </changeSet>
+
 </databaseChangeLog>

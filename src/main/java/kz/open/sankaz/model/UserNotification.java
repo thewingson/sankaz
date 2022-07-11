@@ -50,7 +50,7 @@ public class UserNotification extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "BOOK_ID", foreignKey = @ForeignKey(name = "NOTIFICATION_BOOK_FK"))
     @JsonManagedReference
-    private BookingHistory bookingHistory;
+    private Booking booking;
 
     @ManyToOne
     @JoinColumn(name = "STOCK_ID", foreignKey = @ForeignKey(name = "NOTIFICATION_STOCK_FK"))

@@ -128,6 +128,32 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
     }
 
     @Override
+    public Booking addOne(Booking booking) {
+        booking = repo.save(booking);
+
+        BookingHistory history = new BookingHistory();
+        history.setBooking(booking);
+        history.setHistoryDate(LocalDateTime.now());
+        history.setStatus(booking.getStatus());
+        bookingHistoryRepo.save(history);
+
+        return booking;
+    }
+
+    @Override
+    public Booking editOneById(Booking booking) {
+        booking = repo.save(booking);
+
+        BookingHistory history = new BookingHistory();
+        history.setBooking(booking);
+        history.setHistoryDate(LocalDateTime.now());
+        history.setStatus(booking.getStatus());
+        bookingHistoryRepo.save(history);
+
+        return booking;
+    }
+
+    @Override
     public Booking addOne(BookingAdminCreateFilter filter) {
         Booking booking = new Booking();
         if(filter.getUserId() != null){
@@ -248,13 +274,7 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
 
         addOne(booking);
 
-        BookingHistory history = new BookingHistory();
-        history.setStatus(booking.getStatus());
-        history.setBooking(booking);
-        bookingHistoryRepo.save(history);
-
         return booking;
-
     }
 
     @Override
@@ -299,11 +319,6 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
 
         editOneById(booking);
 
-        BookingHistory history = new BookingHistory();
-        history.setStatus(booking.getStatus());
-        history.setBooking(booking);
-        bookingHistoryRepo.save(history);
-
         return booking;
     }
 
@@ -317,18 +332,13 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setCancelledDate(LocalDateTime.now());
         editOneById(booking);
 
-        BookingHistory history = new BookingHistory();
-        history.setStatus(booking.getStatus());
-        history.setBooking(booking);
-        bookingHistoryRepo.save(history);
-
         if(booking.getUser() != null){
             //TODO: send to firebase
             UserNotification notification = new UserNotification();
             notification.setUser(booking.getUser());
             notification.setNotificationType(UserNotificationType.BOOKING);
             notification.setNotifyDate(LocalDateTime.now());
-            notification.setBookingHistory(history);
+            notification.setBooking(booking);
             notification.setTitle("Ваша бронь #" + booking.getId() + " отменена");
             notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз кері қайтарылды");
             notificationRepo.save(notification);
@@ -365,18 +375,13 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setPaymentUrl(invoiceCreateResponseDto.getOperation_url());
         editOneById(booking);
 
-        BookingHistory history = new BookingHistory();
-        history.setStatus(booking.getStatus());
-        history.setBooking(booking);
-        bookingHistoryRepo.save(history);
-
         if(booking.getUser() != null){
 //            TODO: send to firebase
             UserNotification notification = new UserNotification();
             notification.setUser(booking.getUser());
             notification.setNotificationType(UserNotificationType.PAYMENT);
             notification.setNotifyDate(LocalDateTime.now());
-            notification.setBookingHistory(history);
+            notification.setBooking(booking);
             notification.setTitle("Ваша бронь #" + booking.getId() + " подтверждена");
             notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз қабылданды");
             notificationRepo.save(notification);
@@ -477,11 +482,6 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setStatus(BookingStatus.TRANSFERRED);
         booking.setTransferredDate(LocalDateTime.now());
         editOneById(booking);
-
-        BookingHistory history = new BookingHistory();
-        history.setStatus(booking.getStatus());
-        history.setBooking(booking);
-        bookingHistoryRepo.save(history);
         return booking;
     }
 
@@ -499,18 +499,13 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setPaidDate(LocalDateTime.now());
         editOneById(booking);
 
-        BookingHistory history = new BookingHistory();
-        history.setStatus(booking.getStatus());
-        history.setBooking(booking);
-        bookingHistoryRepo.save(history);
-
         if(booking.getUser() != null){
             //TODO: send to firebase
             UserNotification notification = new UserNotification();
             notification.setUser(booking.getUser());
             notification.setNotificationType(UserNotificationType.PAYMENT);
             notification.setNotifyDate(LocalDateTime.now());
-            notification.setBookingHistory(history);
+            notification.setBooking(booking);
             notification.setTitle("Ваша бронь #" + booking.getId() + " успешно оплачено");
             notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз төленді");
             notificationRepo.save(notification);
@@ -550,16 +545,11 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
 
         addOne(booking);
 
-        BookingHistory history = new BookingHistory();
-        history.setStatus(booking.getStatus());
-        history.setBooking(booking);
-        bookingHistoryRepo.save(history);
-
         // TODO: send notification to firebase
         UserNotification notification = new UserNotification();
         notification.setUser(user);
         notification.setNotificationType(UserNotificationType.BOOKING);
-        notification.setBookingHistory(history);
+        notification.setBooking(booking);
         notification.setNotifyDate(LocalDateTime.now());
         notification.setTitle("Ваша бронь #" + booking.getId() + " рассматривается");
         notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз қарастырылуда");

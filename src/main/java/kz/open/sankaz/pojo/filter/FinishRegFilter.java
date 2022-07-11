@@ -24,10 +24,6 @@ public class FinishRegFilter extends BaseDto {
     @Size(min = 2, message = "{FinishRegFilter.lastName.Size}")
     private String lastName;
 
-    @NotEmpty(message = "{FinishRegFilter.email.NotEmpty}")
-    @Size(min = 8, message = "{FinishRegFilter.email.Size}")
-    private String email;
-
     private Long genderId;
 
     private Long cityId;

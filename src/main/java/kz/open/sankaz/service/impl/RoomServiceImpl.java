@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
@@ -61,6 +62,7 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
         return addOne(room);
     }
 
+    @org.springframework.transaction.annotation.Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public Room addOne(RoomCreateFilter filter, MultipartFile[] pics) throws IOException {
         RoomClassDic classDic = roomClassDicService.getOne(filter.getRoomClassDicId());
