@@ -19,6 +19,12 @@ public class MessageCodeException extends RuntimeException {
         this.data = data;
     }
 
+    public MessageCodeException(String code, Map<String, ?> data, String errMsg) {
+        super(errMsg);
+        this.code = code;
+        this.data = data;
+    }
+
 
     public String getCode() {
         return code;

@@ -18,8 +18,5 @@ public class SecUserEditFilter extends BaseFilter {
     @Size(min = 2)
     private String lastName;
     private Long genderId;
-    @NotEmpty
-    @Size(min = 8)
-    private String email;
     private Long cityId;
 }

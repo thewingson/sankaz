@@ -27,9 +27,6 @@ public class OrganizationCreateFilter extends BaseFilter {
     @NotEmpty
     @Size(min = 12)
     private String telNumber;
-    @NotEmpty
-    @Size(min = 8)
-    private String email;
     @NotNull
     private Long companyCategoryId;
     @NotNull

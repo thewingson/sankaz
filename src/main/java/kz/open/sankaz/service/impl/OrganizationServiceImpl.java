@@ -234,12 +234,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         CompanyCategory companyCategory = companyCategoryService.getOne(filter.getCompanyCategoryId());
 
         try{
-            userService.getUserByEmail(filter.getEmail());
-            throw new RuntimeException("IBAN уже зарегистрирован");
-        } catch (EntityNotFoundException e){
-        }
-
-        try{
             getOrganizationByIban(filter.getIban());
             throw new RuntimeException("IBAN уже зарегистрирован");
         } catch (EntityNotFoundException e){
@@ -265,7 +259,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         Organization organization = new Organization();
         organization.setUser(user);
         organization.setConfirmationStatus(OrganizationConfirmationStatus.valueOf(filter.getConfirmationStatus()));
-        organization.setEmail(filter.getEmail());
         organization.setIban(filter.getIban());
         organization.setName(filter.getName());
         organization.setManagerFullName(filter.getManagerFullName());
@@ -289,9 +282,9 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
 
         CompanyCategory companyCategory = companyCategoryService.getOne(filter.getCompanyCategoryId());
 
-        try{ // проверка email
-            SecUser userByEmail = userService.getUserByEmail(filter.getEmail());
-            if(!organization.getUser().equals(userByEmail)){
+        try{ // проверка telNumber
+            SecUser userByTelNumber = userService.getUserByTelNumber(filter.getTelNumber());
+            if(!organization.getUser().equals(userByTelNumber)){
                 throw new OrganizationRegisterException(OrganizationRegisterExceptionMessages.EMAIL_IS_BUSY_CODE);
             }
         } catch (EntityNotFoundException e){
@@ -329,7 +322,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         }
 
         organization.setUser(user);
-        organization.setEmail(filter.getEmail());
         organization.setIban(filter.getIban());
         organization.setName(filter.getName());
         organization.setManagerFullName(filter.getManagerFullName());

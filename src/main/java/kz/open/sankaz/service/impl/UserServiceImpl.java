@@ -168,7 +168,6 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
         SecUser user = getOne(id);
         user.setFirstName(filter.getFirstName());
         user.setLastName(filter.getLastName());
-        user.setEmail(filter.getEmail());
         if (filter.getGenderId() != null) {
             Gender gender = genderService.getOne(filter.getGenderId());
             if(!gender.equals(user.getGender())){
@@ -304,18 +303,12 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     }
 
     @Override
-    public TokenDto changePassword(Long id, String password, String confirmPassword, String oldPassword) {
+    public TokenDto changePassword(Long id, String password, String confirmPassword) {
         if(!password.equals(confirmPassword)){
             throw new RuntimeException("Пароли не совпадают");
         }
-        if(oldPassword.equals(password)){
-            throw new RuntimeException("Новый пароль не должен совпадать со старым!");
-        }
 
         SecUser user = getOne(id);
-        if(!passwordEncoder.matches(oldPassword, user.getPassword())){
-            throw new RuntimeException("Неправильно ввели текущий пароль!");
-        }
         user.setPassword(passwordEncoder.encode(password));
         editOneById(user);
 

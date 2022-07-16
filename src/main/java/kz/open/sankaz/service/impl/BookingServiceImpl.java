@@ -363,7 +363,7 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         if(!busyDates.isEmpty()){
             Map<String, List<LocalDate>> data = new HashMap<>();
             data.put("busyDates", busyDates);
-            throw new MessageCodeException(BookingCodes.ROOM_IS_BUSY_IN_CHOSEN_DATE_RANGE, data);
+            throw new MessageCodeException(BookingCodes.ROOM_IS_BUSY_IN_CHOSEN_DATE_RANGE, data, "Номер занят в выбранном вами диапазоне дней. Пожалуйста, выберите другую дату.");
         }
 
         UserAuthDto userAuthDto = loginToPaymentService();
@@ -527,7 +527,7 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         if(!busyDates.isEmpty()){
             Map<String, List<LocalDate>> data = new HashMap<>();
             data.put("busyDates", busyDates);
-            throw new MessageCodeException(BookingCodes.ROOM_IS_BUSY_IN_CHOSEN_DATE_RANGE, data);
+            throw new MessageCodeException(BookingCodes.ROOM_IS_BUSY_IN_CHOSEN_DATE_RANGE, data, "Номер занят в выбранном вами диапазоне дней. Пожалуйста, выберите другую дату.");
         }
 
         Booking booking = new Booking();

@@ -513,10 +513,10 @@ public class AuthServiceImpl implements AuthService {
 
     private Organization registerNewOrganization(SecUser userByNumber, OrganizationRegisterFinishFilter filter) {
         try{ // проверка email
-            userService.getUserByEmail(filter.getEmail());
-            throw new MessageCodeException(OrganizationCodes.EMAIL_IS_ALREADY_TAKEN);
+            userService.getUserByTelNumber(filter.getTelNumber());
+            throw new MessageCodeException(OrganizationCodes.TEL_NUMBER_IS_ALREADY_TAKEN);
         } catch (EntityNotFoundException e){
-            log.info("Email is free {}", filter.getTelNumber());
+            log.info("Number is free {}", filter.getTelNumber());
         }
 
         try{ // проверка iban
@@ -549,16 +549,12 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setConfirmationStatus(ConfirmationStatus.FINISHED);
         userByNumber.setFirstName(filter.getFullName());
         userByNumber.setLastName(filter.getFullName());
-        if(!filter.getEmail().isEmpty()){
-            userByNumber.setEmail(filter.getEmail());
-        }
         userService.editOneById(userByNumber);
 
         Organization organization = new Organization();
         organization.setRequestDate(LocalDateTime.now());
         organization.setConfirmationStatus(OrganizationConfirmationStatus.ON_CONFIRMATION);
         organization.setUser(userByNumber);
-        organization.setEmail(filter.getEmail());
         organization.setIban(filter.getIban());
         organization.setName(filter.getOrgName());
         organization.setManagerFullName(filter.getFullName());
@@ -570,13 +566,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Organization registerOldOrganization(SecUser userByNumber, Organization organization, OrganizationRegisterFinishFilter filter) {
-        if (!organization.getEmail().equals(filter.getEmail())) {
+        if (!organization.getTelNumber().equals(filter.getTelNumber())) {
             try { // проверка email
-                userService.getUserByEmail(filter.getEmail());
+                userService.getUserByTelNumber(filter.getTelNumber());
                 throw new MessageCodeException(OrganizationCodes.EMAIL_IS_ALREADY_TAKEN);
             } catch (EntityNotFoundException e) {
-                organization.setEmail(filter.getEmail());
-                userByNumber.setEmail(filter.getEmail());
+                organization.setTelNumber(filter.getTelNumber());
+                userByNumber.setTelNumber(filter.getTelNumber());
             }
         }
 

@@ -33,7 +33,7 @@ public class ModerProfileRest {
                                             @Valid @RequestBody ChangePasswordFilter filter) {
         try {
             Long userId = authService.getUserId(request);
-            return ResponseModel.success(userService.changePassword(userId, filter.getPassword(), filter.getConfirmPassword(), filter.getOldPassword()));
+            return ResponseModel.success(userService.changePassword(userId, filter.getPassword(), filter.getConfirmPassword()));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

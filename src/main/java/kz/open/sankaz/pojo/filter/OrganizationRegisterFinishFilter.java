@@ -26,7 +26,4 @@ public class OrganizationRegisterFinishFilter extends BaseFilter {
     @NotEmpty(message = "{TelNumberFilter.telNumber.NotEmpty}")
     @Size(min = 12, max = 12, message = "{TelNumberFilter.telNumber.Size}")
     private String telNumber;
-    @NotEmpty(message = "{FinishRegFilter.email.NotEmpty}")
-    @Size(min = 8, message = "{FinishRegFilter.email.Size}")
-    private String email;
 }

@@ -19,7 +19,7 @@ public interface UserService extends UserDetailsManager, CommonService<SecUser> 
 
     SecUser getUserByTelNumber(String telNumber);
 
-    TokenDto changePassword(Long id, String password, String confirmPassword, String oldPassword);
+    TokenDto changePassword(Long id, String password, String confirmPassword);
 
     PictureDto changePicture(Long userId, MultipartFile file) throws IOException;
     void deletePicture(Long userId);

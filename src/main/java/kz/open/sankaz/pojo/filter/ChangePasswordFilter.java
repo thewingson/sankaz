@@ -17,7 +17,4 @@ public class ChangePasswordFilter extends BaseFilter {
     @NotEmpty
     @Size(min = 8)
     private String confirmPassword;
-    @NotEmpty
-    @Size(min = 8)
-    private String oldPassword;
 }
