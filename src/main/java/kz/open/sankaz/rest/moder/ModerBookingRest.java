@@ -2,7 +2,10 @@ package kz.open.sankaz.rest.moder;
 
 import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.mapper.BookingMapper;
+import kz.open.sankaz.pojo.dto.DatesDto;
 import kz.open.sankaz.pojo.filter.BookingModerCreateFilter;
+import kz.open.sankaz.pojo.filter.DateRangeFilter;
+import kz.open.sankaz.repo.RoomRepo;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -23,13 +27,15 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class ModerBookingRest {
 
     private final BookingService bookingService;
+    private final RoomRepo roomRepo;
 
     @Autowired
     private BookingMapper bookingMapper;
 
     @Autowired
-    public ModerBookingRest(BookingService bookingService) {
+    public ModerBookingRest(BookingService bookingService, RoomRepo roomRepo) {
         this.bookingService = bookingService;
+        this.roomRepo = roomRepo;
     }
 
     @GetMapping("/sans/{sanId}")
@@ -131,6 +137,17 @@ public class ModerBookingRest {
             return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/rooms/{roomId}")
+    public ResponseEntity<?> getFreeDaysForBooking(@PathVariable("roomId") Long roomId,
+                                                   @Valid @RequestBody DateRangeFilter filter) {
+        try {
+            List<DatesDto> allFreeForBookingByDateRange = roomRepo.getRoomAvailabilityForDateRange(roomId, filter.getStartDate(), filter.getEndDate());
+            return ResponseModel.success(allFreeForBookingByDateRange);
+        } catch (RuntimeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
     }
 
