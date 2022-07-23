@@ -323,13 +323,14 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
     }
 
     @Override
-    public Booking cancel(Long bookId) {
+    public Booking cancel(Long bookId, String reason) {
         Booking booking = getOne(bookId);
         if(booking.isCancelled()){
             throw new MessageCodeException(BookingCodes.BOOKING_IS_ALREADY_CANCELLED);
         }
         booking.setStatus(BookingStatus.CANCELLED);
         booking.setCancelledDate(LocalDateTime.now());
+        booking.setCancelReason(reason);
         editOneById(booking);
 
         if(booking.getUser() != null){

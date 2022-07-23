@@ -22,7 +22,7 @@ public interface BookingService extends CommonService<Booking> {
     Booking addOne(BookingModerCreateFilter filter);
     Booking editOneById(Long bookId, BookingModerCreateFilter filter);
 
-    Booking cancel(Long bookId);
+    Booking cancel(Long bookId, String reason);
 
     Booking approve(Long bookId) throws IOException;
 

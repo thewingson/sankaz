@@ -1,0 +1,1 @@
+alter table public.booking add column if not exists cancel_reason varchar(255);

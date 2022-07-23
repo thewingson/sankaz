@@ -91,6 +91,9 @@ public class Booking extends BaseEntity {
     @Column(name = "PAYMENT_URL")
     private String paymentUrl;
 
+    @Column(name = "CANCEL_REASON")
+    private String cancelReason;
+
     public boolean hasOrderOnWoop(){
         return paymentUrl != null;
     }

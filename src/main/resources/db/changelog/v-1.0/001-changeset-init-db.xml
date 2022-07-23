@@ -84,4 +84,13 @@
                  path="20220723-01-update-city.sql"/>
     </changeSet>
 
+    <changeSet id="8" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220723-01-update-booking.sql"/>
+    </changeSet>
+
 </databaseChangeLog>

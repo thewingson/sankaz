@@ -118,9 +118,10 @@ public class ModerBookingRest {
     }
 
     @PostMapping("/{bookId}/cancel")
-    public ResponseEntity<?> cancelBook(@PathVariable(name = "bookId") Long bookId) {
+    public ResponseEntity<?> cancelBook(@PathVariable(name = "bookId") Long bookId,
+                                        @RequestParam(value="reason") String reason) {
         try{
-            return ResponseModel.success(bookingMapper.bookingToBookingModerByIdDto(bookingService.cancel(bookId)));
+            return ResponseModel.success(bookingMapper.bookingToBookingModerByIdDto(bookingService.cancel(bookId, reason)));
         } catch (MessageCodeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
         } catch (Exception e){
