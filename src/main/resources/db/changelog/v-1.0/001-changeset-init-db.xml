@@ -75,4 +75,13 @@
                  path="20220708-01-update-user-notification.sql"/>
     </changeSet>
 
+    <changeSet id="7" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220723-01-update-city.sql"/>
+    </changeSet>
+
 </databaseChangeLog>
