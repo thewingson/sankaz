@@ -100,6 +100,10 @@ public class Booking extends BaseEntity {
     @JsonBackReference
     private List<BookingHistory> histories;
 
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.REMOVE)
+    @JsonBackReference
+    private List<UserNotification> notifications;
+
     public boolean hasOrderOnWoop(){
         return paymentUrl != null;
     }
