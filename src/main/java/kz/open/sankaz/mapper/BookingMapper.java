@@ -1,6 +1,7 @@
 package kz.open.sankaz.mapper;
 
 import kz.open.sankaz.model.Booking;
+import kz.open.sankaz.model.BookingHistory;
 import kz.open.sankaz.pojo.dto.*;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -113,4 +114,11 @@ public abstract class BookingMapper extends AbstractMapper {
     abstract public BookingModerCalendarDto bookingToBookingModerCalendarDto(Booking booking);
     @IterableMapping(qualifiedByName = "bookingToBookingModerCalendarDto")
     abstract public List<BookingModerCalendarDto> bookingToBookingModerCalendarDto(List<Booking> bookings);
+
+    @Named("bookingHistoryToDto")
+    @Mapping(target = "bookingId", source = "history.booking.id")
+    @Mapping(target = "status", expression = "java( history.getBooking().getStatus().name() )")
+    abstract public BookingHistoryDto bookingHistoryToDto(BookingHistory history);
+    @IterableMapping(qualifiedByName = "bookingHistoryToDto")
+    abstract public List<BookingHistoryDto> bookingHistoryToDto(List<BookingHistory> histories);
 }

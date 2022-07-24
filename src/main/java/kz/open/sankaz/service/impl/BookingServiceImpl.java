@@ -37,6 +37,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -540,6 +543,13 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         List<Booking> bookings = repo.getAllByUserId(userId);
         bookings = checkExpiredBookings(bookings);
         return bookings;
+    }
+
+    @Override
+    public List<BookingHistory> getHistory(Long bookId) {
+        Pageable pageable =
+                PageRequest.of(0, 50, Sort.by(Sort.Direction.ASC, "historyDate"));
+        return bookingHistoryRepo.findAllByBookingId(bookId, pageable).getContent();
     }
 
     private List<Booking> checkExpiredBookings(List<Booking> bookings) {

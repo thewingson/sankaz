@@ -1,6 +1,7 @@
 package kz.open.sankaz.service;
 
 import kz.open.sankaz.model.Booking;
+import kz.open.sankaz.model.BookingHistory;
 import kz.open.sankaz.model.SecUser;
 import kz.open.sankaz.pojo.dto.RoomClassModerCalendarDto;
 import kz.open.sankaz.pojo.filter.BookingAdminCreateFilter;
@@ -34,4 +35,6 @@ public interface BookingService extends CommonService<Booking> {
 
     List<Booking> getAllByUser(SecUser user);
     List<Booking> getAllByUser(Long userId);
+
+    List<BookingHistory> getHistory(Long bookId);
 }

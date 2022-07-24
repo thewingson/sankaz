@@ -76,4 +76,15 @@ public class AdminBookingRest {
         }
     }
 
+    @GetMapping("/{bookId}/history")
+    public ResponseEntity<?> getHistory(@PathVariable(name = "bookId") Long bookId) {
+        try{
+            return ResponseModel.success(bookingMapper.bookingHistoryToDto(bookingService.getHistory(bookId)));
+        } catch (MessageCodeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
+        } catch (Exception e){
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
 }
