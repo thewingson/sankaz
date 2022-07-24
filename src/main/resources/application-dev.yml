@@ -104,3 +104,5 @@ payment:
     card-number: 4111111111111111
     card-exp: 09/25
     card-cvv: 653
+  expires:
+    min: 10

@@ -30,6 +30,8 @@ public interface CommonService<E extends BaseEntity> {
 
     void deleteOneById(Long id) throws SQLException;
 
+    void deleteList(List<E> list);
+
     void deleteOneByIdSoft(Long id);
 
     PageDto getAllPage(int page, int size);

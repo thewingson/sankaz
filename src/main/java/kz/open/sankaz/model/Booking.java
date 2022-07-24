@@ -1,5 +1,6 @@
 package kz.open.sankaz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kz.open.sankaz.model.enums.BookingStatus;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @DynamicUpdate
@@ -93,6 +95,10 @@ public class Booking extends BaseEntity {
 
     @Column(name = "CANCEL_REASON")
     private String cancelReason;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.REMOVE)
+    @JsonBackReference
+    private List<BookingHistory> histories;
 
     public boolean hasOrderOnWoop(){
         return paymentUrl != null;

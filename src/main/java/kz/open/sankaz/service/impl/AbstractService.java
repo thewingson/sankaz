@@ -108,6 +108,11 @@ public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo
     }
 
     @Override
+    public void deleteList(List<E> list) {
+        repo.deleteAll(list);
+    }
+
+    @Override
     public void deleteOneByIdSoft(Long id) {
         E one = getOne(id);
         repo.save(one);

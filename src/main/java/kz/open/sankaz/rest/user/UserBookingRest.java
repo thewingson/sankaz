@@ -5,7 +5,6 @@ import kz.open.sankaz.mapper.BookingMapper;
 import kz.open.sankaz.pojo.dto.DatesDto;
 import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
 import kz.open.sankaz.pojo.filter.DateRangeFilter;
-import kz.open.sankaz.repo.BookingRepo;
 import kz.open.sankaz.repo.RoomRepo;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.AuthService;
@@ -31,9 +30,6 @@ public class UserBookingRest {
 
     @Autowired
     private AuthService authService;
-
-    @Autowired
-    private BookingRepo bookingRepo;
 
     @Autowired
     private RoomRepo roomRepo;
@@ -68,6 +64,8 @@ public class UserBookingRest {
             return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getData(), e.getMessage());
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -75,7 +73,7 @@ public class UserBookingRest {
     public ResponseEntity<?> getHistory(HttpServletRequest request) {
         try {
             Long userId = authService.getUserId(request);
-            return ResponseModel.success(bookingMapper.bookingToBookingUserHistoryDto(bookingRepo.getAllByUserId(userId)));
+            return ResponseModel.success(bookingMapper.bookingToBookingUserHistoryDto(bookingService.getAllByUser(userId)));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
@@ -125,35 +123,16 @@ public class UserBookingRest {
         }
     }
 
-//    @GetMapping("/books/inactive")
-//    public ResponseEntity<?> getAllHistory(HttpServletRequest request) {
-//        try {
-//            Long userId = authService.getUserId(request);
-//            return ResponseModel.success(bookingMapper.bookingToBookingUserDto(bookingRepo.getAllHistoryByUserId(userId)));
-//        } catch (RuntimeException e) {
-//            return ResponseModel.error(BAD_REQUEST, e.getMessage());
-//        }
-//    }
-
-//    @GetMapping("/books/active")
-//    public ResponseEntity<?> getAllActive(HttpServletRequest request) {
-//        try {
-//            Long userId = authService.getUserId(request);
-//            return ResponseModel.success(bookingMapper.bookingToBookingUserDto(bookingRepo.getAllActiveByUserId(userId)));
-//        } catch (RuntimeException e) {
-//            return ResponseModel.error(BAD_REQUEST, e.getMessage());
-//        }
-//    }
-
-//    @PostMapping("/books/filter")
-//    public ResponseEntity<?> getAllByFilter(HttpServletRequest request,
-//                                            @Valid @RequestBody BookingUserGetFilter filter) {
-//        try {
-//            Long userId = authService.getUserId(request);
-//            return ResponseModel.success(bookingMapper.bookingToBookingAllForModerDto(bookingRepo.getAllByUserIdAndStatus(userId, filter.getStatus())));
-//        } catch (RuntimeException e) {
-//            return ResponseModel.error(BAD_REQUEST, e.getMessage());
-//        }
-//    }
+    @DeleteMapping("/books/{bookId}")
+    public ResponseEntity<?> deleteBook(@PathVariable(name = "bookId") Long bookId) {
+        try{
+            bookingService.deleteOneById(bookId);
+            return ResponseModel.success(String.format("Срок брони %d истек", bookId));
+        } catch (MessageCodeException e) {
+            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getMessage());
+        } catch (Exception e){
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
 
 }

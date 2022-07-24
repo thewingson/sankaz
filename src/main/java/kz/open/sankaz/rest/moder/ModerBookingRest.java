@@ -106,17 +106,6 @@ public class ModerBookingRest {
         }
     }
 
-    @PostMapping("/{bookId}/approve")
-    public ResponseEntity<?> approveBook(@PathVariable(name = "bookId") Long bookId) {
-        try{
-            return ResponseModel.success(bookingMapper.bookingToBookingModerByIdDto(bookingService.approve(bookId)));
-        } catch (MessageCodeException e) {
-            return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getData(), e.getMessage());
-        } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
     @PostMapping("/{bookId}/cancel")
     public ResponseEntity<?> cancelBook(@PathVariable(name = "bookId") Long bookId,
                                         @RequestParam(value="reason") String reason) {

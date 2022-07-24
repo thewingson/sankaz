@@ -24,15 +24,14 @@ public interface BookingService extends CommonService<Booking> {
 
     Booking cancel(Long bookId, String reason);
 
-    Booking approve(Long bookId) throws IOException;
-
     String getPaymentPage(Long bookId) throws IOException;
 
     Booking pay(Long bookId);
 
     Booking transfer(Long bookId);
 
-    Booking bookRoomFromUser(Long userId, BookingUserCreateFilter filter);
+    Booking bookRoomFromUser(Long userId, BookingUserCreateFilter filter) throws IOException;
 
     List<Booking> getAllByUser(SecUser user);
+    List<Booking> getAllByUser(Long userId);
 }

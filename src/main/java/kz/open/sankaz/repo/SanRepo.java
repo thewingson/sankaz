@@ -94,4 +94,10 @@ public interface SanRepo extends CommonRepo<San>{
             "join sec_user u on u.id = f.user_id and u.id = :userId ",
             nativeQuery = true)
     List<Long> getFavSanId(@Param("userId") Long userId);
+
+    @Query(value = "select s " +
+            "from Room r " +
+            "join r.san s " +
+            "where r.id = :roomId")
+    San getSanByRoomId(@Param("roomId") Long roomId);
 }

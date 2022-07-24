@@ -2,6 +2,7 @@ package kz.open.sankaz.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kz.open.sankaz.exception.BookingCodes;
+import kz.open.sankaz.exception.EntityNotFoundException;
 import kz.open.sankaz.exception.MessageCodeException;
 import kz.open.sankaz.exception.PaymentIntegrationCodes;
 import kz.open.sankaz.mapper.BookingMapper;
@@ -21,10 +22,7 @@ import kz.open.sankaz.pojo.dto.payment.UserLoginDto;
 import kz.open.sankaz.pojo.filter.BookingAdminCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingModerCreateFilter;
 import kz.open.sankaz.pojo.filter.BookingUserCreateFilter;
-import kz.open.sankaz.repo.BookingHistoryRepo;
-import kz.open.sankaz.repo.BookingRepo;
-import kz.open.sankaz.repo.RoomRepo;
-import kz.open.sankaz.repo.UserNotificationRepo;
+import kz.open.sankaz.repo.*;
 import kz.open.sankaz.repo.dictionary.RoomClassDicRepo;
 import kz.open.sankaz.service.BookingService;
 import kz.open.sankaz.service.RoomService;
@@ -40,16 +38,14 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -64,6 +60,9 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
 
     @Autowired
     private RoomRepo roomRepo;
+
+    @Autowired
+    protected SanRepo sanRepo;
 
     @Autowired
     private UserNotificationRepo notificationRepo;
@@ -109,6 +108,9 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
 
     @Value("${application.url.base}")
     private String appUrlBase;
+
+    @Value("${payment.expires.min}")
+    private Integer paymentExpirationMin;
 
     private static final String ENDPOINT_MODERS_BOOK = "/moders/books";
     private static final String ENDPOINT_PAYMENT = ENDPOINT_MODERS_BOOK + "/{bookId}/pay";
@@ -348,49 +350,6 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         return booking;
     }
 
-    @Override
-    public Booking approve(Long bookId) throws IOException {
-        Booking booking = getOne(bookId);
-        if(!booking.isWaiting()){
-            throw new MessageCodeException(BookingCodes.YOU_CAN_APPROVE_ONLY_WITH_WAITING_STATUS);
-        }
-        List<LocalDate> busyDates = new ArrayList<>();
-        List<DatesDto> availabilityForDateRange = roomRepo.getRoomAvailabilityForDateRange(booking.getRoom().getId(), booking.getStartDate(), booking.getEndDate());
-        availabilityForDateRange.forEach(datesDto -> {
-            if(!datesDto.isFree()){
-                busyDates.add(datesDto.getCheckDate());
-            }
-        });
-        if(!busyDates.isEmpty()){
-            Map<String, List<LocalDate>> data = new HashMap<>();
-            data.put("busyDates", busyDates);
-            throw new MessageCodeException(BookingCodes.ROOM_IS_BUSY_IN_CHOSEN_DATE_RANGE, data, "Номер занят в выбранном вами диапазоне дней. Пожалуйста, выберите другую дату.");
-        }
-
-        UserAuthDto userAuthDto = loginToPaymentService();
-        InvoiceCreateResponseDto invoiceCreateResponseDto = createInvoiceInPayment(userAuthDto.getToken().substring(4), booking);
-
-        booking.setStatus(BookingStatus.APPROVED);
-        booking.setApprovedDate(LocalDateTime.now());
-        booking.setWoopOrderId(paymentModelPrefix + booking.getId());
-        booking.setPaymentUrl(invoiceCreateResponseDto.getOperation_url());
-        editOneById(booking);
-
-        if(booking.getUser() != null){
-//            TODO: send to firebase
-            UserNotification notification = new UserNotification();
-            notification.setUser(booking.getUser());
-            notification.setNotificationType(UserNotificationType.PAYMENT);
-            notification.setNotifyDate(LocalDateTime.now());
-            notification.setBooking(booking);
-            notification.setTitle("Ваша бронь #" + booking.getId() + " подтверждена");
-            notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз қабылданды");
-            notificationRepo.save(notification);
-        }
-
-        return booking;
-    }
-
     private UserAuthDto loginToPaymentService() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         UserLoginDto userLoginDto = new UserLoginDto(paymentMerchantLogin, paymentMerchantPassword);
@@ -423,7 +382,8 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         invoiceCreateDto.setAmount(booking.getSumPrice());
         invoiceCreateDto.setUser_phone(booking.getTelNumber());
         invoiceCreateDto.setEmail("");
-        invoiceCreateDto.setMerchant_name(booking.getRoom().getSan().getName());
+        San sanByRoomId = sanRepo.getSanByRoomId(booking.getRoom().getId());
+        invoiceCreateDto.setMerchant_name(sanByRoomId.getName());
 
         String finalUrl = appUrlBase + ENDPOINT_PAYMENT.replace("{bookId}", booking.getId().toString());
         invoiceCreateDto.setRequestUrl(finalUrl, "POST");
@@ -495,6 +455,10 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         if(!booking.isApproved()){
             throw new MessageCodeException(BookingCodes.BOOKING_IS_NOT_APPROVED);
         }
+        if(booking.getApprovedDate().plusMinutes(paymentExpirationMin).isBefore(LocalDateTime.now())){
+            throw new MessageCodeException(BookingCodes.BOOKING_PAYMENT_TIME_IS_EXPIRED, null,
+                    String.format("Время оплаты брони прошло. Забронируйте номер заново и оплатите в течение %d минут!", paymentExpirationMin));
+        }
 
         booking.setStatus(BookingStatus.PAID);
         booking.setPaidDate(LocalDateTime.now());
@@ -514,8 +478,7 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         return booking;
     }
 
-    @Override
-    public Booking bookRoomFromUser(Long userId, BookingUserCreateFilter filter) {
+    public Booking bookRoomFromUser(Long userId, BookingUserCreateFilter filter) throws IOException {
         SecUser user = userService.getOne(userId);
 
         List<LocalDate> busyDates = new ArrayList<>();
@@ -539,22 +502,30 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setRoom(roomService.getOne(filter.getRoomId()));
         booking.setStartDate(filter.getStartDate());
         booking.setEndDate(filter.getEndDate());
-        booking.setStatus(BookingStatus.WAITING);
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setApprovedDate(LocalDateTime.now());
         booking.setChildrenCount(filter.getChildren());
         booking.setAdultsCount(filter.getAdults());
         booking.setSumPrice(filter.getPrice());
-
         addOne(booking);
 
-        // TODO: send notification to firebase
-        UserNotification notification = new UserNotification();
-        notification.setUser(user);
-        notification.setNotificationType(UserNotificationType.BOOKING);
-        notification.setBooking(booking);
-        notification.setNotifyDate(LocalDateTime.now());
-        notification.setTitle("Ваша бронь #" + booking.getId() + " рассматривается");
-        notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз қарастырылуда");
-        notificationRepo.save(notification);
+        UserAuthDto userAuthDto = loginToPaymentService();
+        InvoiceCreateResponseDto invoiceCreateResponseDto = createInvoiceInPayment(userAuthDto.getToken().substring(4), booking);
+
+        booking.setWoopOrderId(paymentModelPrefix + booking.getId());
+        booking.setPaymentUrl(invoiceCreateResponseDto.getOperation_url());
+        editOneById(booking);
+
+        if(booking.getUser() != null){
+            UserNotification notification = new UserNotification();
+            notification.setUser(booking.getUser());
+            notification.setNotificationType(UserNotificationType.PAYMENT);
+            notification.setNotifyDate(LocalDateTime.now());
+            notification.setBooking(booking);
+            notification.setTitle("Ваша бронь #" + booking.getId() + " подтверждена");
+            notification.setTitleKz("Сіздің #" + booking.getId() + " өтініміңіз қабылданды");
+            notificationRepo.save(notification);
+        }
 
         return booking;
     }
@@ -562,6 +533,48 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
     @Override
     public List<Booking> getAllByUser(SecUser user) {
         return repo.getAllByUserId(user.getId());
+    }
+
+    @Override
+    public List<Booking> getAllByUser(Long userId) {
+        List<Booking> bookings = repo.getAllByUserId(userId);
+        bookings = checkExpiredBookings(bookings);
+        return bookings;
+    }
+
+    private List<Booking> checkExpiredBookings(List<Booking> bookings) {
+        List<Booking> toDelete = new ArrayList<>();
+
+        for (Booking booking : bookings) {
+            if(booking.getStatus().equals(BookingStatus.APPROVED) && booking.getApprovedDate().plusMinutes(paymentExpirationMin).isBefore(LocalDateTime.now())){
+                toDelete.add(booking);
+            }
+        }
+
+        bookings.removeAll(toDelete);
+        deleteList(toDelete);
+        return bookings;
+    }
+
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Override
+    public Booking getOne(Long id) {
+        Optional<Booking> entityById = repo.findById(id);
+
+        if(!entityById.isPresent()){
+            Map<String, Object> params = new HashMap<>();
+            params.put("ID", id);
+            throw new EntityNotFoundException(getCurrentClass(), params);
+        }
+        if(entityById.get().getStatus().equals(BookingStatus.APPROVED) && entityById.get().getApprovedDate().plusMinutes(paymentExpirationMin).isBefore(LocalDateTime.now())){
+            repo.delete(entityById.get());
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("ID", id);
+            throw new EntityNotFoundException(getCurrentClass(), params);
+        }
+
+        return entityById.get();
     }
 
 }

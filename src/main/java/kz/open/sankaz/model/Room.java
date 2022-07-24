@@ -36,7 +36,9 @@ import java.util.List;
                 "    end as isfree " +
                 "FROM " +
                 "    generate_series(cast(:startDate as DATE), cast(:endDate as DATE), cast('1 day' as interval)) dat " +
-                "left join booking b on b.room_id = :roomId and dat between b.start_date and b.end_date and b.status <> 'CANCELLED' and b.status <> 'WAITING';",
+                "left join booking b on b.room_id = :roomId and dat between b.start_date and b.end_date " +
+                "and ( (b.status = 'PAID') or (b.status = 'TRANSFERRED') " +
+                "or ((b.status = 'APPROVED' ) and (b.approved_date + (10 * interval '1 minute')) >= current_timestamp ) );",
         resultSetMapping="getRoomAvailabilityForDateRangeMapping")
 @Entity
 @Table(name = "ROOM",
