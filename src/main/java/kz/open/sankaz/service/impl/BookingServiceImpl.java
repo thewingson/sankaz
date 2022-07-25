@@ -256,12 +256,27 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
 
     @Override
     public Booking addOne(BookingModerCreateFilter filter) {
+        List<LocalDate> busyDates = new ArrayList<>();
+        List<DatesDto> availabilityForDateRange = roomRepo.getRoomAvailabilityForDateRange(filter.getRoomId(), filter.getStartDate(), filter.getEndDate());
+        availabilityForDateRange.forEach(datesDto -> {
+            if(!datesDto.isFree()){
+                busyDates.add(datesDto.getCheckDate());
+            }
+        });
+        if(!busyDates.isEmpty()){
+            Map<String, List<LocalDate>> data = new HashMap<>();
+            data.put("busyDates", busyDates);
+            throw new MessageCodeException(BookingCodes.ROOM_IS_BUSY_IN_CHOSEN_DATE_RANGE, data, "Номер занят в выбранном вами диапазоне дней. Пожалуйста, выберите другую дату.");
+        }
+
         Booking booking = new Booking();
         BookingStatus bookingStatus = BookingStatus.valueOf(filter.getStatus());
         if(bookingStatus.equals(BookingStatus.APPROVED)){
             booking.setApprovedDate(LocalDateTime.now());
-        } else if(bookingStatus.equals(BookingStatus.PAID)){
+        } else if(bookingStatus.equals(BookingStatus.TRANSFERRED)){
+            booking.setApprovedDate(LocalDateTime.now());
             booking.setPaidDate(LocalDateTime.now());
+            booking.setTransferredDate(LocalDateTime.now());
         } else {
             throw new MessageCodeException(BookingCodes.STATUS_IS_NOT_AVAILABLE_FOR_THIS_OPERATION);
         }
