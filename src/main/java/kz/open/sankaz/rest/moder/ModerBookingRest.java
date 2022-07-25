@@ -65,7 +65,7 @@ public class ModerBookingRest {
     @GetMapping("/{bookId}")
     public ResponseEntity<?> getOne(@PathVariable("bookId") Long bookId) {
         try {
-            return ResponseModel.success(bookingMapper.bookingToBookingModerByIdDto(bookingService.getOne(bookId)));
+            return ResponseModel.success(bookingMapper.bookingToBookingAllForModerDto(bookingService.getOne(bookId)));
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
