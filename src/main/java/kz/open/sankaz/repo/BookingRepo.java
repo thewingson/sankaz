@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface BookingRepo extends CommonRepo<Booking> {
 
-    @Query("select b from Booking b where b.room.san.id = :sanId and b.status <> 'CANCELLED'")
+    @Query("select b from Booking b where b.room.san.id = :sanId")
     List<Booking> getAllBySanId(@Param("sanId") Long sanId);
 
     @Query("select b " +

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,9 +15,11 @@ import java.time.LocalDateTime;
 public class BookingModerAllDto extends AbstractDto {
     private String firstName;
     private String lastName;
-    private Long classId;
-    private Long roomId;
+    private RoomClassDicSimpleDto roomClass;
+    private RoomByIdDto room;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private LocalDateTime paidDate;
+    private BigDecimal sumPrice;
     private String status;
 }

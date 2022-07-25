@@ -30,26 +30,14 @@ public abstract class BookingMapper extends AbstractMapper {
     @Named("bookingToBookingAllForModerDto")
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "roomId", source = "booking.room.id")
-    @Mapping(target = "classId", source = "booking.room.roomClassDic.id")
+    @Mapping(target = "room", expression = "java( roomMapper.roomToRoomDto(booking.getRoom()) )")
+    @Mapping(target = "roomClass", expression = "java( roomMapper.roomClassDicSimpleToDto(booking.getRoom().getRoomClassDic()) )")
     @Mapping(target = "startDate", source = "startDate")
     @Mapping(target = "endDate", source = "endDate")
     @Mapping(target = "status", expression = "java( booking.getStatus().name() )")
     abstract public BookingModerAllDto bookingToBookingAllForModerDto(Booking booking);
     @IterableMapping(qualifiedByName = "bookingToBookingAllForModerDto")
     abstract public List<BookingModerAllDto> bookingToBookingAllForModerDto(List<Booking> bookings);
-
-    @Named("bookingToBookingAllForModerDto2")
-    @Mapping(target = "firstName", source = "firstName")
-    @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "roomId", source = "booking.room.id")
-    @Mapping(target = "classId", source = "booking.room.roomClassDic.id")
-    @Mapping(target = "startDate", source = "startDate")
-    @Mapping(target = "endDate", source = "endDate")
-    @Mapping(target = "status", expression = "java( booking.getStatus().name() )")
-    abstract public BookingModerAllDto bookingToBookingAllForModerDto2(Booking booking);
-    @IterableMapping(qualifiedByName = "bookingToBookingAllForModerDto2")
-    abstract public List<BookingModerAllDto> bookingToBookingAllForModerDto2(List<Booking> bookings);
 
     @Named("bookingToBookingModerByIdDto")
     @Mapping(target = "firstName", source = "firstName")
