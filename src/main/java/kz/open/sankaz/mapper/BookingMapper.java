@@ -28,12 +28,15 @@ public abstract class BookingMapper extends AbstractMapper {
     abstract public List<BookingAdminDto> bookingToBookingAdminDto(List<Booking> bookings);
 
     @Named("bookingToBookingAllForModerDto")
+    @Mapping(target = "adults", source = "adultsCount")
+    @Mapping(target = "children", source = "childrenCount")
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "room", expression = "java( roomMapper.roomToRoomDto(booking.getRoom()) )")
     @Mapping(target = "roomClass", expression = "java( roomMapper.roomClassDicSimpleToDto(booking.getRoom().getRoomClassDic()) )")
     @Mapping(target = "startDate", source = "startDate")
     @Mapping(target = "endDate", source = "endDate")
+    @Mapping(target = "price", source = "sumPrice")
     @Mapping(target = "status", expression = "java( booking.getStatus().name() )")
     abstract public BookingModerAllDto bookingToBookingAllForModerDto(Booking booking);
     @IterableMapping(qualifiedByName = "bookingToBookingAllForModerDto")

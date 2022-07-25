@@ -21,5 +21,9 @@ public class BookingModerAllDto extends AbstractDto {
     private LocalDateTime endDate;
     private LocalDateTime paidDate;
     private BigDecimal sumPrice;
+    private BigDecimal price;
     private String status;
+    private Integer adults;
+    private Integer children;
+    private String telNumber;
 }
