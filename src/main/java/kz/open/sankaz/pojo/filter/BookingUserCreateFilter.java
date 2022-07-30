@@ -21,4 +21,5 @@ public class BookingUserCreateFilter extends BookingCreateDateInfoFilter {
     private Integer children;
     @NotNull
     private BigDecimal price;
+    private BigDecimal priceChild;
 }

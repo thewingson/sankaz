@@ -16,6 +16,7 @@ public class RoomInClassDicDto extends BaseDto {
     private String roomNumber;
     private FileDto mainPic;
     private BigDecimal price;
+    private BigDecimal priceChild;
     private Integer roomCount;
     private Integer bedCount;
     private List<FileDto> pics;

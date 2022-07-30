@@ -15,5 +15,6 @@ public class RoomDto extends AbstractDto {
     private String name;
     private String description;
     private BigDecimal price;
+    private BigDecimal priceChild;
     private SanDto san;
 }

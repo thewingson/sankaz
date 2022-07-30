@@ -18,6 +18,7 @@ public class RoomByIdDto extends BaseDto {
     private String name;
     private String description;
     private BigDecimal price;
+    private BigDecimal priceChild;
     private String roomNumber;
     private Integer roomCount;
     private Integer bedCount;

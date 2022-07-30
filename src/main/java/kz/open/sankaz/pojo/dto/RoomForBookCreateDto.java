@@ -16,6 +16,7 @@ public class RoomForBookCreateDto extends AbstractDto {
     private Integer roomCount;
     private Integer bedCount;
     private BigDecimal price;
+    private BigDecimal priceChild;
     private Long roomClassDicId;
     private String roomClassName;
 }

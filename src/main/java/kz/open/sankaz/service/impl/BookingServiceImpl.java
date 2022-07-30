@@ -45,6 +45,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -290,7 +291,10 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setAdultsCount(filter.getAdults());
         booking.setEndDate(filter.getEndDate());
         booking.setStartDate(filter.getStartDate());
-        booking.setSumPrice(filter.getPrice());
+
+        BigDecimal adults = room.getPrice().multiply(BigDecimal.valueOf(filter.getAdults()));
+        BigDecimal children = room.getPriceChild().multiply(BigDecimal.valueOf(filter.getChildren()));
+        booking.setSumPrice(adults.add(children));
 
         addOne(booking);
 
@@ -524,7 +528,11 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setApprovedDate(LocalDateTime.now());
         booking.setChildrenCount(filter.getChildren());
         booking.setAdultsCount(filter.getAdults());
-        booking.setSumPrice(filter.getPrice());
+
+        Room room = roomService.getOne(filter.getRoomId());
+        BigDecimal adults = room.getPrice().multiply(BigDecimal.valueOf(filter.getAdults()));
+        BigDecimal children = room.getPriceChild().multiply(BigDecimal.valueOf(filter.getChildren()));
+        booking.setSumPrice(adults.add(children));
         addOne(booking);
 
         UserAuthDto userAuthDto = loginToPaymentService();

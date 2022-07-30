@@ -16,6 +16,7 @@ public class RoomInSanByIdDto extends BaseDto {
     private String mainPicUrl;
     private String name;
     private BigDecimal price;
+    private BigDecimal priceChild;
     private Integer roomCount;
     private Integer bedCount;
 }
