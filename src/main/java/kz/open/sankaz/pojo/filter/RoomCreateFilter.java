@@ -28,4 +28,6 @@ public class RoomCreateFilter extends BaseFilter {
     private Integer bedCount;
     @NotNull
     private BigDecimal price;
+    @NotNull
+    private BigDecimal priceChild;
 }

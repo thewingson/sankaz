@@ -51,6 +51,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 @Slf4j
 @Service
 @Transactional
@@ -530,8 +532,9 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setAdultsCount(filter.getAdults());
 
         Room room = roomService.getOne(filter.getRoomId());
-        BigDecimal adults = room.getPrice().multiply(BigDecimal.valueOf(filter.getAdults()));
-        BigDecimal children = room.getPriceChild().multiply(BigDecimal.valueOf(filter.getChildren()));
+        long daysBetween = DAYS.between(booking.getStartDate(), booking.getEndDate().plusHours(1));
+        BigDecimal adults = room.getPrice().multiply(BigDecimal.valueOf(filter.getAdults())).multiply(BigDecimal.valueOf(daysBetween));
+        BigDecimal children = room.getPriceChild().multiply(BigDecimal.valueOf(filter.getChildren())).multiply(BigDecimal.valueOf(daysBetween));
         booking.setSumPrice(adults.add(children));
         addOne(booking);
 

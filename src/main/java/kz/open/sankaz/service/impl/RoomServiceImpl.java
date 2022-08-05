@@ -78,6 +78,7 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
         room.setBedCount(filter.getBedCount());
         room.setRoomCount(filter.getRoomCount());
         room.setPrice(filter.getPrice());
+        room.setPriceChild(filter.getPriceChild());
         return addPics(addOne(room), pics);
     }
 
@@ -95,6 +96,7 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
         room.setBedCount(filter.getBedCount());
         room.setRoomCount(filter.getRoomCount());
         room.setPrice(filter.getPrice());
+        room.setPriceChild(filter.getPriceChild());
         return editOneById(room);
     }
 

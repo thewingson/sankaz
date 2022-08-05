@@ -62,9 +62,10 @@ public class ModerRoomRest {
                                     @RequestParam Integer roomCount,
                                     @RequestParam Integer bedCount,
                                     @RequestParam BigDecimal price,
+                                    @RequestParam BigDecimal priceChild,
                                     @RequestParam(value = "pics", required = false) MultipartFile[] pics) {
         try {
-            RoomCreateFilter filter = new RoomCreateFilter(roomNumber, roomClassDicId, sanId, roomCount, bedCount, price);
+            RoomCreateFilter filter = new RoomCreateFilter(roomNumber, roomClassDicId, sanId, roomCount, bedCount, price, priceChild);
             return ResponseModel.success(roomMapper.roomToRoomCreateDto(roomService.addOne(filter, pics)));
         } catch (Exception e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());

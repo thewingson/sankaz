@@ -140,4 +140,12 @@ public class Booking extends BaseEntity {
         return firstName + " " + lastName;
     }
 
+    public void setStartDate(LocalDateTime startDate){
+        this.startDate = LocalDateTime.of(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth(), 0, 0, 0);
+    }
+
+    public void setEndDate(LocalDateTime endDate){
+        this.endDate = LocalDateTime.of(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth(), 23, 0, 0);
+    }
+
 }

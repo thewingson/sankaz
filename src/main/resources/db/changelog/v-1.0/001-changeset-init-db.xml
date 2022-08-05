@@ -93,4 +93,22 @@
                  path="20220723-01-update-booking.sql"/>
     </changeSet>
 
+    <changeSet id="9" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220723-01-update-room.sql"/>
+    </changeSet>
+
+    <changeSet id="10" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220805-01-update-room.sql"/>
+    </changeSet>
+
 </databaseChangeLog>
