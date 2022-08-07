@@ -68,10 +68,10 @@ public abstract class BookingMapper extends AbstractMapper {
     abstract public List<BookingUserDto> bookingToBookingUserDto(List<Booking> bookings);
 
     @Named("bookingToBookingUserHistoryDto")
-    @Mapping(target = "sanId", source = "booking.room.san.id")
-    @Mapping(target = "sanName", source = "booking.room.san.name")
-    @Mapping(target = "sanTypeName", source = "booking.room.san.sanType.name")
-    @Mapping(target = "sanAddress", source = "booking.room.san.address")
+    @Mapping(target = "sanId", expression = "java( booking.getRoom().getSan().getId() )")
+    @Mapping(target = "sanName", expression = "java( booking.getRoom().getSan().getName() )")
+    @Mapping(target = "sanTypeName", expression = "java( booking.getRoom().getSan().getSanType().getName() )")
+    @Mapping(target = "sanAddress", expression = "java( booking.getRoom().getSan().getAddress() )")
     @Mapping(target = "sanTelNumber", expression = "java( getTelNumberValuesFromEntity(booking.getRoom().getSan().getTelNumbers()) )")
     @Mapping(target = "sanPicUrl", expression = "java( getPicUrlFromSysFile(booking.getRoom().getSan().getMainPic()) )")
     @Mapping(target = "adults", source = "adultsCount")
@@ -83,6 +83,14 @@ public abstract class BookingMapper extends AbstractMapper {
     abstract public BookingUserHistoryDto bookingToBookingUserHistoryDto(Booking booking);
     @IterableMapping(qualifiedByName = "bookingToBookingUserHistoryDto")
     abstract public List<BookingUserHistoryDto> bookingToBookingUserHistoryDto(List<Booking> bookings);
+
+    @Named("bookingToBookingUserHistorySingleDto")
+    @Mapping(target = "adults", source = "adultsCount")
+    @Mapping(target = "children", source = "childrenCount")
+    @Mapping(target = "status", expression = "java( booking.getStatus().name() )")
+    abstract public BookingUserHistorySingleDto bookingToBookingUserHistorySingleDto(Booking booking);
+    @IterableMapping(qualifiedByName = "bookingToBookingUserHistorySingleDto")
+    abstract public List<BookingUserHistorySingleDto> bookingToBookingUserHistorySingleDto(List<Booking> bookings);
 
     @Named("bookingToBookingByIdUserDto")
     @Mapping(target = "userId", source = "booking.user.id")

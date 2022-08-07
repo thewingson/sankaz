@@ -91,15 +91,10 @@ application:
   file:
     upload:
       path:
-        #        image: D:/sankaz_files/images/
         image: /Users/almatrakhmetolla/IdeaProjects/sankaz
-    #        image: http://185.146.1.64/sankaz/images
-    #        image: http://185.146.1.64/sankaz/images
     download:
       path:
-        #        image: D:/sankaz_files/images/
         image: /Users/almatrakhmetolla/IdeaProjects/sankaz
-#        image: http://185.146.1.64/sankaz/images
 fcm:
   service-account-file: sankaz-push-firebase-adminsdk.json
 payment:

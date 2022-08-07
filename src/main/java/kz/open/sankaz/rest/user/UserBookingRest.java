@@ -59,7 +59,7 @@ public class UserBookingRest {
                                             @Valid @RequestBody BookingUserCreateFilter filter) {
         try {
             Long userId = authService.getUserId(request);
-            return ResponseModel.success(bookingMapper.bookingToBookingAllForModerDto(bookingService.bookRoomFromUser(userId, filter)));
+            return ResponseModel.success(bookingMapper.bookingToBookingUserHistorySingleDto(bookingService.bookRoomFromUser(userId, filter)));
         } catch (MessageCodeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getCode(), e.getData(), e.getMessage());
         } catch (RuntimeException e) {
