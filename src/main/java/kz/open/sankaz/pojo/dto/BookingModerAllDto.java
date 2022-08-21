@@ -26,4 +26,5 @@ public class BookingModerAllDto extends AbstractDto {
     private Integer adults;
     private Integer children;
     private String telNumber;
+    private String cancelReason;
 }
