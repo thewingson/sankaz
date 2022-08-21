@@ -84,14 +84,24 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
 
     @Override
     public Room editOneById(Long roomId, RoomCreateFilter filter) {
+        Room room = new Room();
         List<Room> rooms = repo.findRoomByNameAndSan(filter.getSanId(), filter.getRoomNumber().toLowerCase());
         if(!rooms.isEmpty()){
-            throw new RuntimeException("Такой номер уже записан! Выберите другой номер");
+            for (Room item : rooms) {
+                if(item.getId().equals(roomId)){
+                    room = item;
+                    break;
+                }
+            }
+            if(room.getRoomNumber() == null){
+                throw new RuntimeException("Такой номер уже записан! Выберите другой номер");
+            }
         }
-        San san = sanService.getOne(filter.getSanId());
-        Room room = getOne(roomId);
+        if(room.getRoomNumber() == null){
+            room = getOne(roomId);
+        }
+
         room.setRoomClassDic(roomClassDicService.getOne(filter.getRoomClassDicId()));
-        room.setSan(san);
         room.setRoomNumber(filter.getRoomNumber());
         room.setBedCount(filter.getBedCount());
         room.setRoomCount(filter.getRoomCount());
