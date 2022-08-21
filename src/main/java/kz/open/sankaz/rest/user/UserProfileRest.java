@@ -131,6 +131,18 @@ public class UserProfileRest {
         }
     }
 
+    @DeleteMapping("/fav/{sanId}")
+    public ResponseEntity<?> deleteFav(HttpServletRequest request,
+                                    @PathVariable(name = "sanId") Long sanId) {
+        try {
+            Long userId = authService.getUserId(request);
+            sanService.deleteFav(userId, sanId);
+            return ResponseModel.successPure();
+        } catch (Exception e) {
+            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
     @GetMapping("/fav/list")
     public ResponseEntity<?> getFavs(HttpServletRequest request,
                                      @RequestParam(defaultValue = "0") Integer page,
