@@ -390,8 +390,12 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         CloseableHttpResponse response = client.execute(httpPost);
         int statusCode = response.getStatusLine().getStatusCode();
         if(statusCode != 200){
+            Map<String, String> data = new HashMap<>();
+            data.put("paymentMerchantLogin", paymentMerchantLogin);
+            data.put("paymentMerchantPassword", paymentMerchantPassword);
             log.warn("WoopKassa: Authentication failed with credentials {}", paymentMerchantLogin + " " + paymentMerchantPassword);
-            throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION);
+            throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION, data, "WoopKassa: Authentication failed with current credentials");
+
         }
         HttpEntity responseEntity = response.getEntity();
         String json = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
@@ -430,7 +434,10 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         int statusCode = response.getStatusLine().getStatusCode();
         if(statusCode != 200){
             log.warn("WoopKassa: Invoice creation failed with body {}", userLoginJson);
-            throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION);
+
+            Map<String, String> data = new HashMap<>();
+            data.put("userLoginJson", userLoginJson);
+            throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION, data, "WoopKassa: Invoice creation failed with body");
         }
         HttpEntity responseEntity = response.getEntity();
         String json = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
