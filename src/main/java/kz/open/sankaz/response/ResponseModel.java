@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
@@ -61,7 +62,7 @@ public class ResponseModel<T> implements Serializable {
     }
 
     public static ResponseEntity<?> error(HttpStatus errorCode, String errorType, String errorText) {
-        return ResponseEntity.status(errorCode).body(
+        return ResponseEntity.status(errorCode).contentType(MediaType.APPLICATION_JSON).body(
                 ResponseModel.builder()
                         .type("error")
                         .errorType(errorType)
@@ -71,7 +72,7 @@ public class ResponseModel<T> implements Serializable {
     }
 
     public static ResponseEntity<?> error(HttpStatus errorCode, String errorType, Map<String, ?> content, String errorText) {
-        return ResponseEntity.status(errorCode).body(
+        return ResponseEntity.status(errorCode).contentType(MediaType.APPLICATION_JSON).body(
                 ResponseModel.builder()
                         .type("error")
                         .errorType(errorType)
@@ -82,7 +83,7 @@ public class ResponseModel<T> implements Serializable {
     }
 
     public static ResponseEntity<?> success(Object content) {
-        return ResponseEntity.ok(
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(
                 ResponseModel.builder()
                         .type("success")
                         .data(content)
@@ -91,7 +92,7 @@ public class ResponseModel<T> implements Serializable {
     }
 
     public static ResponseEntity<?> success(Map<String, Object> content) {
-        return ResponseEntity.ok(
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(
                 ResponseModel.builder()
                         .type("success")
                         .data(content)
@@ -100,7 +101,7 @@ public class ResponseModel<T> implements Serializable {
     }
 
     public static ResponseEntity<?> successPure() {
-        return ResponseEntity.ok(
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(
                 ResponseModel.builder()
                         .type("success").build()
         );

@@ -21,7 +21,7 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-@PreAuthorize("hasRole('ROLE_USER')")
+
 @RestController
 @RequestMapping("/users")
 public class UserBookingRest {
@@ -43,7 +43,7 @@ public class UserBookingRest {
     }
 
     @PostMapping("/books/rooms/{roomId}")
-    public ResponseEntity<?> getFreeDaysForBooking(HttpServletRequest request,
+    public ResponseEntity<?> getFreeDaysForBooking(
                                       @PathVariable("roomId") Long roomId,
                                       @Valid @RequestBody DateRangeFilter filter) {
         try {

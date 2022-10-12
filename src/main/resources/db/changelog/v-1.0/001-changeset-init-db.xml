@@ -110,5 +110,13 @@
                  stripComments="true"
                  path="20220805-01-update-room.sql"/>
     </changeSet>
+    <changeSet id="11" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220322-01-init-db.sql"/>
+    </changeSet>
 
 </databaseChangeLog>

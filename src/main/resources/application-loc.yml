@@ -22,9 +22,9 @@ spring:
     #    url: jdbc:postgresql://localhost:5439/sankaz_doc
     #    username: postgres
     #    password: root
-    url: jdbc:postgresql://localhost:5432/sankaz_loc
+    url: jdbc:postgresql://localhost:5432/sanatour
     username: postgres
-    password: root
+    password: postgress
   #    url: jdbc:postgresql://185.146.1.64:5432/sankaz_dev
   #    username: sankaz
   #    password: sankaz
