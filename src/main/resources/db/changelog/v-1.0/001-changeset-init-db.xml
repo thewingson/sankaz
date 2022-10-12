@@ -118,5 +118,13 @@
                  stripComments="true"
                  path="20220322-01-init-db.sql"/>
     </changeSet>
+    <changeSet id="12" author="almat_rakhmetolla">
+        <sqlFile dbms="postgresql"
+                 endDelimiter="\n;"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 path="20220322-01-init-db.sql"/>
+    </changeSet>
 
 </databaseChangeLog>

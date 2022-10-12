@@ -1,24 +1,24 @@
-﻿create sequence public.booking_history_seq start 10 increment 1;
-create sequence public.booking_seq start 10 increment 1;
-create sequence public.city_seq start 10 increment 1;
-create sequence public.company_category_seq start 10 increment 1;
-create sequence public.gender_seq start 10 increment 1;
-create sequence public.jwt_black_list_seq start 10 increment 1;
-create sequence public.notification_template_seq start 10 increment 1;
-create sequence public.organization_seq start 10 increment 1;
-create sequence public.review_seq start 10 increment 1;
-create sequence public.room_class_dic_seq start 10 increment 1;
-create sequence public.room_seq start 10 increment 1;
-create sequence public.san_seq start 10 increment 1;
-create sequence public.san_type_seq start 10 increment 1;
-create sequence public.sec_role_seq start 10 increment 1;
-create sequence public.sec_user_seq start 10 increment 1;
-create sequence public.service_category_seq start 10 increment 1;
-create sequence public.stock_seq start 10 increment 1;
-create sequence public.sys_file_seq start 10 increment 1;
-create sequence public.tel_number_seq start 10 increment 1;
-create sequence public.user_device_token_seq start 10 increment 1;
-create sequence public.user_notification_seq start 10 increment 1;
+﻿create sequence public.booking_history_seq start 1 increment 1;
+create sequence public.booking_seq start 1 increment 1;
+create sequence public.city_seq start 1 increment 1;
+create sequence public.company_category_seq start 1 increment 1;
+create sequence public.gender_seq start 1 increment 1;
+create sequence public.jwt_black_list_seq start 1 increment 1;
+create sequence public.notification_template_seq start 1 increment 1;
+create sequence public.organization_seq start 1 increment 1;
+create sequence public.review_seq start 1 increment 1;
+create sequence public.room_class_dic_seq start 1 increment 1;
+create sequence public.room_seq start 1 increment 1;
+create sequence public.san_seq start 1 increment 1;
+create sequence public.san_type_seq start 1 increment 1;
+create sequence public.sec_role_seq start 1 increment 1;
+create sequence public.sec_user_seq start 1 increment 1;
+create sequence public.service_category_seq start 1 increment 1;
+create sequence public.stock_seq start 1 increment 1;
+create sequence public.sys_file_seq start 1 increment 1;
+create sequence public.tel_number_seq start 1 increment 1;
+create sequence public.user_device_token_seq start 1 increment 1;
+create sequence public.user_notification_seq start 1 increment 1;
 
 create table public.booking
 (
