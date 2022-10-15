@@ -1,1 +1,0 @@
-update public.room set price_child = 5000;
