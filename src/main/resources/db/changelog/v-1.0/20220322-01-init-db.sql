@@ -39,7 +39,6 @@ create table public.booking
     tel_number     varchar(255)   not null,
     room_id        int8           not null,
     user_id        int8,
-    woop_order_id  varchar(255),
     payment_url    varchar(255),
     transferred_date timestamp,
     cancel_reason varchar(255),
@@ -345,7 +344,6 @@ create table public.faq
     primary key (id)
 );
 
-alter table public.booking add constraint UK_WOOP_ORDER_ID unique (woop_order_id);
 alter table public.city add constraint UK_p738egrkomomgourst3hqfipb unique (code);
 alter table public.company_category add constraint UK_irrd8l4f2wtj4pd263qxkcoda unique (code);
 alter table public.gender add constraint UK_mxvfcsf1euhi5hsw1uecvke7b unique (code);
@@ -476,18 +474,18 @@ VALUES(nextval('public.room_seq'), 1, 14500.00, 2, '201E', 1, 1,5000),
       (nextval('public.room_seq'), 2, 34500.00, 3, '7', 4, 2,5000);
 
 INSERT INTO public.booking
-(id, adults_count, approved_date, booking_date, cancelled_date, children_count, end_date, first_name, last_name, paid_date, start_date, status, sum_price, tel_number, room_id, user_id, woop_order_id, payment_url)
-VALUES(nextval('public.booking_seq'), 1, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-03-26 00:00:00.000', 'Алмат', 'Рахметолла', NULL, '2022-03-23 00:00:00.000', 'WAITING', 15000.00, '+77081997727', 1, NULL, 'ecom_1', 'https://www.google.com/'),
-      (nextval('public.booking_seq'), 2, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-03-27 00:00:00.000', 'Бекзат', 'Серкебай', NULL, '2022-03-23 00:00:00.000', 'WAITING', 15000.00, '+77081997777', 1, NULL, 'ecom_2', 'https://www.google.com/'),
-      (nextval('public.booking_seq'), 1, NULL, '2022-03-22 20:10:14.000', '2022-03-22 20:10:14.000', 0, '2022-03-27 00:00:00.000', 'Асан', 'Пердешов', NULL, '2022-03-25 00:00:00.000', 'CANCELLED', 3000.00, '+77028649054', 1, NULL, 'ecom_3', 'https://www.google.com/'),
-      (nextval('public.booking_seq'), 2, NULL, '2022-03-22 20:10:14.000', '2022-03-22 20:10:14.000', 0, '2022-03-29 00:00:00.000', 'Болат', 'Назарбаев', NULL, '2022-03-26 00:00:00.000', 'CANCELLED', 40000.00, '+77021000000', 1, NULL, 'ecom_4', 'https://www.google.com/'),
-      (nextval('public.booking_seq'), 1, '2022-03-22 20:10:14.000', '2022-03-22 20:10:14.000', NULL, 0, '2022-03-31 00:00:00.000', 'Мейрамбек', 'Бесбаев', NULL, '2022-03-27 00:00:00.000', 'APPROVED', 60000.00, '+77777777778', 3, NULL, 'ecom_5', 'https://www.google.com/'),
-      (nextval('public.booking_seq'), 2, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-04-02 00:00:00.000', 'Заттыбек', 'Көпболсынұлы', '2022-03-28 00:00:00.000', '2022-03-28 00:00:00.000', 'PAID', 25000.00, '+77081111111', 3, NULL, 'ecom_6', 'https://www.google.com/'),
-      (nextval('public.booking_seq'), 1, '2022-03-22 20:10:14.000', '2022-03-22 20:10:14.000', NULL, 0, '2022-04-04 00:00:00.000', 'Дуа', 'Липа', NULL, '2022-03-29 00:00:00.000', 'APPROVED', 89000.00, '+77070000007', 4, NULL, 'ecom_7', 'https://www.google.com/'),
-      (nextval('public.booking_seq'), 2, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-04-06 00:00:00.000', 'Қасым-Жомарт', 'Тоқаев', '2022-03-30 00:00:00.000', '2022-03-30 00:00:00.000', 'PAID', 65000.00, '+77777777777', 4, NULL, 'ecom_8', 'https://www.google.com/'),
-      (nextval('public.booking_seq'), 1, '2022-03-22 20:10:14.000', '2022-03-22 20:10:14.000', NULL, 0, '2022-04-08 00:00:00.000', 'Евгений', 'Поносенков', NULL, '2022-03-31 00:00:00.000', 'APPROVED', 51000.00, '+77055555555', 5, NULL, 'ecom_9', 'https://www.google.com/'),
-      (nextval('public.booking_seq'), 2, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-04-10 00:00:00.000', 'Владимир', 'Путин', '2022-03-30 00:00:00.000', '2022-03-30 00:00:00.000', 'PAID', 109000.00, '+77012332233', 5, NULL, 'ecom_10', 'https://www.google.com/'),
-      (nextval('public.booking_seq'), 3, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-04-12 00:00:00.000', 'Владимир', 'Зеленский', '2022-03-31 00:00:00.000', '2022-03-31 00:00:00.000', 'PAID', 10000.00, '+77012332244', 2, NULL, 'ecom_11', 'https://www.google.com/');
+(id, adults_count, approved_date, booking_date, cancelled_date, children_count, end_date, first_name, last_name, paid_date, start_date, status, sum_price, tel_number, room_id, user_id, payment_url)
+VALUES(nextval('public.booking_seq'), 1, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-03-26 00:00:00.000', 'Алмат', 'Рахметолла', NULL, '2022-03-23 00:00:00.000', 'WAITING', 15000.00, '+77081997727', 1, NULL,'https://www.google.com/'),
+      (nextval('public.booking_seq'), 2, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-03-27 00:00:00.000', 'Бекзат', 'Серкебай', NULL, '2022-03-23 00:00:00.000', 'WAITING', 15000.00, '+77081997777', 1, NULL, 'https://www.google.com/'),
+      (nextval('public.booking_seq'), 1, NULL, '2022-03-22 20:10:14.000', '2022-03-22 20:10:14.000', 0, '2022-03-27 00:00:00.000', 'Асан', 'Пердешов', NULL, '2022-03-25 00:00:00.000', 'CANCELLED', 3000.00, '+77028649054', 1, NULL, 'https://www.google.com/'),
+      (nextval('public.booking_seq'), 2, NULL, '2022-03-22 20:10:14.000', '2022-03-22 20:10:14.000', 0, '2022-03-29 00:00:00.000', 'Болат', 'Назарбаев', NULL, '2022-03-26 00:00:00.000', 'CANCELLED', 40000.00, '+77021000000', 1, NULL,  'https://www.google.com/'),
+      (nextval('public.booking_seq'), 1, '2022-03-22 20:10:14.000', '2022-03-22 20:10:14.000', NULL, 0, '2022-03-31 00:00:00.000', 'Мейрамбек', 'Бесбаев', NULL, '2022-03-27 00:00:00.000', 'APPROVED', 60000.00, '+77777777778', 3, NULL,  'https://www.google.com/'),
+      (nextval('public.booking_seq'), 2, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-04-02 00:00:00.000', 'Заттыбек', 'Көпболсынұлы', '2022-03-28 00:00:00.000', '2022-03-28 00:00:00.000', 'PAID', 25000.00, '+77081111111', 3, NULL,  'https://www.google.com/'),
+      (nextval('public.booking_seq'), 1, '2022-03-22 20:10:14.000', '2022-03-22 20:10:14.000', NULL, 0, '2022-04-04 00:00:00.000', 'Дуа', 'Липа', NULL, '2022-03-29 00:00:00.000', 'APPROVED', 89000.00, '+77070000007', 4, NULL,  'https://www.google.com/'),
+      (nextval('public.booking_seq'), 2, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-04-06 00:00:00.000', 'Қасым-Жомарт', 'Тоқаев', '2022-03-30 00:00:00.000', '2022-03-30 00:00:00.000', 'PAID', 65000.00, '+77777777777', 4, NULL,  'https://www.google.com/'),
+      (nextval('public.booking_seq'), 1, '2022-03-22 20:10:14.000', '2022-03-22 20:10:14.000', NULL, 0, '2022-04-08 00:00:00.000', 'Евгений', 'Поносенков', NULL, '2022-03-31 00:00:00.000', 'APPROVED', 51000.00, '+77055555555', 5, NULL,  'https://www.google.com/'),
+      (nextval('public.booking_seq'), 2, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-04-10 00:00:00.000', 'Владимир', 'Путин', '2022-03-30 00:00:00.000', '2022-03-30 00:00:00.000', 'PAID', 109000.00, '+77012332233', 5, NULL,  'https://www.google.com/'),
+      (nextval('public.booking_seq'), 3, NULL, '2022-03-22 20:10:14.000', NULL, 0, '2022-04-12 00:00:00.000', 'Владимир', 'Зеленский', '2022-03-31 00:00:00.000', '2022-03-31 00:00:00.000', 'PAID', 10000.00, '+77012332244', 2, NULL,  'https://www.google.com/');
 
 INSERT INTO public.faq
 (id, question, answer)

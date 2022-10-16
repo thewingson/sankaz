@@ -86,10 +86,6 @@ public class Booking extends BaseEntity {
     private LocalDateTime cancelledDate;
     @Column(name = "TRANSFERRED_DATE")
     private LocalDateTime transferredDate;
-
-    @Column(name = "WOOP_ORDER_ID")
-    private String woopOrderId;
-
     @Column(name = "PAYMENT_URL")
     private String paymentUrl;
 

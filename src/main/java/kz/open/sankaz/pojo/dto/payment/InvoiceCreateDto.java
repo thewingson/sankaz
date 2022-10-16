@@ -14,45 +14,27 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InvoiceCreateDto {
-    private String reference_id;
-    private BigDecimal amount;
-    private String user_phone;
-    private String email;
-    private String merchant_name;
-    private String back_url;
+    private String merchantId;
+    private BigInteger amount;
+    private String callbackUrl;
     private String description;
-    private String death_date;
-    private String option;
-    private RequestUrl request_url;
+    private String returnUrl;
+    private String orderId;
+    private boolean demo;
 
-//        "reference_id" : "st123123",
-//        "amount" : "10",
-//        "user_phone": "87087087878",
-//        "email": "example@example.com",
-//        "merchant_name" : "merchViktor",
-//        "request_url": {
-//              "url": "https://test.ol3g.ru/",
-//              "type":"POST"
-//              },
-//        "back_url": "https://www.test.wooppay.com",
-//        "description": "auto_tets",
-//        "death_date": "2025-12-25 22:42:03",
-//        "option": "4"
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    class RequestUrl {
-        private String url;
-        private RequestType type;
-    }
 
-    enum RequestType {
-        GET, POST, PUT, DELETE;
-    }
+//    {
+//        "merchantId": "123123123123123",
+//            "callbackUrl": "http://example.com/callback",
+//            "description": "описание",
+//            "returnUrl": "http://example.com",
+//            "amount": 10000,(Транзакция на 100 тенге. Сумма транзакции указывается в тиин(1 тенге = 100 тиин))
+//        "orderId": "123",
+//            "demo": true
+//    }
 
-    public void setRequestUrl(String url, String type){
-        this.request_url = new RequestUrl(url, RequestType.valueOf(type));
-    }
+
+
+
 }

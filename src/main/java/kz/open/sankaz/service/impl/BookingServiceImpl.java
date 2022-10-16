@@ -43,9 +43,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import sun.security.provider.certpath.OCSPResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -87,31 +90,11 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
 
     @Value("${payment.api.base-url}")
     private String paymentBaseUrl;
-
-    @Value("${payment.model.prefix}")
-    private String paymentModelPrefix;
-
-    @Value("${payment.operation.create}")
-    private String paymentOperationCreate;
-
-    @Value("${payment.operation.auth}")
-    private String paymentOperationAuth;
-
     @Value("${payment.merchant.login}")
     private String paymentMerchantLogin;
 
     @Value("${payment.merchant.password}")
     private String paymentMerchantPassword;
-
-    @Value("${payment.test-user.card-number}")
-    private String paymentTestUserCardNumber;
-
-    @Value("${payment.test-user.card-exp}")
-    private String paymentTestUserCardExp;
-
-    @Value("${payment.test-user.card-cvv}")
-    private String paymentTestUserCardCvv;
-
     @Value("${application.url.base}")
     private String appUrlBase;
 
@@ -374,70 +357,45 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         return booking;
     }
 
-    private UserAuthDto loginToPaymentService() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        UserLoginDto userLoginDto = new UserLoginDto(paymentMerchantLogin, paymentMerchantPassword);
-        String userLoginJson = objectMapper.writeValueAsString(userLoginDto);
-        StringEntity entity = new StringEntity(userLoginJson);
-
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(paymentBaseUrl + paymentOperationAuth);
-
-        httpPost.setEntity(entity);
-        httpPost.setHeader("Accept", "application/json");
-        httpPost.setHeader("Content-type", "application/json");
-
-        CloseableHttpResponse response = client.execute(httpPost);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if(statusCode != 200){
-            Map<String, String> data = new HashMap<>();
-            data.put("paymentMerchantLogin", paymentMerchantLogin);
-            data.put("paymentMerchantPassword", paymentMerchantPassword);
-            log.warn("WoopKassa: Authentication failed with credentials {}", paymentMerchantLogin + " " + paymentMerchantPassword);
-            throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION, data, "WoopKassa: Authentication failed with current credentials");
-
-        }
-        HttpEntity responseEntity = response.getEntity();
-        String json = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
-        client.close();
-        return objectMapper.readValue(json, UserAuthDto.class);
+    private String basicString() {
+        String loginAndPassword=paymentMerchantLogin+":"+paymentMerchantPassword;
+        return  "Basic "+Base64.getEncoder().encodeToString(loginAndPassword.getBytes());
     }
 
-    private InvoiceCreateResponseDto createInvoiceInPayment(String authJwt, Booking booking) throws IOException {
+    private InvoiceCreateResponseDto createInvoiceInPayment(String basic, Booking booking) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         InvoiceCreateDto invoiceCreateDto = new InvoiceCreateDto();
-        invoiceCreateDto.setReference_id(paymentModelPrefix + booking.getId());
-        invoiceCreateDto.setAmount(booking.getSumPrice());
-        invoiceCreateDto.setUser_phone(booking.getTelNumber());
-        invoiceCreateDto.setEmail("");
+        invoiceCreateDto.setAmount(booking.getSumPrice().multiply(BigDecimal.valueOf(100)).toBigInteger());//kassa24 тиынмен қабылдайды екен. сол үшін жүзге көбейтіп аламыз
+        invoiceCreateDto.setMerchantId(paymentMerchantLogin);
+        invoiceCreateDto.setDescription("SanaTour.kz : " +booking.getId());
+        invoiceCreateDto.setOrderId(booking.getId().toString());
+        invoiceCreateDto.setDemo(false);
+        //кейін  осы жерге  metadata қою керек. ол кейін callback-қа қайтарып береді
         San sanByRoomId = sanRepo.getSanByRoomId(booking.getRoom().getId());
-        invoiceCreateDto.setMerchant_name(sanByRoomId.getName());
+
 
         String finalUrl = appUrlBase + ENDPOINT_PAYMENT.replace("{bookId}", booking.getId().toString());
-        invoiceCreateDto.setRequestUrl(finalUrl, "POST");
-        invoiceCreateDto.setBack_url("https://www.test.wooppay.com");
-        invoiceCreateDto.setDescription("from_backend");
-        invoiceCreateDto.setDeath_date(LocalDateTime.now().plusDays(1).toString());
-        invoiceCreateDto.setOption("4");
-        String userLoginJson = objectMapper.writeValueAsString(invoiceCreateDto);
-        StringEntity entity = new StringEntity(userLoginJson);
+
+        String bodyRequest = objectMapper.writeValueAsString(invoiceCreateDto);
+        StringEntity entity = new StringEntity(bodyRequest);
 
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(paymentBaseUrl + paymentOperationCreate);
+        HttpPost httpPost = new HttpPost(paymentBaseUrl);
 
         httpPost.setEntity(entity);
         httpPost.setHeader("Accept", "application/json");
         httpPost.setHeader("Content-type", "application/json");
-        httpPost.setHeader("Authorization", "Bearer " + authJwt);
+        httpPost.setHeader("accept-charset", "utf-8");
+        httpPost.setHeader("Authorization", basic);
 
         CloseableHttpResponse response = client.execute(httpPost);
         int statusCode = response.getStatusLine().getStatusCode();
-        if(statusCode != 200){
-            log.warn("WoopKassa: Invoice creation failed with body {}", userLoginJson);
+        if(statusCode != 201){
+            log.warn("Қателік", bodyRequest);
 
             Map<String, String> data = new HashMap<>();
-            data.put("userLoginJson", userLoginJson);
-            throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION, data, "WoopKassa: Invoice creation failed with body");
+            data.put("bodyRequest", bodyRequest);
+            throw new MessageCodeException(PaymentIntegrationCodes.ERROR_IN_PAYMENT_INTEGRATION, data, "Қателік");
         }
         HttpEntity responseEntity = response.getEntity();
         String json = EntityUtils.toString(responseEntity, StandardCharsets.UTF_8);
@@ -545,11 +503,9 @@ public class BookingServiceImpl extends AbstractService<Booking, BookingRepo> im
         booking.setSumPrice(adults.add(children));
         addOne(booking);
 
-        UserAuthDto userAuthDto = loginToPaymentService();
-        InvoiceCreateResponseDto invoiceCreateResponseDto = createInvoiceInPayment(userAuthDto.getToken().substring(4), booking);
 
-        booking.setWoopOrderId(paymentModelPrefix + booking.getId());
-        booking.setPaymentUrl(invoiceCreateResponseDto.getOperation_url());
+        InvoiceCreateResponseDto invoiceCreateResponseDto = createInvoiceInPayment(basicString(), booking);
+        booking.setPaymentUrl(invoiceCreateResponseDto.getUrl());
         editOneById(booking);
 
         if(booking.getUser() != null){
