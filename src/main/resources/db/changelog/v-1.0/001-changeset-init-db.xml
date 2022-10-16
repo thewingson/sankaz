@@ -21,4 +21,13 @@
                      path="20220322-01-init-db-drop.sql"/>
         </rollback>
     </changeSet>
+    <changeSet id="2" author="ilyas">
+        <sqlFile
+                dbms="postgresql"
+                endDelimiter="\n;"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                stripComments="true"
+                path="20221016-delete-woopay.sql"/>
+    </changeSet>
 </databaseChangeLog>
