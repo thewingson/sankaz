@@ -43,7 +43,8 @@ spring:
   servlet:
     multipart:
       max-file-size: 7MB
-
+  pid:
+    fail-on-write-error: true
 mail:
   host: localhost
   port: 1025
