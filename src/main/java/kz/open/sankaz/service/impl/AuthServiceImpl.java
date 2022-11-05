@@ -512,12 +512,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Organization registerNewOrganization(SecUser userByNumber, OrganizationRegisterFinishFilter filter) {
-        try{ // проверка email
-            userService.getUserByTelNumber(filter.getTelNumber());
-            throw new MessageCodeException(OrganizationCodes.TEL_NUMBER_IS_ALREADY_TAKEN);
-        } catch (EntityNotFoundException e){
-            log.info("Number is free {}", filter.getTelNumber());
-        }
+//        try{ // проверка email
+//            userService.getUserByTelNumber(filter.getTelNumber());
+//            throw new MessageCodeException(OrganizationCodes.TEL_NUMBER_IS_ALREADY_TAKEN);
+//        } catch (EntityNotFoundException e){
+//            log.info("Number is free {}", filter.getTelNumber());
+//        }
 
         try{ // проверка iban
             organizationService.getOrganizationByIban(filter.getIban());
