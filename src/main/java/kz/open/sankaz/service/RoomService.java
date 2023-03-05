@@ -1,6 +1,7 @@
 package kz.open.sankaz.service;
 
 import kz.open.sankaz.model.Room;
+import kz.open.sankaz.model.RoomAdditional;
 import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import org.springframework.web.multipart.MultipartFile;

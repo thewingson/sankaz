@@ -38,4 +38,5 @@ public interface RoomRepo extends CommonRepo<Room> {
             "where lower(r.room_number) = :roomNumber")
     List<Room> findRoomByNameAndSan(@Param("sanId") Long sanId,
                                     @Param("roomNumber") String roomNumber);
+
 }

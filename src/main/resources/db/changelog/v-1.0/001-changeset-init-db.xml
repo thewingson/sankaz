@@ -30,4 +30,22 @@
                 stripComments="true"
                 path="20221016-delete-woopay.sql"/>
     </changeSet>
+    <changeSet id="3" author="ilyas">
+        <sqlFile
+                dbms="postgresql"
+                endDelimiter="\n;"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                stripComments="true"
+                path="20230218-01-create-room-additional.sql"/>
+    </changeSet>
+    <changeSet id="4" author="ilyas">
+        <sqlFile
+                dbms="postgresql"
+                endDelimiter="\n;"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                stripComments="true"
+                path="20230219-01-alter-room.sql"/>
+    </changeSet>
 </databaseChangeLog>

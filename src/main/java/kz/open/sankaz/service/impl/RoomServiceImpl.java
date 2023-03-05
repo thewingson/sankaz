@@ -1,9 +1,6 @@
 package kz.open.sankaz.service.impl;
 
-import kz.open.sankaz.model.Room;
-import kz.open.sankaz.model.RoomClassDic;
-import kz.open.sankaz.model.San;
-import kz.open.sankaz.model.SysFile;
+import kz.open.sankaz.model.*;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import kz.open.sankaz.repo.RoomRepo;
 import kz.open.sankaz.service.*;
@@ -59,6 +56,7 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
         room.setBedCount(filter.getBedCount());
         room.setRoomCount(filter.getRoomCount());
         room.setPrice(filter.getPrice());
+        room.setAdditionals(filter.getRoomAdditionalDto());
         return addOne(room);
     }
 
@@ -79,6 +77,7 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
         room.setRoomCount(filter.getRoomCount());
         room.setPrice(filter.getPrice());
         room.setPriceChild(filter.getPriceChild());
+        room.setAdditionals(filter.getRoomAdditionalDto());
         return addPics(addOne(room), pics);
     }
 

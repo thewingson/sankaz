@@ -30,4 +30,5 @@ public class RoomCreateFilter extends BaseFilter {
     private BigDecimal price;
     @NotNull
     private BigDecimal priceChild;
+    private String roomAdditionalDto;
 }

@@ -77,6 +77,9 @@ public class Room extends AbstractEntity {
     @Column(name = "PRICE_CHILD")
     private BigDecimal priceChild;
 
+    @Column
+    private String additionals;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CLASS_ID", foreignKey = @ForeignKey(name = "ROOM_CLASS_FK"), nullable = false)
     @JsonManagedReference

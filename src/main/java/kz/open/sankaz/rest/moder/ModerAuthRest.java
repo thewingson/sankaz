@@ -151,7 +151,7 @@ public class ModerAuthRest {
 
     @PreAuthorize("permitAll()")
     @PostMapping("/send-reset")
-    public ResponseEntity<?> sedResetNumber(@Valid @RequestBody TelNumberFilter filter) {
+    public ResponseEntity<?> sendResetNumber(@Valid @RequestBody TelNumberFilter filter) {
         try {
             authService.sendResetNumber(filter.getTelNumber());
             return ResponseModel.successPure();

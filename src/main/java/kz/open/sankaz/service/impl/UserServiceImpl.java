@@ -209,7 +209,7 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
                 userByNumber.setEmail(filter.getEmail());
             }
         }
-        userByNumber.setPassword(passwordEncoder.encode("Welcome123"));
+        userByNumber.setPassword("Welcome123");
         userByNumber.setConfirmationStatus(ConfirmationStatus.valueOf(filter.getConfirmationStatus()));
         userByNumber.setUserType(UserType.valueOf(filter.getUserType()));
         userByNumber.setUsername(filter.getUsername());
@@ -309,7 +309,7 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
         }
 
         SecUser user = getOne(id);
-        user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(password);
         editOneById(user);
 
         List<SecUserToken> tokens = tokenRepo.findAllByUser(user);

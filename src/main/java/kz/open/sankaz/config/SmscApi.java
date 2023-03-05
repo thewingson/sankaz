@@ -13,6 +13,7 @@ public class SmscApi {
 //	String SMSC_PASSWORD = "3cc3621995712fbe6bdb6954d82ac8704e0c571b";  // пароль
 	String SMSC_LOGIN    = "ybnabbas";     // логин клиента
 	String SMSC_PASSWORD = "Arujan2013@";  // пароль
+	String SMSC_SENDER   = "SanaTour";  //Отправитель смс
 	boolean SMSC_HTTPS   = false;         // использовать HTTPS протокол
 	String SMSC_CHARSET  = "utf-8";       // кодировка сообщения: koi8-r, windows-1251 или utf-8 (по умолчанию)
 	boolean SMSC_DEBUG   = false;         // флаг отладки
@@ -221,6 +222,7 @@ public class SmscApi {
 		try {
 			String _url = (SMSC_HTTPS ? "https" : "http") + "://smsc.kz/sys/" + cmd +".php?login=" + URLEncoder.encode(SMSC_LOGIN, SMSC_CHARSET)
 				+ "&psw=" + URLEncoder.encode(SMSC_PASSWORD, SMSC_CHARSET)
+				+ "&sender=" + URLEncoder.encode(SMSC_SENDER, SMSC_CHARSET)
 				+ "&fmt=1&charset=" + SMSC_CHARSET + "&" + arg;
 
 			String url = _url;

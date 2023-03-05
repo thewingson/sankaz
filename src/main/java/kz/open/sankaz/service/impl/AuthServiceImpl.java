@@ -136,20 +136,20 @@ public class AuthServiceImpl implements AuthService {
                 .map(SecUser::getTelNumber)
                 .collect(Collectors.toList());
     }
-
+        //Смс код жібереді. Клиент
     @Override
     public int sendConfirmationNumber(String telNumber) {
-        log.info("Start of sending confirmation number {}", telNumber);
+        log.info("Клиент тіркеу басталды {}", telNumber);
         SecUser userByNumber;
         try{
-            log.info("Checking tel number in DB");
+            log.info("Номірді базадан іздеу");
             userByNumber = userService.getUserByTelNumber(telNumber);
             if(userByNumber.getConfirmedBy() != null){
                 throw new RuntimeException("Номер уже зарегистрирован! Пожалуйста, укажите другой номер.");
             }
         } catch (EntityNotFoundException e){
             // FREE NUMBER
-            log.info("Number is free");
+            log.info("Номір бос екен.");
             userByNumber = new SecUser();
         }
 
@@ -160,6 +160,7 @@ public class AuthServiceImpl implements AuthService {
 
         userByNumber.setConfirmationStatus(ConfirmationStatus.ON_CONFIRMATION);
         userByNumber.setConfirmedDate(null);
+        //Смске рандом номер
         userByNumber.setConfirmationNumber(getRandomConfirmationNumber());
         userByNumber.setConfirmationNumberCreatedDate(LocalDateTime.now());
         userByNumber.setTelNumber(telNumber);
@@ -167,9 +168,9 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setPassword(passwordEncoder.encode("test"));
         userByNumber.setFirstName("");
         userByNumber.setLastName("");
-        log.info("Registering new user {}", userByNumber.getUsername());
+        log.info("Жаңа клиент тіркеу {}", userByNumber.getUsername());
         userService.addOne(userByNumber);
-        log.info("Sending confirmation number {}", telNumber);
+        log.info("Смс жіберу басталды {}", telNumber);
 
         String phones = telNumber;
         String message = "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber();
@@ -177,31 +178,31 @@ public class AuthServiceImpl implements AuthService {
         String time = "";
         String id = "";
         int format = 0;
-        String sender = "SanKaz";
+        String sender = "SanaTour";
         String query = "";
         SmscApi smscApi = new SmscApi();
         smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
 //        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber());
-        log.info("End of sending confirmation number {}", telNumber);
+        log.info("Смс жіберу аяқталды {}", telNumber);
         return userByNumber.getConfirmationNumber();
     }
-
+    //Смс код жібереді. Организация
     @Override
     public int sendConfirmationNumberOrganization(String telNumber, String password, String confirmPassword) {
-        log.info("Start of sending confirmation number {}", telNumber);
+        log.info("Организацияны тіреу басталды {}", telNumber);
         if(!password.equals(confirmPassword)){
             throw new RuntimeException("Пароли не совпадают! Пожалуйста, введите еще раз.");
         }
         SecUser userByNumber;
         try{
-            log.info("Checking tel number in DB");
+            log.info("Базадан номерді тексеру");
             userByNumber = userService.getUserByTelNumber(telNumber);
             if(userByNumber.getConfirmationStatus().equals(ConfirmationStatus.CONFIRMED)){
                 throw new RuntimeException("К сожалению номер занят! Пожалуйста, введите другой номер.");
             }
         } catch (EntityNotFoundException e){
             // FREE NUMBER
-            log.info("Number is free");
+            log.info("Номер бос");
             userByNumber = new SecUser();
         }
 
@@ -219,9 +220,9 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setPassword(password);
         userByNumber.setFirstName("");
         userByNumber.setLastName("");
-        log.info("Registering new user {}", userByNumber.getUsername());
+        log.info("Жаңа орзанизация тіркеу {}", userByNumber.getUsername());
         userService.addOne(userByNumber);
-        log.info("Sending confirmation number {}", telNumber);
+        log.info("Номерге смс жіберу {}", telNumber);
 
         String phones = telNumber;
         String message = "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber();
@@ -229,12 +230,12 @@ public class AuthServiceImpl implements AuthService {
         String time = "";
         String id = "";
         int format = 0;
-        String sender = "SanKaz";
+        String sender = "SanaTour";
         String query = "";
         SmscApi smscApi = new SmscApi();
         smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
 //        smsSender.sendSms(userByNumber.getTelNumber(), smsProperties.getTrialNumber(), "Добро пожаловать в SanKaz! \nВаш номер подтверждения: " + userByNumber.getConfirmationNumber());
-        log.info("End of sending confirmation number {}", telNumber);
+        log.info("Смс жіберу аяқталды {}", telNumber);
         return userByNumber.getConfirmationNumber();
     }
 
@@ -246,7 +247,7 @@ public class AuthServiceImpl implements AuthService {
         try{
             userByNumber = userService.getUserByTelNumber(telNumber);
         } catch (EntityNotFoundException e){
-            throw new RuntimeException("Неправильный номер! Данный номер отсутствует базе.");
+            throw new RuntimeException("Ошибка! Данный номер не зарегистрирован.");
         }
 
         userByNumber.setResetNumberStatus(ResetNumberStatus.ON_RESET);
@@ -260,7 +261,7 @@ public class AuthServiceImpl implements AuthService {
         String time = "";
         String id = "";
         int format = 0;
-        String sender = "SanKaz";
+        String sender = "SanaTour";
         String query = "";
         SmscApi smscApi = new SmscApi();
         smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
@@ -370,7 +371,7 @@ public class AuthServiceImpl implements AuthService {
         userService.editOneById(userByNumber);
         log.info("End of checking reset number {}", telNumber);
     }
-
+//Бірінші номерді базадан іздеу керек. Егер болса от туралы толық ақпарат аламыз
     @Override
     public NumberFreeDto isNumberFree(String telNumber) {
         log.info("Start of checking number {}", telNumber);
@@ -394,7 +395,7 @@ public class AuthServiceImpl implements AuthService {
                 String time = "";
                 String id = "";
                 int format = 0;
-                String sender = "SanKaz";
+                String sender = "SanaTour";
                 String query = "";
                 SmscApi smscApi = new SmscApi();
                 smscApi.send_sms(phones, message, translit, time, id, format, sender, query);
@@ -412,19 +413,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public NumberFreeDto isNumberFreeOrganization(String telNumber) {
-        log.info("Start of checking number {}", telNumber);
+        log.info("Номірді тексеру. Организация {}", telNumber);
         NumberFreeDto dto = new NumberFreeDto();
         boolean isFree = false;
         try{
-            log.info("Checking tel number in DB");
+
             SecUser userByNumber = userService.getUserByTelNumber(telNumber);
             dto.setConfirmationStatus(userByNumber.getConfirmationStatus().name());
             dto.setRoles(userByNumber.getRoles().stream().map(SecRole::getName).collect(Collectors.toList()));
         } catch (EntityNotFoundException e){
             isFree = true;
+            log.info("Номер бос екен");
             dto.setConfirmationStatus(ConfirmationStatus.NEW.name());
         }
-        log.info("End of checking number {}", telNumber);
         dto.setFree(isFree);
         return dto;
     }
@@ -637,12 +638,12 @@ public class AuthServiceImpl implements AuthService {
         userByNumber.setPassword(passwordEncoder.encode(password));
         userService.editOneById(userByNumber);
 
-        List<SecUserToken> tokens = tokenRepo.findAllByUser(userByNumber);
-        tokens.forEach(token -> {
-            token.setIsBlocked(true);
-            token.setBlockDate(LocalDateTime.now());
-        });
-        tokenRepo.saveAll(tokens);
+//        List<SecUserToken> tokens = tokenRepo.findAllByUser(userByNumber);
+//        tokens.forEach(token -> {
+//            token.setIsBlocked(true);
+//            token.setBlockDate(LocalDateTime.now());
+//        });
+//        tokenRepo.saveAll(tokens);
 
         return authenticateUser(userByNumber.getUsername(), password);
     }

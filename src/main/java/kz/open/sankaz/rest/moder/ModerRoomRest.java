@@ -5,6 +5,7 @@ import kz.open.sankaz.pojo.filter.DeletePicsFilter;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import kz.open.sankaz.repo.RoomRepo;
 import kz.open.sankaz.response.ResponseModel;
+import kz.open.sankaz.service.RoomAdditionalService;
 import kz.open.sankaz.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,8 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class ModerRoomRest {
 
     private final RoomService roomService;
+    @Autowired
+    RoomAdditionalService roomAdditionalService;
 
     @Autowired
     private RoomRepo roomRepo;
@@ -63,9 +66,10 @@ public class ModerRoomRest {
                                     @RequestParam Integer bedCount,
                                     @RequestParam BigDecimal price,
                                     @RequestParam BigDecimal priceChild,
+                                    @RequestParam String roomAdditionalDto,
                                     @RequestParam(value = "pics", required = false) MultipartFile[] pics) {
         try {
-            RoomCreateFilter filter = new RoomCreateFilter(roomNumber, roomClassDicId, sanId, roomCount, bedCount, price, priceChild);
+            RoomCreateFilter filter = new RoomCreateFilter(roomNumber, roomClassDicId, sanId, roomCount, bedCount, price, priceChild,roomAdditionalDto);
             return ResponseModel.success(roomMapper.roomToRoomCreateDto(roomService.addOne(filter, pics)));
         } catch (Exception e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
@@ -110,6 +114,15 @@ public class ModerRoomRest {
             return ResponseModel.successPure();
         } catch (Exception e) {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+    @GetMapping
+    @RequestMapping("/room-additionals")
+    public ResponseEntity<?> getRoomAdditionals(){
+        try {
+            return ResponseModel.success(roomAdditionalService.getRoomAdditionals());
+        }catch (Exception e){
+            return ResponseModel.error(BAD_REQUEST,e.getMessage());
         }
     }
 
