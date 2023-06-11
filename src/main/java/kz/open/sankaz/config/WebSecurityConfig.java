@@ -64,6 +64,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeHttpRequests().antMatchers(
                 "/push/**",
                 "/patient/**",
+                "/admin/**",
+                "/moders/**",
+                "/users/**",
                 "/dict/**",
                 "/users/auth/numbers/is-free",
                 "/users/books/{bookId}/payment-status",

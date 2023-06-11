@@ -23,12 +23,6 @@ import java.util.Optional;
 @Transactional
 public abstract class AbstractService<E extends BaseEntity, R extends CommonRepo<E>> implements CommonService<E> {
 
-    @Value("${application.file.upload.path.image}")
-    protected String APPLICATION_UPLOAD_PATH_IMAGE;
-
-    @Value("${application.file.download.path.image}")
-    protected String APPLICATION_DOWNLOAD_PATH_IMAGE;
-
     protected final R repo;
     @Autowired
     protected ApplicationEventPublisher applicationEventPublisher;

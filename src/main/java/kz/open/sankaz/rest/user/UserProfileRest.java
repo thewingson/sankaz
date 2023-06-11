@@ -85,17 +85,7 @@ public class UserProfileRest {
         }
     }
 
-    @DeleteMapping("/{userId}/picture")
-    public ResponseEntity<?> deletePic(HttpServletRequest request,
-                                       @PathVariable(name = "userId") Long userId) {// todo: remove from mobile and here
-        try{
-            userId = authService.getUserId(request);
-            userService.deletePicture(userId);
-            return ResponseModel.successPure();
-        } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
+
 
     @GetMapping("/notifications")
     public ResponseEntity<?> getNotifications(HttpServletRequest request,

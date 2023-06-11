@@ -1,5 +1,6 @@
 package kz.open.sankaz.pojo.dto;
 
+import kz.open.sankaz.image.SanaTourImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class RoomByIdDto extends BaseDto {
     private Long classId;
-    private List<String> picUrls;
+    private List<SanaTourImage> sanaTourImages;
     private String name;
     private String description;
     private BigDecimal price;

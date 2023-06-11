@@ -126,28 +126,8 @@ public class ModerAuthRest {
         }
     }
 
-    @PostMapping("/upload-pic/{orgId}/list")
-    public ResponseEntity<?> uploadPictures(@PathVariable Long orgId,
-                                            @RequestParam("pics") MultipartFile[] pics) {
-        try {
-            organizationService.checkIfOwnOrg(orgId);
-            organizationService.uploadPicture(orgId, pics);
-            return ResponseModel.successPure();
-        } catch (Exception e) {
-            return ResponseModel.error(BAD_REQUEST, e.getMessage());
-        }
-    }
 
-    @DeleteMapping("/org/{orgId}/delete-pic/{picId}")
-    public ResponseEntity<?> deletePic(@PathVariable(name = "orgId") Long orgId,
-                                       @PathVariable(name = "picId") Long picId) {
-        try{
-            organizationService.deletePics(orgId, picId);
-            return ResponseModel.successPure();
-        } catch (Exception e){
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
+
 
     @PreAuthorize("permitAll()")
     @PostMapping("/send-reset")

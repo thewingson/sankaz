@@ -116,26 +116,4 @@ public class AdminOrgRest {
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
-    @PutMapping("/{orgId}/pics")
-    public ResponseEntity<?> addPics(@PathVariable(name = "orgId") Long orgId,
-                                    @RequestParam("pics") MultipartFile[] pics) {
-        try {
-            return ResponseModel.success(organizationMapper.fileToDto(organizationService.addPics(orgId, pics)));
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/{orgId}/pics/{picId}")
-    public ResponseEntity<?> deletePic(@PathVariable(name = "orgId") Long orgId,
-                                        @PathVariable(name = "picId") Long picId) {
-        try {
-            organizationService.deletePics(orgId, picId);
-            return ResponseModel.successPure();
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
 }

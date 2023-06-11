@@ -3,6 +3,8 @@ package kz.open.sankaz.rest.user;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.mapper.SanMapper;
+import kz.open.sankaz.model.RoomClassDic;
+import kz.open.sankaz.pojo.dto.RoomClassDicDto;
 import kz.open.sankaz.pojo.filter.ReviewCreateFilter;
 import kz.open.sankaz.pojo.filter.SanForMainFilter;
 import kz.open.sankaz.response.ResponseModel;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -83,7 +86,8 @@ public class UserSanRest {
     @GetMapping("/{sanId}/classes")
     public ResponseEntity<?> getAllClassesBySan(@PathVariable(name = "sanId") Long sanId) {
         try {
-            return ResponseModel.success(roomMapper.roomClassDicToDto(roomClassDicService.getBySan(sanId)));
+            List<RoomClassDicDto> asd=roomMapper.roomClassDicToDto(roomClassDicService.getBySan(sanId));
+            return ResponseModel.success(asd);
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

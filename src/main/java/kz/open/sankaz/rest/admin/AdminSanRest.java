@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+//@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
 @RequestMapping("/admin/sans")
 public class AdminSanRest {
@@ -25,9 +25,6 @@ public class AdminSanRest {
 
     @Autowired
     private AuthService authService;
-
-    @Autowired
-    private SanMapper sanMapper;
 
     @Autowired
     public AdminSanRest(SanService sanService) {

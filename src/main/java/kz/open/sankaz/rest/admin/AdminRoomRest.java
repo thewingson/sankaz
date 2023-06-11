@@ -16,7 +16,7 @@ import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+//@PreAuthorize("hasRole('ROLE_ADMIN')") //TODO
 @RestController
 @RequestMapping("/admin/rooms")
 public class AdminRoomRest {
@@ -78,25 +78,6 @@ public class AdminRoomRest {
         }
     }
 
-    @PutMapping("/{roomId}/pics/list")
-    public ResponseEntity<?> addRoomPics(@PathVariable(name = "roomId") Long roomId,
-                                         @RequestParam("pics") MultipartFile[] pics) {
-        try {
-            return ResponseModel.success(roomService.addPics(roomId, pics));
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
 
-    @DeleteMapping("{roomId}/pics/list")
-    public ResponseEntity<?> deleteRoomPic(@PathVariable(name = "roomId") Long roomId,
-                                           @Valid @RequestBody DeletePicsFilter filter) {
-        try {
-            roomService.deletePics(roomId, filter.getPicIds());
-            return ResponseModel.successPure();
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
 
 }

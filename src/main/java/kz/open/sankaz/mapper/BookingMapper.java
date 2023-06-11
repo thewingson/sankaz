@@ -73,7 +73,7 @@ public abstract class BookingMapper extends AbstractMapper {
     @Mapping(target = "sanTypeName", expression = "java( booking.getRoom().getSan().getSanType().getName() )")
     @Mapping(target = "sanAddress", expression = "java( booking.getRoom().getSan().getAddress() )")
     @Mapping(target = "sanTelNumber", expression = "java( getTelNumberValuesFromEntity(booking.getRoom().getSan().getTelNumbers()) )")
-    @Mapping(target = "sanPicUrl", expression = "java( getPicUrlFromSysFile(booking.getRoom().getSan().getMainPic()) )")
+    //TODO @Mapping(target = "sanPicUrl", expression = "java( getPicUrlFromSysFile(booking.getRoom().getSan().getMainPic()) )")
     @Mapping(target = "adults", source = "adultsCount")
     @Mapping(target = "children", source = "childrenCount")
     @Mapping(target = "roomCount", source = "booking.room.roomCount")

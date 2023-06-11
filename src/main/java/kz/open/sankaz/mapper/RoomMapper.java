@@ -1,8 +1,8 @@
 package kz.open.sankaz.mapper;
 
+import kz.open.sankaz.image.SanaTourImage;
 import kz.open.sankaz.model.Room;
 import kz.open.sankaz.model.RoomClassDic;
-import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.dto.*;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -10,7 +10,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -22,7 +21,7 @@ public abstract class RoomMapper extends AbstractMapper {
     @Named("roomToRoomCreateDto")
     @Mapping(target = "roomClassDicId", source = "room.roomClassDic.id")
     @Mapping(target = "sanId", source = "room.san.id")
-    @Mapping(target = "pics", expression = "java( fileToDto(room.getPics()) )")
+
     abstract public RoomCreateDto roomToRoomCreateDto(Room room);
     @IterableMapping(qualifiedByName = "roomToRoomCreateDto")
     abstract public List<RoomCreateDto> roomToRoomCreateDto(List<Room> rooms);
@@ -36,7 +35,7 @@ public abstract class RoomMapper extends AbstractMapper {
 
     @Named("roomToRoomInSanByIdDto")
     @Mapping(target = "roomClassDicId", source = "room.roomClassDic.id")
-    @Mapping(target = "mainPicUrl", expression = "java( getFirstPicUrlFromSysFiles(room.getPics()) )")
+    //TODO @Mapping(target = "sanaTourImage", expression = "java( getFirstPicUrlFromSysFiles(room.getPics()) )")
     @Mapping(target = "name", source = "room.roomClassDic.name")
     abstract public RoomInSanByIdDto roomToRoomInSanByIdDto(Room room);
     @IterableMapping(qualifiedByName = "roomToRoomInSanByIdDto")
@@ -44,7 +43,7 @@ public abstract class RoomMapper extends AbstractMapper {
 
     @Named("roomToRoomByIdDtoForUser")
     @Mapping(target = "classId", source = "room.roomClassDic.id")
-    @Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles(room.getPics()) )")
+    //@Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles(room.getPics()) )")
     @Mapping(target = "name", source = "room.roomClassDic.name")
     @Mapping(target = "description", source = "room.roomClassDic.description")
     abstract public RoomByIdDto roomToRoomByIdDtoForUser(Room room);
@@ -53,24 +52,24 @@ public abstract class RoomMapper extends AbstractMapper {
 
     @Named("roomToRoomByIdDtoForAdmin")
     @Mapping(target = "san", expression = "java( sanMapper.sanToSanSimpleDto(room.getSan()) )")
-    @Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles(room.getPics()) )")
+   // @Mapping(target = "picUrls", expression = "java( getPicUrlsFromSysFiles(room.getPics()) )")
     @Mapping(target = "name", source = "room.roomClassDic.name")
     @Mapping(target = "description", source = "room.roomClassDic.description")
     abstract public RoomByIdDto roomToRoomByIdDtoForAdmin(Room room);
     @IterableMapping(qualifiedByName = "roomToRoomByIdDtoForAdmin")
     abstract public List<RoomByIdDto> roomToRoomByIdDtoForAdmin(List<Room> rooms);
 
-    protected String getFirstPicUrlFromSysFiles(List<SysFile> pics){
-        if(pics != null && !pics.isEmpty()){
-            return getPicUrlFromSysFile(pics.get(0));
-        }
+    protected String getFirstPicUrlFromSysFiles(List<SanaTourImage> pics){
+//        if(pics != null && !pics.isEmpty()){
+//            return getPicUrlFromSysFile(pics.get(0));
+//        }
         return null;
     }
 
     @Named("roomToRoomInClassDicDto")
     @Mapping(target = "roomNumber", source = "room.roomNumber")
-    @Mapping(target = "mainPic", expression = "java( fileToDto(room.getMainPic()) )")
-    @Mapping(target = "pics", expression = "java( fileToDto(room.getPics()) )")
+   // @Mapping(target = "mainPic", expression = "java( fileToDto(room.getMainPic()) )")
+  //  @Mapping(target = "pics", expression = "java( fileToDto(room.getPics()) )")
     @Mapping(target = "price", source = "room.price")
     @Mapping(target = "priceChild", source = "room.priceChild")
     abstract public RoomInClassDicDto roomToRoomInClassDicDto(Room room);
@@ -78,7 +77,6 @@ public abstract class RoomMapper extends AbstractMapper {
     abstract public List<RoomInClassDicDto> roomToRoomInClassDicDto(List<Room> rooms);
 
     @Named("roomClassDicToDto")
-    @Mapping(target = "sanId", ignore = true)
     @Mapping(target = "rooms", expression = "java( roomToRoomInClassDicDto( roomClassDic.getRooms() ) )")
     abstract public RoomClassDicDto roomClassDicToDto(RoomClassDic roomClassDic);
     @IterableMapping(qualifiedByName = "roomClassDicToDto")
@@ -104,7 +102,7 @@ public abstract class RoomMapper extends AbstractMapper {
 
     @Named("roomToRoomDto")
     @Mapping(target = "san", ignore = true)
-    @Mapping(target = "picUrls", ignore = true)
+  //  @Mapping(target = "picUrls", ignore = true)
     @Mapping(target = "classId", ignore = true)
     @Mapping(target = "name", source = "room.roomClassDic.name")
     @Mapping(target = "description", source = "room.roomClassDic.description")

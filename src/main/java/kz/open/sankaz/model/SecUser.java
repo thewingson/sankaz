@@ -116,11 +116,6 @@ public class  SecUser extends AbstractEntity implements UserDetails{
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
     private List<SecRole> roles;
 
-    @ManyToOne
-    @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SEC_USER_PIC_FK"))
-    @JsonManagedReference
-    private SysFile pic;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @JsonBackReference
     private List<UserDeviceToken> deviceTokens;

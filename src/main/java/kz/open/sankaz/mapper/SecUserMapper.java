@@ -19,7 +19,7 @@ public abstract class SecUserMapper extends AbstractMapper {
     @Mapping(target = "userType", source = "secUser.userType")
     @Mapping(target = "city", expression = "java( dictionaryToDto(secUser.getCity()) )")
     @Mapping(target = "gender", expression = "java( dictionaryToDto(secUser.getGender()) )")
-    @Mapping(target = "pic", expression = "java( fileToDto(secUser.getPic()) )")
+    //TODO  @Mapping(target = "pic", expression = "java( fileToDto(secUser.getPic()) )")
     abstract public SecUserDto userToDto(SecUser secUser);
     @IterableMapping(qualifiedByName = "userToDto")
     abstract public List<SecUserDto> userToDto(List<SecUser> secUsers);
@@ -30,7 +30,7 @@ public abstract class SecUserMapper extends AbstractMapper {
     abstract public List<SecUserForNewOrgDto> userToSecUserForNewOrgDto(List<SecUser> secUsers);
 
     @Named("userToOwnProfileDto")
-    @Mapping(target = "picUrl", expression = "java(getPicUrlFromSysFile(secUser.getPic()))")
+    //TODO  @Mapping(target = "picUrl", expression = "java(getPicUrlFromSysFile(secUser.getPic()))")
     @Mapping(target = "genderId", source = "secUser.gender.id")
     @Mapping(target = "genderName", source = "secUser.gender.name")
     @Mapping(target = "cityId", source = "secUser.city.id")

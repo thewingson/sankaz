@@ -106,25 +106,4 @@ public class AdminUserRest {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }
     }
-
-    @PutMapping("/{userId}/pics")
-    public ResponseEntity<?> addPic(@PathVariable(name = "userId") Long userId,
-                                     @RequestParam("pic") MultipartFile pic) {
-        try {
-            return ResponseModel.success(userMapper.fileToDto(userService.addPic(userId, pic)));
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    @DeleteMapping("{userId}/pics")
-    public ResponseEntity<?> deletePics(@PathVariable(name = "userId") Long userId) {
-        try {
-            userService.deletePic(userId);
-            return ResponseModel.successPure();
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
 }

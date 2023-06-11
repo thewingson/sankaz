@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,4 +34,6 @@ public class SanCreateFilter extends BaseFilter {
     private Double latitude;
     @NotNull
     private String address;
+    @NotNull
+    private List<byte[]> images;
 }

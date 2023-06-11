@@ -48,4 +48,31 @@
                 stripComments="true"
                 path="20230219-01-alter-room.sql"/>
     </changeSet>
+    <changeSet id="5" author="ilyas">
+        <sqlFile
+                dbms="postgresql"
+                endDelimiter="\n;"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                stripComments="true"
+                path="20230403-01-alter-room.sql"/>
+    </changeSet>
+    <changeSet id="6" author="ilyas">
+        <sqlFile
+                dbms="postgresql"
+                endDelimiter="\n;"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                stripComments="true"
+                path="20230403-01-create-image.sql"/>
+    </changeSet>
+    <changeSet id="7" author="ilyas">
+        <sqlFile
+                dbms="postgresql"
+                endDelimiter="\n;"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                stripComments="true"
+                path="20230403-01-alter-sanatour-image.sql"/>
+    </changeSet>
 </databaseChangeLog>

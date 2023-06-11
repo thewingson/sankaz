@@ -23,7 +23,7 @@ public class OrganizationDto extends AbstractDto {
     private LocalDateTime approvedDate;
     private String confirmedBy;
     private SecUserInOrgDto user;
-    private List<FileDto> pics;
+    //TODO private List<FileDto> pics;
     private String companyName;
     private String description;
     private String address;

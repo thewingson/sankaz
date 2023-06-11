@@ -20,7 +20,7 @@ import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-@PreAuthorize("hasRole('ROLE_MODERATOR')")
+//@PreAuthorize("hasRole('ROLE_MODERATOR')")
 @RestController
 @RequestMapping("/moders/sans")
 public class ModerSanRest {
@@ -62,7 +62,8 @@ public class ModerSanRest {
     @GetMapping("/{sanId}")
     public ResponseEntity<?> getOneById(@PathVariable(name = "sanId") Long sanId) {
         try{
-            sanService.checkIfOwnSan(sanId);
+            //TODO
+           // sanService.checkIfOwnSan(sanId);
             return ResponseModel.success(sanMapper.sanToSanByIdDto(sanService.getOne(sanId)));
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -136,28 +137,9 @@ public class ModerSanRest {
         }
     }
 
-    @PutMapping("/{sanId}/pics/list")
-    public ResponseEntity<?> addPics(@PathVariable(name = "sanId") Long sanId,
-                                     @RequestParam("pics") MultipartFile[] pics) {
-        try {
-            sanService.checkIfOwnSan(sanId);
-            return ResponseModel.success(sanMapper.fileToDto(sanService.addPics(sanId, pics)));
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
 
-    @DeleteMapping("{sanId}/pics/list")
-    public ResponseEntity<?> deletePics(@PathVariable(name = "sanId") Long sanId,
-                                        @Valid @RequestBody DeletePicsFilter filter) {
-        try {
-            sanService.checkIfOwnSan(sanId);
-            sanService.deletePics(sanId, filter.getPicIds());
-            return ResponseModel.successPure();
-        } catch (Exception e) {
-            return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
+
+
 
     @GetMapping("/{sanId}/reviews")
     public ResponseEntity<?> getReviews(@PathVariable(name = "sanId") Long sanId,

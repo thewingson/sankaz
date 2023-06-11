@@ -13,7 +13,6 @@ import kz.open.sankaz.model.enums.UserNotificationType;
 import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.BookingByIdUserDto;
 import kz.open.sankaz.pojo.dto.PageDto;
-import kz.open.sankaz.pojo.dto.PictureDto;
 import kz.open.sankaz.pojo.dto.TokenDto;
 import kz.open.sankaz.pojo.dto.notifications.*;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
@@ -39,10 +38,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,8 +50,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implements UserService {
 
-    @Autowired
-    private SysFileService fileService;
+
 
     @Autowired
     private GenderService genderService;
@@ -62,8 +58,7 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     @Autowired
     private CityService cityService;
 
-    @Autowired
-    private SysFileService sysFileService;
+
 
     @Lazy
     @Autowired
@@ -263,46 +258,6 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     }
 
     @Override
-    public SysFile addPic(Long userId, MultipartFile pic) throws IOException {
-        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
-        SecUser user = getOne(userId);
-
-        if (!pic.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-            String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
-
-            pic.transferTo(new File(fileNameWithPath));
-
-            SysFile file = new SysFile();
-            file.setFileName(resultFilename);
-            file.setExtension(pic.getContentType());
-            file.setSize(pic.getSize());
-            file = sysFileService.addOne(file);
-
-            user.setPic(file);
-        }
-
-        return editOneById(user).getPic();
-    }
-
-    @Override
-    public void deletePic(Long userId) {
-        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
-        SecUser user = getOne(userId);
-        SysFile pic = user.getPic();
-        pic.setDeletedDate(LocalDate.now());
-        sysFileService.editOneById(pic);
-        user.setPic(null);
-        editOneById(user);
-    }
-
-    @Override
     public TokenDto changePassword(Long id, String password, String confirmPassword) {
         if(!password.equals(confirmPassword)){
             throw new RuntimeException("Пароли не совпадают");
@@ -323,42 +278,12 @@ public class UserServiceImpl extends AbstractService<SecUser, UserRepo> implemen
     }
 
     @Override
-    public PictureDto changePicture(Long userId, MultipartFile file) throws IOException {
-        SecUser user = getOne(userId);
-        String fileNameWithPath = "";
-        if (file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) {
-            throw new RuntimeException("Wrong file!");
-        }
+    public boolean changePicture(Long userId, MultipartFile file) throws IOException {
 
-        File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdir();
-        }
-
-        String uuidFile = UUID.randomUUID().toString();
-        String resultFilename = uuidFile + "." + file.getOriginalFilename();
-        fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
-
-        file.transferTo(new File(fileNameWithPath));
-
-        SysFile sysFile = new SysFile();
-        sysFile.setExtension(file.getContentType());
-        sysFile.setFileName(file.getOriginalFilename());
-        sysFile.setSize(file.getSize());
-        fileService.addOne(sysFile);
-
-        user.setPic(sysFile);
-        editOneById(user);
-        return new PictureDto(APPLICATION_DOWNLOAD_PATH_IMAGE + "/" + resultFilename);
+        return false;
     }
 
-    @Override
-    public void deletePicture(Long userId) {
-        // TODO: remove pic file
-        SecUser user = getOne(userId);
-        user.setPic(null);
-        editOneById(user);
-    }
+
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @Override

@@ -2,6 +2,7 @@ package kz.open.sankaz.rest.moder;
 
 import kz.open.sankaz.mapper.RoomMapper;
 import kz.open.sankaz.model.RoomClassDic;
+import kz.open.sankaz.pojo.dto.RoomClassDicDto;
 import kz.open.sankaz.response.ResponseModel;
 import kz.open.sankaz.service.RoomClassDicService;
 import kz.open.sankaz.service.SanService;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -37,7 +40,9 @@ public class ModerRoomClassDicRest {
     public ResponseEntity<?> getAllBySan(@PathVariable(name = "sanId") Long sanId) {
         try {
             sanService.checkIfOwnSan(sanId);
-            return ResponseModel.success(roomMapper.roomClassDicToDto(roomClassDicService.getBySan(sanId)));
+            List<RoomClassDic> asda=roomClassDicService.getBySan(sanId);
+            List<RoomClassDicDto> asd=roomMapper.roomClassDicToDto(asda);
+            return ResponseModel.success(asd);
         } catch (RuntimeException e) {
             return ResponseModel.error(BAD_REQUEST, e.getMessage());
         }

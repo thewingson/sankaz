@@ -2,6 +2,7 @@ package kz.open.sankaz.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import kz.open.sankaz.image.SanaTourImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -63,16 +64,13 @@ public class San extends AbstractEntity{
     @JsonManagedReference
     private SanType sanType;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(
-            name = "SAN_PICS",
-            joinColumns = @JoinColumn(name = "SAN_ID", foreignKey = @ForeignKey(name = "SAN_PICS_SAN_FK")),
-            inverseJoinColumns = @JoinColumn(name = "PIC_ID", foreignKey = @ForeignKey(name = "SAN_PICS_PIC_FK")))
-    private List<SysFile> pics;
-
     @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JsonBackReference
     private List<Review> reviews;
+
+    @OneToMany(mappedBy = "sanId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<SanaTourImage> sanaTourImages;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CITY_ID", foreignKey = @ForeignKey(name = "SAN_CITY_FK"), nullable = false)
@@ -105,31 +103,6 @@ public class San extends AbstractEntity{
         return Objects.hash(id);
     }
 
-    public void addPic(SysFile pic){
-        if(getPics() == null){
-            this.pics = new ArrayList<>();
-        }
-        pics.add(pic);
-    }
-
-    public void addPics(List<SysFile> pics){
-        if(getPics() == null){
-            this.pics = new ArrayList<>();
-        }
-        this.pics.addAll(pics);
-    }
-
-    public void deletePic(SysFile pic){
-        if(!getPics().isEmpty()){
-            getPics().remove(pic);
-        }
-    }
-
-    public void deletePics(List<SysFile> pics){
-        if(!getPics().isEmpty()){
-            this.getPics().removeAll(pics);
-        }
-    }
 
     public void addTelNumber(TelNumber telNumber){
         if(getTelNumbers() == null){
@@ -165,27 +138,13 @@ public class San extends AbstractEntity{
         return (int)getReviews().stream().count();
     }
 
-    public SysFile getMainPic(){
-        initPics();
-        if(getPics() != null && !getPics().isEmpty()){
-            return getPics().get(0);
-        }
-        return null;
-    }
+
 
     public String getMainPicUrl(){
-        SysFile mainPic = getMainPic();
-        if(mainPic != null){
-            return mainPic.getFileName();
-        } else{
-            return null;
-        }
+     return null;
     }
 
-    public List<SysFile> getPices(){
-        initPics();
-        return getPics();
-    }
+
 
     public void initPics(){
 //        Hibernate.initialize(this.pics);

@@ -22,7 +22,7 @@ public abstract class OrganizationMapper extends AbstractMapper {
 
     @Named("organizationToDto")
     @Mapping(target = "user", expression = "java( secUserMapper.userToSecUserInOrgDto(organization.getUser()) )")
-    @Mapping(target = "pics", expression = "java( fileToDto(organization.getPics()) )")
+   // @Mapping(target = "pics", expression = "java( fileToDto(organization.getPics()) )")
     @Mapping(target = "companyCategory", expression = "java( dictionaryToDto(organization.getCompanyCategory()) )")
     abstract public OrganizationDto organizationToDto(Organization organization);
     @IterableMapping(qualifiedByName = "organizationToDto")
@@ -31,7 +31,7 @@ public abstract class OrganizationMapper extends AbstractMapper {
     // with additional data
     @Named("organizationToDtoWithAddData")
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "pics", expression = "java( fileToDto( organization.getPics() ) )")
+   // @Mapping(target = "pics", expression = "java( fileToDto( organization.getPics() ) )")
     abstract public OrganizationDto organizationToDtoWithAddData(Organization organization);
     @IterableMapping(qualifiedByName = "organizationToDtoWithAddData")
     abstract public List<OrganizationDto> organizationToDtoWithAddData(List<Organization> organizations);

@@ -1,8 +1,6 @@
 package kz.open.sankaz.service;
 
 import kz.open.sankaz.model.Room;
-import kz.open.sankaz.model.RoomAdditional;
-import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,14 +10,7 @@ import java.util.List;
 
 public interface RoomService extends CommonService<Room> {
     Room addOne(RoomCreateFilter filter);
-
-    Room addOne(RoomCreateFilter filter, MultipartFile[] pics) throws IOException;
-
     Room editOneById(Long roomId, RoomCreateFilter filter);
-
-    List<SysFile> addPics(Long roomId, MultipartFile[] pics) throws IOException;
-
-    void deletePics(Long roomId, Long[] picIds);
 
     List<Room> getAllByClass(Long classId);
 

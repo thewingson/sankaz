@@ -29,9 +29,9 @@ public abstract class SanMapper extends AbstractMapper {
     @Mapping(target = "city", expression = "java( dictionaryToDto(san.getCity()) )")
     @Mapping(target = "orgId", source = "san.organization.id")
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
-    @Mapping(target = "pics", expression = "java( fileToDto(san.getPics()) )")
+   // @Mapping(target = "pics", expression = "java( fileToDto(san.getPics()) )")
     abstract public SanAdminDto sanToAdminDto(San san);
-    @IterableMapping(qualifiedByName = "sanToAdminDto")
+  //  @IterableMapping(qualifiedByName = "sanToAdminDto")
     abstract public List<SanAdminDto> sanToAdminDto(List<San> sans);
 
     @Named("sanToDto")
@@ -42,31 +42,30 @@ public abstract class SanMapper extends AbstractMapper {
     abstract public List<SanDto> sanToDto(List<San> sans);
 
     @Named("sanToSanForMainDto")
-    @Mapping(target = "mainPicUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
+    //TODO @Mapping(target = "mainPicUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
     @Mapping(target = "rating", source = "san.rating")
     @Mapping(target = "sanType", expression = "java( dictionaryToDto(san.getSanType()) )")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
-    @Mapping(target = "picUrls", expression = "java( fileToDto(san.getPices()) )")
+   // @Mapping(target = "picUrls", expression = "java( fileToDto(san.getPices()) )")
     abstract public SanForMainDto sanToSanForMainDto(San san);
     @IterableMapping(qualifiedByName = "sanToSanForMainDto")
     abstract public List<SanForMainDto> sanToSanForMainDto(List<San> sans);
 
     @Named("sanToSanForMainAdminDto")
-    @Mapping(target = "mainPicUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
+    //TODO@Mapping(target = "mainPicUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
     @Mapping(target = "rating", source = "san.rating")
     @Mapping(target = "sanType", expression = "java( dictionaryToDto(san.getSanType()) )")
     @Mapping(target = "city", expression = "java( dictionaryToDto(san.getCity()) )")
     @Mapping(target = "address", source = "san.address")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
-    @Mapping(target = "picUrls", expression = "java( fileToDto(san.getPices()) )")
+   // @Mapping(target = "picUrls", expression = "java( fileToDto(san.getPices()) )")
     abstract public SanForMainAdminDto sanToSanForMainAdminDto(San san);
     @IterableMapping(qualifiedByName = "sanToSanForMainAdminDto")
     abstract public List<SanForMainAdminDto> sanToSanForMainAdminDto(List<San> sans);
 
     @Named("sanToSanByIdDto")
-    @Mapping(target = "pics", expression = "java( fileToDto(san.getPics()) )")
     @Mapping(target = "rating", source = "san.rating")
     @Mapping(target = "sanType", source = "san.sanType.id")
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
@@ -77,7 +76,7 @@ public abstract class SanMapper extends AbstractMapper {
     abstract public List<SanByIdDto> sanToSanByIdDto(List<San> sans);
 
     @Named("sanToSanSimpleDto")
-    @Mapping(target = "mainPicUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
+    //@Mapping(target = "mainPicUrl", expression = "java(getPicUrlFromSysFile(san.getMainPic()))")
     abstract public SanSimpleDto sanToSanSimpleDto(San san);
     @IterableMapping(qualifiedByName = "sanToSanSimpleDto")
     abstract public List<SanSimpleDto> sanToSanSimpleDto(List<San> sans);

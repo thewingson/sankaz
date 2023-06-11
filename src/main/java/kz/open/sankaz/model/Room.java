@@ -2,6 +2,7 @@ package kz.open.sankaz.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import kz.open.sankaz.image.SanaTourImage;
 import kz.open.sankaz.pojo.dto.DatesDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -79,6 +80,8 @@ public class Room extends AbstractEntity {
 
     @Column
     private String additionals;
+    @Column(columnDefinition = "boolean default true")
+    private boolean isEnable=true;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CLASS_ID", foreignKey = @ForeignKey(name = "ROOM_CLASS_FK"), nullable = false)
@@ -90,57 +93,12 @@ public class Room extends AbstractEntity {
     @JsonManagedReference
     private San san;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "ROOM_PICS",
-            joinColumns = @JoinColumn(name = "ROOM_ID", foreignKey = @ForeignKey(name = "ROOM_PICS_ROOM_FK")),
-            inverseJoinColumns = @JoinColumn(name = "FILE_ID", foreignKey = @ForeignKey(name = "ROOM_PICS_PIC_FK")))
-    private List<SysFile> pics;
+    @OneToMany(mappedBy = "roomId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<SanaTourImage> sanaTourImages;
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Booking> books;
-
-    public void addPic(SysFile pic){
-        if(getPics() == null){
-            this.pics = new ArrayList<>();
-        }
-        pics.add(pic);
-    }
-
-    public void addPics(List<SysFile> pics){
-        if(getPics() == null){
-            this.pics = new ArrayList<>();
-        }
-        this.pics.addAll(pics);
-    }
-
-    public void deletePic(SysFile pic){
-        if(!getPics().isEmpty()){
-            getPics().remove(pic);
-        }
-    }
-
-    public void deletePics(List<SysFile> pics){
-        if(!getPics().isEmpty()){
-            this.getPics().removeAll(pics);
-        }
-    }
-
-    public SysFile getMainPic(){
-        if(getPics() != null && !getPics().isEmpty()){
-            return getPics().get(0);
-        }
-        return null;
-    }
-
-    public String getMainPicUrl(){
-        SysFile mainPic = getMainPic();
-        if(mainPic != null){
-            return mainPic.getFileName();
-        } else{
-            return null;
-        }
-    }
 
 }

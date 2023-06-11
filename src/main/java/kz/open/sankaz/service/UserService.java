@@ -1,8 +1,6 @@
 package kz.open.sankaz.service;
 
 import kz.open.sankaz.model.SecUser;
-import kz.open.sankaz.model.SysFile;
-import kz.open.sankaz.pojo.dto.PictureDto;
 import kz.open.sankaz.pojo.dto.TokenDto;
 import kz.open.sankaz.pojo.dto.notifications.UserNotificationDto;
 import kz.open.sankaz.pojo.filter.SecUserEditFilter;
@@ -21,8 +19,8 @@ public interface UserService extends UserDetailsManager, CommonService<SecUser> 
 
     TokenDto changePassword(Long id, String password, String confirmPassword);
 
-    PictureDto changePicture(Long userId, MultipartFile file) throws IOException;
-    void deletePicture(Long userId);
+    boolean changePicture(Long userId, MultipartFile file) throws IOException;
+
 
     SecUser getUserByEmail(String email);
     SecUser getUserByUsername(String email);
@@ -32,10 +30,6 @@ public interface UserService extends UserDetailsManager, CommonService<SecUser> 
     SecUser createOne(UserCreateFilter filter);
 
     SecUser editOne(Long userId, UserEditFilter filter);
-
-    SysFile addPic(Long userId, MultipartFile pic) throws IOException;
-
-    void deletePic(Long userId);
 
     List<SecUser> getAllPageWithFilter(String fullName, String telNumber, int page, int size);
 

@@ -15,7 +15,6 @@ public abstract class NotificationMapper extends AbstractMapper {
     @Named("stockToDto")
     @Mapping(target = "viewCount", source = "viewCount")
     @Mapping(target = "sanId", source = "san.id")
-    @Mapping(target = "pics", ignore = true)
     abstract public StockDto stockToDto(Stock stock);
     @IterableMapping(qualifiedByName = "stockToDto")
     abstract public List<StockDto> stockToDto(List<Stock> stocks);

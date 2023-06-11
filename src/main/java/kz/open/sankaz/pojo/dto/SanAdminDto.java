@@ -1,5 +1,6 @@
 package kz.open.sankaz.pojo.dto;
 
+import kz.open.sankaz.image.SanaTourImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,8 @@ public class SanAdminDto extends AbstractDto {
     private String siteLink;
     private DictionaryLangDto sanType;
     private List<String> telNumbers;
-    private FileDto pic;
+    private SanaTourImage sanaTourImage;
     private DictionaryLangDto city;
     private Long orgId;
-    private List<FileDto> pics;
+    private List<SanaTourImage> sanaTourImages;
 }

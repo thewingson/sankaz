@@ -1,7 +1,7 @@
 package kz.open.sankaz.service.impl;
 
 import kz.open.sankaz.exception.EntityNotFoundException;
-import kz.open.sankaz.mapper.FileMapper;
+import kz.open.sankaz.image.SanaTourImage;
 import kz.open.sankaz.mapper.ReviewMapper;
 import kz.open.sankaz.mapper.SanMapper;
 import kz.open.sankaz.model.*;
@@ -13,17 +13,24 @@ import kz.open.sankaz.pojo.dto.SanForMainDto;
 import kz.open.sankaz.pojo.filter.*;
 import kz.open.sankaz.repo.*;
 import kz.open.sankaz.service.*;
+import kz.open.sankaz.util.ReSizerImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,9 +68,11 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
 
     @Autowired
     private ReviewService reviewService;
+@Autowired
+SanaTourImageService sanaTourImageService;
 
-    @Autowired
-    private SysFileService sysFileService;
+@Autowired
+    ReSizerImageService reSizerImageService;
 
     @Autowired
     protected OrganizationService organizationService;
@@ -81,8 +90,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Autowired
     private ReviewMapper reviewMapper;
 
-    @Autowired
-    private FileMapper fileMapper;
+
 
     public SanServiceImpl(SanRepo sanRepo) {
         super(sanRepo);
@@ -295,50 +303,6 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
         san.setLongitude(longitude);
         editOneById(san);
     }
-
-    @Override
-    public List<SysFile> addPics(Long sanId, MultipartFile[] pics) throws IOException {
-        San san = getOne(sanId);
-
-        for(MultipartFile pic : pics){
-            if (!pic.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdir();
-                }
-
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
-
-                pic.transferTo(new File(fileNameWithPath));
-
-                SysFile file = new SysFile();
-                file.setFileName(resultFilename);
-                file.setExtension(pic.getContentType());
-                file.setSize(pic.getSize());
-                file = sysFileService.addOne(file);
-
-                san.addPic(file);
-            }
-        }
-
-        return editOneById(san).getPics();
-    }
-
-    @Override
-    public void deletePics(Long sanId, Long[] picIds) {
-        San san = getOne(sanId);
-
-        List<SysFile> picsToDelete = sysFileService.getAllByIdIn(Arrays.asList(picIds));
-        picsToDelete.stream().forEach(file -> {
-            file.setDeletedDate(LocalDate.now());
-            sysFileService.editOneById(file);
-        });
-        san.deletePics(picsToDelete);
-        editOneById(san);
-    }
-
     @Override
     public List<San> getAllOwn(){
         String currentUsername = authService.getCurrentUsername();
@@ -440,7 +404,7 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
     @Override
     public San createSan(SanCreateFilter filter) {
         City city = cityService.getOne(filter.getCityId());
-
+        List<SanaTourImage> sanaTourImages= new ArrayList<>();
         SanType sanType = sanTypeService.getOne(filter.getSanTypeId());
 
         Organization organization = organizationService.getOne(filter.getOrgId());
@@ -477,7 +441,18 @@ public class SanServiceImpl extends AbstractService<San, SanRepo> implements San
             san.addTelNumber(number);
         }
 
-        return addOne(san);
+        San result= addOne(san);
+        for (byte[] imageByte :filter.getImages()){
+            SanaTourImage sanaTourImage = new SanaTourImage();
+            sanaTourImage.setType("S");
+            sanaTourImage.setBase64Original(Base64.getEncoder().encodeToString(imageByte));
+
+            sanaTourImage.setBase64Scaled(reSizerImageService.reSize(imageByte,240,240));
+            sanaTourImage.setSanId(result);
+            sanaTourImages.add(sanaTourImage);
+        }
+        sanaTourImageService.saveAll(sanaTourImages);
+        return result;
     }
 
     @Override

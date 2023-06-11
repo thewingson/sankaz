@@ -93,12 +93,7 @@ public class Organization extends AbstractEntity {
     @JsonManagedReference
     private CompanyCategory companyCategory;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST})
-    @JoinTable(
-            name = "ORGANIZATION_PICS",
-            joinColumns = @JoinColumn(name = "ORGANIZATION_ID", foreignKey = @ForeignKey(name = "ORGANIZATION_PICS_ORGANIZATION_FK")),
-            inverseJoinColumns = @JoinColumn(name = "FILE_ID", foreignKey = @ForeignKey(name = "ORGANIZATION_PICS_FILE_FK")))
-    private List<SysFile> pics;
+
 
     @Column(name = "REJECT_MESSAGE")
     private String rejectMessage;
@@ -106,21 +101,5 @@ public class Organization extends AbstractEntity {
     @OneToMany(mappedBy = "organization")
     @JsonBackReference
     private List<San> sans;
-
-    public void addPic(SysFile pic){
-        getPics().add(pic);
-    }
-
-    public void deletePic(SysFile pic){
-        if(!getPics().isEmpty()){
-            getPics().remove(pic);
-        }
-    }
-
-    public void deletePics(List<SysFile> pics){
-        if(!getPics().isEmpty()){
-            this.getPics().removeAll(pics);
-        }
-    }
 
 }

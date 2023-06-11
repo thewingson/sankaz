@@ -1,5 +1,6 @@
 package kz.open.sankaz.pojo.dto;
 
+import kz.open.sankaz.image.SanaTourImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,5 +21,5 @@ public class RoomClassDto extends AbstractDto {
     private Integer bedCount;
     private BigDecimal price;
     private Long sanId;
-    private List<FileDto> pics;
+    private List<SanaTourImage> sanaTourImages;
 }

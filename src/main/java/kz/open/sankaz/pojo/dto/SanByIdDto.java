@@ -1,5 +1,6 @@
 package kz.open.sankaz.pojo.dto;
 
+import kz.open.sankaz.image.SanaTourImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SanByIdDto extends AbstractDto {
-    private List<FileDto> pics;
+
     private String name;
     private Float rating;
     private String sanType;
@@ -24,4 +25,5 @@ public class SanByIdDto extends AbstractDto {
     private List<RoomInSanByIdDto> rooms;
     private Double longitude;
     private Double latitude;
+    private List<SanaTourImage> sanaTourImages;
 }

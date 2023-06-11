@@ -3,7 +3,6 @@ package kz.open.sankaz.service;
 import kz.open.sankaz.model.Review;
 import kz.open.sankaz.model.San;
 import kz.open.sankaz.model.Stock;
-import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.pojo.dto.SanForMainAdminDto;
 import kz.open.sankaz.pojo.dto.SanForMainDto;
 import kz.open.sankaz.pojo.filter.*;
@@ -34,10 +33,6 @@ public interface SanService extends CommonService<San> {
     List<SanForMainDto> getFavs(Long userId, int page, int size);
 
     void addGeo(Long sanId, Double longitude, Double latitude);
-
-    List<SysFile> addPics(Long sanId, MultipartFile[] pics) throws IOException;
-
-    void deletePics(Long sanId, Long[] picIds);
 
     List<San> getAllOwn();
 

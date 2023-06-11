@@ -7,7 +7,6 @@ import kz.open.sankaz.mapper.OrganizationMapper;
 import kz.open.sankaz.model.CompanyCategory;
 import kz.open.sankaz.model.Organization;
 import kz.open.sankaz.model.SecUser;
-import kz.open.sankaz.model.SysFile;
 import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
 import kz.open.sankaz.model.enums.UserType;
 import kz.open.sankaz.pojo.dto.PageDto;
@@ -42,8 +41,7 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     @Autowired
     private CompanyCategoryService companyCategoryService;
 
-    @Autowired
-    private SysFileService fileService;
+
 
     @Autowired
     private UserService userService;
@@ -51,16 +49,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
     @Lazy
     @Autowired
     private AuthService authService;
-
-    @Autowired
-    private SysFileService sysFileService;
-
-    @Value("${application.file.upload.path.image}")
-    private String APPLICATION_UPLOAD_PATH_IMAGE;
-
-    @Value("${application.file.download.path.image}")
-    private String APPLICATION_DOWNLOAD_PATH_IMAGE;
-
     public OrganizationServiceImpl(OrganizationRepo organizationRepo) {
         super(organizationRepo);
     }
@@ -165,62 +153,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         organization.setInstagramLink(filter.getInstagramLink());
         organization.setSiteLink(filter.getSiteLink());
 
-        editOneById(organization);
-    }
-
-    @Override
-    public void uploadPicture(Long orgId, MultipartFile pic) throws IOException {
-        Organization organization = getOne(orgId);
-        String fileNameWithPath = "";
-        if (pic != null && !pic.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-            fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
-
-            pic.transferTo(new File(fileNameWithPath));
-
-            SysFile file = new SysFile();
-            file.setFileName(resultFilename);
-            file.setExtension(pic.getContentType());
-            file.setSize(pic.getSize());
-            file = fileService.addOne(file);
-
-            organization.addPic(file);
-            editOneById(organization);
-        }
-    }
-
-    @Override
-    public void uploadPicture(Long orgId, MultipartFile[] pics) throws IOException {
-        Organization organization = getOne(orgId);
-        for(MultipartFile pic : pics){
-            if (!pic.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdir();
-                }
-
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
-
-                pic.transferTo(new File(fileNameWithPath));
-
-                SysFile file = new SysFile();
-                file.setFileName(resultFilename);
-                file.setExtension(pic.getContentType());
-                file.setSize(pic.getSize());
-                file = fileService.addOne(file);
-
-                organization.addPic(file);
-
-            }
-        }
         editOneById(organization);
     }
 
@@ -359,47 +291,6 @@ public class OrganizationServiceImpl extends AbstractService<Organization, Organ
         dto.setContent(organizationMapper.organizationToDto(pages.getContent()));
         dto.setPageable(pages.getPageable());
         return dto;
-    }
-
-    @Override
-    public List<SysFile> addPics(Long orgId, MultipartFile[] pics) throws IOException {
-        Organization organization = getOne(orgId);
-
-        for(MultipartFile pic : pics){
-            if (!pic.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdir();
-                }
-
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
-
-                pic.transferTo(new File(fileNameWithPath));
-
-                SysFile file = new SysFile();
-                file.setFileName(resultFilename);
-                file.setExtension(pic.getContentType());
-                file.setSize(pic.getSize());
-                file = sysFileService.addOne(file);
-
-                organization.addPic(file);
-            }
-        }
-
-        return editOneById(organization).getPics();
-    }
-
-    @Override
-    public void deletePics(Long orgId, Long picId) {
-        Organization organization = getOne(orgId);
-
-        SysFile picToDelete = sysFileService.getOne(picId);
-        picToDelete.setDeletedDate(LocalDate.now());
-        sysFileService.editOneById(picToDelete);
-        organization.deletePic(picToDelete);
-        editOneById(organization);
     }
 
     @Override

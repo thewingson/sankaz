@@ -1,25 +1,22 @@
 package kz.open.sankaz.service.impl;
 
+import kz.open.sankaz.image.SanaTourImage;
 import kz.open.sankaz.model.*;
 import kz.open.sankaz.pojo.filter.RoomCreateFilter;
 import kz.open.sankaz.repo.RoomRepo;
 import kz.open.sankaz.service.*;
+import kz.open.sankaz.util.ReSizerImageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
+//Todo удалить
 
 @Service
 @Slf4j
@@ -28,9 +25,6 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
 
     @Autowired
     private RoomClassDicService roomClassDicService;
-
-    @Autowired
-    private SysFileService sysFileService;
 
     @Lazy
     @Autowired
@@ -42,27 +36,20 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
 
     @Autowired
     private OrganizationService organizationService;
-
+    @Autowired
+    private SanaTourImageService sanaTourImageService;
+    @Autowired
+    private ReSizerImageService reSizerImageService;
 
     public RoomServiceImpl(RoomRepo roomRepo) {
         super(roomRepo);
     }
 
-    @Override
-    public Room addOne(RoomCreateFilter filter) {
-        Room room = new Room();
-        room.setRoomClassDic(roomClassDicService.getOne(filter.getRoomClassDicId()));
-        room.setRoomNumber(filter.getRoomNumber());
-        room.setBedCount(filter.getBedCount());
-        room.setRoomCount(filter.getRoomCount());
-        room.setPrice(filter.getPrice());
-        room.setAdditionals(filter.getRoomAdditionalDto());
-        return addOne(room);
-    }
+
 
     @org.springframework.transaction.annotation.Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public Room addOne(RoomCreateFilter filter, MultipartFile[] pics) throws IOException {
+    public Room addOne(RoomCreateFilter filter) {
         RoomClassDic classDic = roomClassDicService.getOne(filter.getRoomClassDicId());
         San san = sanService.getOne(filter.getSanId());
         List<Room> rooms = repo.findRoomByNameAndSan(san.getId(), filter.getRoomNumber().toLowerCase());
@@ -76,9 +63,21 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
         room.setBedCount(filter.getBedCount());
         room.setRoomCount(filter.getRoomCount());
         room.setPrice(filter.getPrice());
-        room.setPriceChild(filter.getPriceChild());
+        room.setPriceChild(filter.getChildPrice());
         room.setAdditionals(filter.getRoomAdditionalDto());
-        return addPics(addOne(room), pics);
+        Room result=addOne(room);
+        List<SanaTourImage> sanaTourImages= new ArrayList<>();
+        for (byte[] imageByte :filter.getImages()){
+            SanaTourImage sanaTourImage = new SanaTourImage();
+            sanaTourImage.setType("R");
+            sanaTourImage.setBase64Original(Base64.getEncoder().encodeToString(imageByte));
+            sanaTourImage.setBase64Scaled(reSizerImageService.reSize(imageByte,240,240));
+            sanaTourImage.setRoomId(result);
+            sanaTourImages.add(sanaTourImage);
+        }
+        sanaTourImageService.saveAll(sanaTourImages);
+        return result;
+
     }
 
     @Override
@@ -105,84 +104,15 @@ public class RoomServiceImpl extends AbstractService<Room, RoomRepo> implements 
         room.setBedCount(filter.getBedCount());
         room.setRoomCount(filter.getRoomCount());
         room.setPrice(filter.getPrice());
-        room.setPriceChild(filter.getPriceChild());
+        room.setPriceChild(filter.getChildPrice());
+        room.setEnable(filter.getIsEnable());
         return editOneById(room);
     }
 
-    private Room addPics(Room room, MultipartFile[] pics) throws IOException {
 
-        for(MultipartFile pic : pics){
-            if (!pic.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdir();
-                }
 
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
 
-                pic.transferTo(new File(fileNameWithPath));
 
-                SysFile file = new SysFile();
-                file.setFileName(resultFilename);
-                file.setExtension(pic.getContentType());
-                file.setSize(pic.getSize());
-                file = sysFileService.addOne(file);
-
-                room.addPic(file);
-            }
-        }
-
-        return room;
-    }
-
-    @Override
-    public List<SysFile> addPics(Long roomId, MultipartFile[] pics) throws IOException {
-        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
-        Room room = getOne(roomId);
-
-        List<SysFile> savedPics = new ArrayList<>();
-        for(MultipartFile pic : pics){
-            if (!pic.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(APPLICATION_UPLOAD_PATH_IMAGE);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdir();
-                }
-
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFilename = uuidFile + "." + pic.getOriginalFilename();
-                String fileNameWithPath = APPLICATION_UPLOAD_PATH_IMAGE + "/" + resultFilename;
-
-                pic.transferTo(new File(fileNameWithPath));
-
-                SysFile file = new SysFile();
-                file.setFileName(resultFilename);
-                file.setExtension(pic.getContentType());
-                file.setSize(pic.getSize());
-                file = sysFileService.addOne(file);
-                savedPics.add(file);
-
-                room.addPic(file);
-            }
-        }
-
-        return savedPics;
-    }
-
-    @Override
-    public void deletePics(Long roomId, Long[] picIds) {
-        log.info(getServiceClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " Started");
-        Room room = getOne(roomId);
-
-        List<SysFile> picsToDelete = sysFileService.getAllByIdIn(Arrays.asList(picIds));
-        picsToDelete.stream().forEach(file -> {
-            file.setDeletedDate(LocalDate.now());
-            sysFileService.editOneById(file);
-        });
-        room.deletePics(picsToDelete);
-        editOneById(room);
-    }
 
     @Override
     public List<Room> getAllByDate(Long sanId, LocalDateTime startDate, LocalDateTime endDate) {
