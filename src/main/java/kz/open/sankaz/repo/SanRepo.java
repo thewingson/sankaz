@@ -28,6 +28,7 @@ public interface SanRepo extends CommonRepo<San>{
                     "                    and ((cast(b.start_date as date) between cast(cast(:startDate as text) as date) and cast(cast(:endDate as text) as date)) " +
                     "                    or (cast(b.end_date as date) between cast(cast(:startDate as text) as date) and cast(cast(:endDate as text) as date))) " +
                     "                    end " +
+                    "left join san_additional sa on sa.san=s.id "+
                     "where 1=1 " +
                     "and case when :name is not null " +
                     "    then lower(s.name) like concat('%', :name, '%') " +

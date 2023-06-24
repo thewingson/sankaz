@@ -71,7 +71,7 @@ public class ModerSanRest {
     }
 
     @PostMapping
-    public ResponseEntity<?> addOne(@Valid @RequestBody SanCreateFilter filter) {
+    public ResponseEntity<?> addOne(@RequestBody SanCreateFilter filter) {
         try{
             sanService.checkIfOwnOrg(filter.getOrgId());
             return ResponseModel.success(sanMapper.sanToDto(sanService.createSan(filter)));

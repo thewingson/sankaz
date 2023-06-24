@@ -15,6 +15,7 @@ import kz.open.sankaz.repo.*;
 import kz.open.sankaz.service.*;
 import kz.open.sankaz.util.ReSizerImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,9 +78,7 @@ SanaTourImageService sanaTourImageService;
     @Autowired
     protected OrganizationService organizationService;
 
-    @Lazy
-    @Autowired
-    private RoomService roomService;
+
 
     @Autowired
     private CityService cityService;
@@ -89,6 +88,12 @@ SanaTourImageService sanaTourImageService;
 
     @Autowired
     private ReviewMapper reviewMapper;
+    @Autowired
+    private SanAdditionalDicService sanAdditionalDicService;
+    @Autowired
+    @Qualifier("SanAdditionalService")
+    private SanAdditionalService sanAdditionalService;
+
 
 
 
@@ -418,6 +423,7 @@ SanaTourImageService sanaTourImageService;
         san.setOrganization(organization);
         san.setSanType(sanType);
 
+
         if(filter.getSiteLink() != null){
             san.setSiteLink(filter.getSiteLink());
         }
@@ -442,6 +448,7 @@ SanaTourImageService sanaTourImageService;
         }
 
         San result= addOne(san);
+        //Сохранить фото в базу
         for (byte[] imageByte :filter.getImages()){
             SanaTourImage sanaTourImage = new SanaTourImage();
             sanaTourImage.setType("S");
@@ -452,6 +459,23 @@ SanaTourImageService sanaTourImageService;
             sanaTourImages.add(sanaTourImage);
         }
         sanaTourImageService.saveAll(sanaTourImages);
+        //Сохранить Дополнительный услуги в базу
+        if (!filter.getSanAdditionalDics().isEmpty()){
+            List<SanAdditionalDic> sanAdditionDics=sanAdditionalDicService.findAllByIds(filter.getSanAdditionalDics());
+
+            sanAdditionDics.stream().forEach(e->{
+                e.setSanAdditionalList(null);
+                SanAdditional sanAdditional = new SanAdditional();
+                sanAdditional.setEnable(true);
+                sanAdditional.setAdditionalDic(e);
+                sanAdditional.setCost(0L);
+                sanAdditional.setSan(result);
+                sanAdditionalService.save(sanAdditional);
+
+
+            });
+
+        }
         return result;
     }
 

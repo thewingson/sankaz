@@ -74,7 +74,7 @@ public class San extends AbstractEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CITY_ID", foreignKey = @ForeignKey(name = "SAN_CITY_FK"), nullable = false)
-    @JsonManagedReference
+    @JsonManagedReference(value = "city")
     private City city;
 
     @Column(name = "LONGITUDE")
@@ -89,6 +89,10 @@ public class San extends AbstractEntity{
     @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Room> rooms;
+
+    @OneToMany(mappedBy = "san", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "sanAdditionals")
+    private List<SanAdditional> sanAdditionals;
 
     @Override
     public boolean equals(Object o) {

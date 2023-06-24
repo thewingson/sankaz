@@ -75,4 +75,40 @@
                 stripComments="true"
                 path="20230403-01-alter-sanatour-image.sql"/>
     </changeSet>
+    <changeSet id="8" author="ilyas">
+        <sqlFile
+                dbms="postgresql"
+                endDelimiter="\n;"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                stripComments="true"
+                path="20230611-01-create-additional-dic_san.sql"/>
+    </changeSet>
+    <changeSet id="9" author="ilyas">
+        <sqlFile
+                dbms="postgresql"
+                endDelimiter="\n;"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                stripComments="true"
+                path="20230611-02-insert-additional-dic-san.sql"/>
+    </changeSet>
+    <changeSet id="10" author="ilyas">
+        <sqlFile
+                dbms="postgresql"
+                endDelimiter="\n;"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                stripComments="true"
+                path="20230611-03-create-additional-san.sql"/>
+    </changeSet>
+    <changeSet id="11" author="ilyas">
+        <sqlFile
+                dbms="postgresql"
+                endDelimiter="\n;"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                stripComments="true"
+                path="20230612-01-alter-additional-san.sql"/>
+    </changeSet>
 </databaseChangeLog>

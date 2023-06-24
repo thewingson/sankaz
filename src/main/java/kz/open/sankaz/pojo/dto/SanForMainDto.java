@@ -1,6 +1,7 @@
 package kz.open.sankaz.pojo.dto;
 
 import kz.open.sankaz.image.SanaTourImage;
+import kz.open.sankaz.model.SanAdditional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,4 +28,6 @@ public class SanForMainDto extends BaseDto {
     private String address;
     private List<SanaTourImage> sanaTourImages;
     private boolean isFav = false;
+    private List<SanAdditional> sanAdditionals;
+
 }

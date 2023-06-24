@@ -1,5 +1,6 @@
 package kz.open.sankaz.pojo.filter;
 
+import kz.open.sankaz.model.SanAdditional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,4 +37,6 @@ public class SanCreateFilter extends BaseFilter {
     private String address;
     @NotNull
     private List<byte[]> images;
+
+    private List<Long> sanAdditionalDics;
 }
