@@ -58,7 +58,7 @@ public class UserSanRest {
 
     @PreAuthorize("permitAll()")
     @PostMapping
-    public ResponseEntity<?> getAll(
+    public ResponseEntity<?> getAllSanatorium(
             HttpServletRequest request,
             @RequestParam(required = false) Long cityId,
             @RequestParam(defaultValue = "") String name,

@@ -92,10 +92,10 @@ application:
   file:
     upload:
       path:
-        image: /Users/almatrakhmetolla/IdeaProjects/sankaz
+        image: /Users/ilyas/IdeaProjects/sankaz
     download:
       path:
-        image: /Users/almatrakhmetolla/IdeaProjects/sankaz
+        image: /Users/ilyas/IdeaProjects/sankaz
 fcm:
   service-account-file: sankaz-push-firebase-adminsdk.json
 payment:

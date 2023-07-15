@@ -39,6 +39,7 @@ public abstract class SanMapper extends AbstractMapper {
     @Mapping(target = "orgId", source = "san.organization.id")
     abstract public SanDto sanToDto(San san);
     @IterableMapping(qualifiedByName = "sanToDto")
+    @Mapping(target = "instagramLink", expression = "java(getInstaDefault())")
     abstract public List<SanDto> sanToDto(List<San> sans);
 
     @Named("sanToSanForMainDto")
@@ -47,7 +48,7 @@ public abstract class SanMapper extends AbstractMapper {
     @Mapping(target = "sanType", expression = "java( dictionaryToDto(san.getSanType()) )")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
-   // @Mapping(target = "picUrls", expression = "java( fileToDto(san.getPices()) )")
+    @Mapping(target = "instagramLink", expression = "java(getInstaDefault())")
     abstract public SanForMainDto sanToSanForMainDto(San san);
     @IterableMapping(qualifiedByName = "sanToSanForMainDto")
     abstract public List<SanForMainDto> sanToSanForMainDto(List<San> sans);
@@ -60,7 +61,7 @@ public abstract class SanMapper extends AbstractMapper {
     @Mapping(target = "address", source = "san.address")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
-   // @Mapping(target = "picUrls", expression = "java( fileToDto(san.getPices()) )")
+    @Mapping(target = "instagramLink", expression = "java(getInstaDefault())")
     abstract public SanForMainAdminDto sanToSanForMainAdminDto(San san);
     @IterableMapping(qualifiedByName = "sanToSanForMainAdminDto")
     abstract public List<SanForMainAdminDto> sanToSanForMainAdminDto(List<San> sans);
@@ -71,6 +72,7 @@ public abstract class SanMapper extends AbstractMapper {
     @Mapping(target = "telNumbers", expression = "java( getTelNumberValuesFromEntity(san.getTelNumbers()) )")
     @Mapping(target = "reviewCount", source = "san.reviewCount")
     @Mapping(target = "rooms", expression = "java( roomMapper.roomToRoomInSanByIdDto(san.getRooms()) )")
+    @Mapping(target = "instagramLink", expression = "java(getInstaDefault())")
     abstract public SanByIdDto sanToSanByIdDto(San san);
     @IterableMapping(qualifiedByName = "sanToSanByIdDto")
     abstract public List<SanByIdDto> sanToSanByIdDto(List<San> sans);

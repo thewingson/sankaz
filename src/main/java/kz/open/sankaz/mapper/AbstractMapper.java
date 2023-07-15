@@ -11,6 +11,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,12 @@ public abstract class AbstractMapper extends BaseMapper {
 
 
     protected List<String> getTelNumberValuesFromEntity(List<TelNumber> telNumbers){
-        return telNumbers.stream().map(TelNumber::getValue).collect(Collectors.toList());
+        return Arrays.asList("+7 775 355 3207");
+
+    }
+    protected String getInstaDefault(){
+        return "https://instagram.com/sanatour.kz?igshid=NTc4MTIwNjQ2YQ==";
+
     }
 
     protected String getNameFromUser(SecUser user){

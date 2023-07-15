@@ -1,5 +1,5 @@
 server:
-  port: 8098
+  port: 8080
   error:
     include-message: always
     include-binding-errors: always
@@ -16,12 +16,12 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: public
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: true
   datasource:
-    url: jdbc:postgresql://localhost/sankaz_admin_dev
-    username: sankaz
-    password: sankaz
+    url: jdbc:postgresql://195.210.47.239:5432/sanatour_db
+    username: postgres
+    password: Arujan2013@3
   mail:
     host: smtp.gmail.com
     username: sanofkaz@gmail.com
@@ -29,11 +29,13 @@ spring:
     port: 465
     protocol: smtps
   liquibase:
-    enabled: false
-    change-log: classpath:liquibase/changelog-master.xml
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
   servlet:
     multipart:
-      max-file-size: 2MB
+      max-file-size: 7MB
+  pid:
+    fail-on-write-error: true
 
 mail:
   host: localhost
@@ -69,10 +71,13 @@ notification:
 
 logging:
   file:
-    path: /opt/sankaz/admin
-    name: app.log
+    #    path: C:\Users\Mi Notebook\Desktop\sankaz-config
+    name: sankaz_logs.log
+    path: /home/ubuntu/
 
 application:
+  url:
+    base: http://195.210.47.239:8078
   rest:
     response:
       success: success
@@ -80,7 +85,19 @@ application:
   file:
     upload:
       path:
-        image: /var/www/content/sankaz/images
+        image: /home/ubuntu/apache2/var/www/html/files/images/
     download:
       path:
-        image: http://185.146.1.64/sankaz/images/
+        image: http://195.210.47.239/files/images/
+fcm:
+  service-account-file: sankaz-push-firebase-adminsdk.json
+payment:
+  model:
+    prefix: sankaz_dev_
+  api:
+    base-url: https://ecommerce.pult24.kz/payment/create
+  merchant:
+    login: 13792919073652992
+    password: TQw9MBVKCjB2BG6wT671
+  expires:
+    min: 10

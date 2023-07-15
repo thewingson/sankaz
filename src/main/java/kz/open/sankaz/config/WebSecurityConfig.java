@@ -83,7 +83,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/moders/auth/check-reset",
                 "/moders/auth/reset-pass",
                 "/moders/books/{bookId}/pay",
-                "/faqs/**"
+                "/faqs/**",
+                "/migration/**"
         ).permitAll();
 
         http.authorizeHttpRequests().antMatchers(HttpMethod.GET, "/users/sans/**").permitAll();
