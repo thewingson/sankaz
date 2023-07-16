@@ -19,7 +19,7 @@ spring:
       ddl-auto: none
     show-sql: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/sanatour_dev
+    url: jdbc:postgresql://localhost:5432/sanatour
     username: postgres
     password: root
   mail:

@@ -8,6 +8,7 @@ import kz.open.sankaz.model.*;
 import kz.open.sankaz.model.enums.OrganizationConfirmationStatus;
 import kz.open.sankaz.model.enums.UserNotificationType;
 import kz.open.sankaz.model.enums.UserType;
+import kz.open.sankaz.pojo.dto.DictionaryLangDto;
 import kz.open.sankaz.pojo.dto.SanForMainAdminDto;
 import kz.open.sankaz.pojo.dto.SanForMainDto;
 import kz.open.sankaz.pojo.filter.*;
@@ -248,26 +249,28 @@ SanaTourImageService sanaTourImageService;
     }
 
     @Override
-    public List<SanForMainDto> getAllForMain(Long userId, SanForMainFilter filter, int page, int size) {
-        int personCount = Optional.ofNullable(filter.getAdults()).orElse(0) + Optional.ofNullable(filter.getChildren()).orElse(0);
-        List<San> result = sanRepo.getAllBySanForMainFilter(
-                filter.getCityId(),
-                filter.getName().toLowerCase(),
-                filter.getSanTypeCode().toLowerCase(),
-                filter.getStartDate(),
-                filter.getEndDate(),
-                personCount,
-                page, size);
+    public List<SanForMainDto> getAllForMain() {
+        List<SanForMainDto> resultList=new ArrayList<>();
+    List<San> asd=sanRepo.getAllSanForMain();
+    asd.forEach(s->{
+        SanForMainDto sanForMainDto = new SanForMainDto();
+        sanForMainDto.setName(s.getName());
+        String mainImageBase64=sanaTourImageService.getBySanId(s.getId());
+        SanType sanType=sanTypeService.getOne(s.getSanType().getId());
+        DictionaryLangDto dictionaryLangDto = new DictionaryLangDto();
+        dictionaryLangDto.setName(sanType.getName());
+        sanForMainDto.setSanType(dictionaryLangDto);
 
-        List<SanForMainDto> sanForMainDtos = sanMapper.sanToSanForMainDto(result);
-        List<Long> favSanIds = repo.getFavSanId(userId);
-        sanForMainDtos.forEach(dto -> {
-            if(favSanIds.contains(dto.getId())){
-                dto.setFav(true);
-            }
+        sanForMainDto.setMainImageBase64(mainImageBase64);
+        resultList.add(sanForMainDto);
 
-        });
-        return sanForMainDtos;
+    });
+
+
+
+
+
+        return resultList;
     }
 
     @Override
@@ -291,14 +294,16 @@ SanaTourImageService sanaTourImageService;
 
     @Override
     public List<SanForMainDto> getFavs(Long userId, int page, int size) {
-        List<San> result = sanRepo.getFavs(userId, page, size);
-
-        List<SanForMainDto> sanForMainDtos = sanMapper.sanToSanForMainDto(result);
-        List<Long> favSanIds = repo.getFavSanId(userId);
-        sanForMainDtos.forEach(dto -> {
-            dto.setFav(true);
-        });
-        return sanForMainDtos;
+//        List<San> result = sanRepo.getFavs(userId, page, size);
+//
+//      / /List<SanForMainDto> sanForMainDtos = sanMapper.sanToSanForMainDto(result);
+//        List<Long> favSanIds = repo.getFavSanId(userId);
+//        sanForMainDtos.forEach(dto -> {
+//            //TODO
+//           // dto.setFav(true);
+//        });
+//        return sanForMainDtos;
+        return null;
     }
 
     @Override

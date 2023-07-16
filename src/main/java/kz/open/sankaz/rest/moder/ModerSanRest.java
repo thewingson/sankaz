@@ -53,7 +53,7 @@ public class ModerSanRest {
     @GetMapping
     public ResponseEntity<?> getAllOwn() {
         try{
-            return ResponseModel.success(sanMapper.sanToSanForMainDto(sanService.getAllOwn()));
+            return ResponseModel.success(sanService.getAllOwn());
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

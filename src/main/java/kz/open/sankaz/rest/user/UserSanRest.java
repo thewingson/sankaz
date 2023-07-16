@@ -42,8 +42,7 @@ public class UserSanRest {
     @Autowired
     private AuthService authService;
 
-    @Autowired
-    private SanMapper sanMapper;
+
 
     @Autowired
     private ReviewMapper reviewMapper;
@@ -57,26 +56,10 @@ public class UserSanRest {
     }
 
     @PreAuthorize("permitAll()")
-    @PostMapping
-    public ResponseEntity<?> getAllSanatorium(
-            HttpServletRequest request,
-            @RequestParam(required = false) Long cityId,
-            @RequestParam(defaultValue = "") String name,
-            @RequestParam(defaultValue = "") String sanTypeCode,
-            @RequestParam(value="startDate", required = false) String startDate,
-            @RequestParam(value="endDate", required = false) String endDate,
-            @RequestParam(required = false) Integer adults,
-            @RequestParam(required = false) Integer children,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size) {
+    @GetMapping
+    public ResponseEntity<?> getAllSanatorium() {
         try{
-            Long userId = authService.getUserId(request);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            SanForMainFilter filter = new SanForMainFilter(cityId, name,
-                    sanTypeCode,
-                    startDate.isEmpty() ? null : LocalDateTime.parse(startDate, formatter),
-                    endDate.isEmpty() ? null : LocalDateTime.parse(endDate, formatter), adults, children);
-            return ResponseModel.success(sanService.getAllForMain(userId, filter, page, size));
+            return ResponseModel.success(sanService.getAllForMain());
         } catch (Exception e){
             return ResponseModel.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }

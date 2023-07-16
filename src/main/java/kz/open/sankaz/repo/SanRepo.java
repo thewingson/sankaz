@@ -101,4 +101,8 @@ public interface SanRepo extends CommonRepo<San>{
             "join r.san s " +
             "where r.id = :roomId")
     San getSanByRoomId(@Param("roomId") Long roomId);
+
+
+    @Query(value = "select new San(s.id,s.name,s.sanType) from San s")
+    List<San> getAllSanForMain();
 }

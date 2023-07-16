@@ -153,4 +153,12 @@ public class San extends AbstractEntity{
     public void initPics(){
 //        Hibernate.initialize(this.pics);
     }
+
+    public San(Long id, String name,SanType sanType) {
+        this.id = id;
+        this.name = name;
+        this.sanType = sanType;
+
+
+    }
 }

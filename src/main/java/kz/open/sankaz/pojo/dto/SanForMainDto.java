@@ -2,6 +2,7 @@ package kz.open.sankaz.pojo.dto;
 
 import kz.open.sankaz.image.SanaTourImage;
 import kz.open.sankaz.model.SanAdditional;
+import kz.open.sankaz.model.SanType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ public class SanForMainDto extends BaseDto {
     private String name;
     private DictionaryLangDto sanType;
     private String description;
-    private String mainPicUrl;
+    private String mainImageBase64;
     private Float rating;
     private Integer reviewCount;
     private Double longitude;

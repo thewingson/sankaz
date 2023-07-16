@@ -26,7 +26,7 @@ public interface SanService extends CommonService<San> {
 
     Review answerToReview(Long sanId, ReviewModerCreateFilter filter);
 
-    List<SanForMainDto> getAllForMain(Long userId, SanForMainFilter filter, int page, int size);
+    List<SanForMainDto> getAllForMain();
 
     List<SanForMainAdminDto> getAllForMainAdmin(Long userId, SanForMainFilter filter, int page, int size);
 
